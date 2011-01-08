@@ -1,0 +1,13 @@
+.emacs.d/auto-save-list/*
+.emacs.d/.org-id-locations
+*~
+\#*#
+*#*
+session.*
+archive-contents
+builtin-packages
+.project-roots
+tramp
+temp
+.emacs.desktop
+.emacs.desktop.lock
