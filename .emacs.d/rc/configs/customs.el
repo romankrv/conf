@@ -13,6 +13,7 @@
  '(erc-prompt-for-password nil)
  '(erc-server "irc.freenode.net")
  '(erc-user-full-name "Roman Kalinichenko")
+ '(eshell-directory-name "~/.emacs.d/temp/.eshell/")
  '(ido-enable-flex-matching t)
  '(ido-mode (quote both) nil (ido))
  '(ido-save-directory-list-file "~/.emacs.d/temp/.ido.last")
