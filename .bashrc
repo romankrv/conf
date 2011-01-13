@@ -112,5 +112,21 @@ type -P ack-grep &>/dev/null && [ -L /usr/local/bin/ack ] || sudo ln -s /usr/bin
 alias ack="ack-grep"
 # end ack-grep
 
+
+## Improve bash's behaviour
+
+# join history from other sessions
+shopt -s histappend
+PROMPT_COMMAND='history -a'
+
+# remove dublicale history
+export HISTCONTROL="ignoredups"
+export HISTIGNORE="&:ls:[bf]g:exit"
+
+export HISTIGNORE="[A-Z]*"
+
+## end improve bash behaviour
+
+
 #my alias
 alias h="history"
