@@ -43,7 +43,7 @@
 (require 'color-theme)
 (color-theme-initialize)
 (if window-system
-    (color-theme-taylor))
+    (color-theme-hober))
 (if (not (window-system))
     (color-theme-tty-dark))
 
@@ -100,9 +100,10 @@
 (yas/initialize)
 (yas/load-directory "~/.emacs.d/snippets")
 
-;; load concrete packages
+;; Loading additional configuration modes
 (load-file "~/.emacs.d/rc/configs/conf-smex.el")
 (load-file "~/.emacs.d/rc/configs/keybinding.el")
+(load-file "~/.emacs.d/rc/configs/org-mode.el")
 
 ;; project-root from http://hg.piranha.org.ua/project-root/
 (load-file "~/.emacs.d/packages/ack.el")
@@ -122,3 +123,4 @@
     (make-directory "~/.emacs.d/temp"))
 
 (desktop-save-mode 1)
+(require 'org-install)

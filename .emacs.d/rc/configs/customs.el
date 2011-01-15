@@ -17,6 +17,7 @@
  '(ido-enable-flex-matching t)
  '(ido-mode (quote both) nil (ido))
  '(ido-save-directory-list-file "~/.emacs.d/temp/.ido.last")
+ '(org-agenda-files (quote ("~/ORG/work.org")))
  '(setq erc-hide-timestamps))
 
 (setq erc-hide-list '("JOIN" "PART" "QUIT" "NICK" "MODE" "TOPIC" "353"))
