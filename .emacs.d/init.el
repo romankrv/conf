@@ -12,7 +12,7 @@
 (tool-bar-mode -1)
 (menu-bar-mode -1)
 
-;; 
+;;
 (set-face-attribute 'default nil :height 100)
 
 ;; no blinking cursor
@@ -63,7 +63,7 @@
 ;; Start from empty page (scratch-buffer);
 (setq inhibit-splash-screen t)
 
-;; Sets null message for scratch-buffer 
+;; Sets null message for scratch-buffer
 (setq initial-scratch-message nil)
 
   ;; ======
@@ -88,11 +88,11 @@
 (autoload 'pymacs-eval "pymacs" nil t)
 (autoload 'pymacs-exec "pymacs" nil t)
 (autoload 'pymacs-load "pymacs" nil t)
-;; Initialize Rope                                            
+;; Initialize Rope
 ;;(pymacs-load "ropemacs" "rope-")
 ;;(setq ropemacs-enable-autoimport t)
 
-;; Initialize Yasnippet          
+;; Initialize Yasnippet
 ;Don't map TAB to yasnippet
 ;In fact, set it to something we'll never use because
 ;we'll only ever trigger it indirectly.
@@ -119,4 +119,6 @@
 
 ;; Checkout that TEMP FOLDER is exist otherwise create it
 (if (not (file-exists-p "~/.emacs.d/temp" ))
-    (make-directory "~/.emacs.d/temp")) 
+    (make-directory "~/.emacs.d/temp"))
+
+(desktop-save-mode 1)
