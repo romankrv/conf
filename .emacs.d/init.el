@@ -7,6 +7,24 @@
 ;;
 (add-to-list 'load-path "~/.emacs.d/packages/")
 
+;; el-get 
+;;        (aka get-apt for emacs)
+
+;; Checkout that el-get package is install
+(if (not (load "~/.emacs.d/el-get/el-get/el-get" t))
+ (throw 'not-configured "Install el-get to get dependences: https://github.com/dimitri/el-get/     see also README in ~/.emacs.d for copy/paste install code"))
+(require 'el-get)
+(setq el-get-sources '(yasnippet smex color-theme 
+                          ack 
+                          ;(:name project-root
+                          ; :type hg
+                          ; :url "http://hg.piranha.org.ua/project-root"
+                          ; :features project-root
+                          ;)
+                          ipython ))
+(el-get 'sync)
+;; end el-get
+
 ;; Turn off mouse interface
 (scroll-bar-mode -1)
 (tool-bar-mode -1)
@@ -39,7 +57,6 @@
 (require 'sr-speedbar)
 
 ;; Color theme
-(add-to-list 'load-path "~/.emacs.d/packages/color-theme")
 (require 'color-theme)
 (color-theme-initialize)
 (if window-system
@@ -53,9 +70,6 @@
  '(ido-mode (quote both) nil (ido)))
 (custom-set-faces
  )
-
-;; Yasnippet package
-(require 'yasnippet-bundle)
 
 ;;Not allow type "yes" if file or buffer exist
 (setq confirm-nonexistent-file-or-buffer nil)
@@ -92,13 +106,18 @@
 ;;(pymacs-load "ropemacs" "rope-")
 ;;(setq ropemacs-enable-autoimport t)
 
+
+;; Yasnippet package
+;;(require 'yasnippet-bundle)
+
+
 ;; Initialize Yasnippet
 ;Don't map TAB to yasnippet
 ;In fact, set it to something we'll never use because
 ;we'll only ever trigger it indirectly.
 (setq yas/trigger-key (kbd "C-c <kp-multiply>"))
 (yas/initialize)
-(yas/load-directory "~/.emacs.d/snippets")
+(yas/load-directory "~/.emacs.d/el-get/yasnippet/snippets")
 
 ;; Loading additional configuration modes
 (load-file "~/.emacs.d/rc/configs/conf-smex.el")
@@ -106,11 +125,11 @@
 (load-file "~/.emacs.d/rc/configs/org-mode.el")
 
 ;; project-root from http://hg.piranha.org.ua/project-root/
-(load-file "~/.emacs.d/packages/ack.el")
 (require 'project-root)
 (load-file "~/.emacs.d/rc/configs/conf-project-root.el")
+;; end Loading additional configuration modes
 
-;; Some customs from M-x customize
+;; conf for M-x customize-group 
 (setq custom-file "~/.emacs.d/rc/configs/customs.el")
 (load custom-file)
 
@@ -122,5 +141,6 @@
 (if (not (file-exists-p "~/.emacs.d/temp" ))
     (make-directory "~/.emacs.d/temp"))
 
+;; Desktop mode 
 (desktop-save-mode 1)
 (require 'org-install)
