@@ -123,7 +123,7 @@
 (load-file "~/.emacs.d/rc/configs/conf-smex.el")
 (load-file "~/.emacs.d/rc/configs/keybinding.el")
 (load-file "~/.emacs.d/rc/configs/org-mode.el")
-
+(load-file "~/.emacs.d/rc/configs/django-mode.el")
 ;; project-root from http://hg.piranha.org.ua/project-root/
 (require 'project-root)
 (load-file "~/.emacs.d/rc/configs/conf-project-root.el")
