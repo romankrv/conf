@@ -1,4 +1,19 @@
 ;; Interface
+
+;; dired
+
+;; store recent files list
+(recentf-mode 1)
+(setq recentf-max-menu-items 25)
+(global-set-key (kbd "C-c C-r") 'recentf-open-files)
+;;
+
+;; highlight marked text
+(transient-mark-mode 1)
+;; but work even without it
+(setq mark-even-if-inactive t)
+;;;;
+
 (column-number-mode 1)
 (line-number-mode 1)
 (setq visible-bell t)
@@ -16,6 +31,7 @@
 
 ;; Sets null message for scratch-buffer
 (setq initial-scratch-message nil)
+
 
 ;; Color theme
 (require 'color-theme)

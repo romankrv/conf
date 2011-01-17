@@ -80,7 +80,6 @@
 
 ;; Desktop mode 
 (desktop-save-mode 1)
-(require 'org-install)
 
 (defun lorem ()
   "Insert a lorem ipsum."
@@ -103,3 +102,6 @@
       (byte-compile-file (buffer-file-name))))
 
 (add-hook 'after-save-hook 'autocompile)
+
+
+(require 'htmlize)
