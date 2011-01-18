@@ -78,6 +78,10 @@
 (if (not (file-exists-p "~/.emacs.d/temp" ))
     (make-directory "~/.emacs.d/temp"))
 
+;; htmlize  package converts the buffer text and the associated
+;; decorations to HTML. M-x htmlize- RET
+(require 'htmlize)
+
 ;; Desktop mode 
 (desktop-save-mode 1)
 
@@ -92,7 +96,6 @@
           "pariatur. Excepteur sint occaecat cupidatat non proident, sunt in "
           "culpa qui officia deserunt mollit anim id est laborum."))
 
-;;
 (defun autocompile ()
   "Compile itself if this is config file"
   (interactive)
@@ -103,5 +106,3 @@
 
 (add-hook 'after-save-hook 'autocompile)
 
-
-(require 'htmlize)
