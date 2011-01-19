@@ -96,13 +96,13 @@
           "pariatur. Excepteur sint occaecat cupidatat non proident, sunt in "
           "culpa qui officia deserunt mollit anim id est laborum."))
 
-(defun autocompile ()
-  "Compile itself if this is config file"
-  (interactive)
-  (if (or
-       (string-match ".emacs.d/load/[a-z]+_init.el$" (buffer-file-name))
-       (string-match ".emacs.d/init.el$" (buffer-file-name)))
-      (byte-compile-file (buffer-file-name))))
+;; (defun autocompile ()
+;;   "Compile itself if this is config file"
+;;   (interactive)
+;;   (if (or
+;;        (string-match ".emacs.d/load/[a-z]+_init.el$" (buffer-file-name))
+;;        (string-match ".emacs.d/init.el$" (buffer-file-name)))
+;;       (byte-compile-file (buffer-file-name))))
 
-(add-hook 'after-save-hook 'autocompile)
+;; (add-hook 'after-save-hook 'autocompile)
 
