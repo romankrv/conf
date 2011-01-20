@@ -1,15 +1,16 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; GNU Emacs configuration
-;; (c) Roman Kalinichenko 2010     romankrv AT gmail.com
-;; https://github.com/romankrv/conf
+;; (c) Roman Kalinichenko 2010-2011
+;; https://github.com/romankrv/conf       romankrv AT gmail.com
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;Interface
+
 (scroll-bar-mode -1)
 (tool-bar-mode -1)
 (menu-bar-mode -1)
 (set-face-attribute 'default nil :height 100)
-
 (add-to-list 'load-path "~/.emacs.d/packages/")
 
 ;; el-get 
@@ -49,14 +50,6 @@
  '(ido-mode (quote both) nil (ido)))
 (custom-set-faces)
 
-;; Initialize Yasnippet
-;Don't map TAB to yasnippet
-;In fact, set it to something we'll never use because
-;we'll only ever trigger it indirectly.
-(setq yas/trigger-key (kbd "C-c <kp-multiply>"))
-(yas/initialize)
-(yas/load-directory "~/.emacs.d/el-get/yasnippet/snippets")
-
 ;; Loading additional configuration modes
 (load-file "~/.emacs.d/rc/configs/interfaces.el")
 (load-file "~/.emacs.d/rc/configs/conf-smex.el")
@@ -64,6 +57,8 @@
 (load-file "~/.emacs.d/rc/configs/org-mode.el")
 (load-file "~/.emacs.d/rc/configs/django-mode.el")
 (load-file "~/.emacs.d/rc/configs/python-mode.el")
+(load-file "~/.emacs.d/rc/configs/yasnipet-conf.el")
+
 
 ;; project-root from http://hg.piranha.org.ua/project-root/
 (require 'project-root)
@@ -95,14 +90,3 @@
           "reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla "
           "pariatur. Excepteur sint occaecat cupidatat non proident, sunt in "
           "culpa qui officia deserunt mollit anim id est laborum."))
-
-;; (defun autocompile ()
-;;   "Compile itself if this is config file"
-;;   (interactive)
-;;   (if (or
-;;        (string-match ".emacs.d/load/[a-z]+_init.el$" (buffer-file-name))
-;;        (string-match ".emacs.d/init.el$" (buffer-file-name)))
-;;       (byte-compile-file (buffer-file-name))))
-
-;; (add-hook 'after-save-hook 'autocompile)
-

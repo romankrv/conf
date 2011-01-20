@@ -1,11 +1,21 @@
-If you want to start this config that
-you must make pre-install steps:
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; GNU Emacs configuration
+;; (c) Roman Kalinichenko 2010 2011
+;; https://github.com/romankrv/conf       romankrv AT gmail.com
 
-1) Install  el-get --> el-get allows you to install and manage elisp code for Emacs.
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+If you want to use this config that you must make pre-install steps:
+
+1) Install  el-get --> allows you to install and manage elisp code for Emacs.
    How to Install it?
 
    ;; So the idea is that you copy/paste this code into your *scratch* buffer,
    ;; hit C-j, and you have a working el-get.
+
+   so copy this code:
+
    (url-retrieve
     "https://github.com/dimitri/el-get/raw/master/el-get-install.el"
     (lambda (s)
