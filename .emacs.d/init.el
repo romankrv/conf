@@ -20,8 +20,8 @@
 (if (not (load "~/.emacs.d/el-get/el-get/el-get" t))
  (throw 'not-configured "Install el-get to get dependences: https://github.com/dimitri/el-get/     see also README in ~/.emacs.d for copy/paste install code"))
 (require 'el-get)
-(setq el-get-sources '(yasnippet smex color-theme js2-mode
-                          ack highlight-parentheses 
+(setq el-get-sources '(yasnippet smex color-theme js2-mode ack
+                          highlight-parentheses browse-kill-ring 
                           ;(:name project-root
                           ; :type hg
                           ; :url "http://hg.piranha.org.ua/project-root"
@@ -51,22 +51,22 @@
 (custom-set-faces)
 
 ;; Loading additional configuration modes
-(load-file "~/.emacs.d/rc/configs/interfaces.el")
-(load-file "~/.emacs.d/rc/configs/conf-smex.el")
-(load-file "~/.emacs.d/rc/configs/keybinding.el")
-(load-file "~/.emacs.d/rc/configs/org-mode.el")
-(load-file "~/.emacs.d/rc/configs/django-mode.el")
-(load-file "~/.emacs.d/rc/configs/python-mode.el")
-(load-file "~/.emacs.d/rc/configs/yasnipet-conf.el")
+(load-file "~/.emacs.d/rc/interfaces.el")
+(load-file "~/.emacs.d/rc/conf-smex.el")
+(load-file "~/.emacs.d/rc//keybinding.el")
+(load-file "~/.emacs.d/rc/org-mode.el")
+(load-file "~/.emacs.d/rc/django-mode.el")
+(load-file "~/.emacs.d/rc/python-mode.el")
+(load-file "~/.emacs.d/rc/yasnipet-conf.el")
 
 
 ;; project-root from http://hg.piranha.org.ua/project-root/
 (require 'project-root)
-(load-file "~/.emacs.d/rc/configs/conf-project-root.el")
+(load-file "~/.emacs.d/rc/conf-project-root.el")
 ;; end Loading additional configuration modes
 
 ;; conf for M-x customize-group 
-(setq custom-file "~/.emacs.d/rc/configs/customs.el")
+(setq custom-file "~/.emacs.d/rc/customs.el")
 (load custom-file)
 
 ;; Checkout that TEMP FOLDER is exist otherwise create it
