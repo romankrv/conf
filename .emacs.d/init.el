@@ -11,23 +11,26 @@
 (tool-bar-mode -1)
 (menu-bar-mode -1)
 (set-face-attribute 'default nil :height 100)
+;
+
 (add-to-list 'load-path "~/.emacs.d/packages/")
 
-;; el-get 
-;;        (aka get-apt for emacs)
+;; el-get (aka get-apt for emacs)
 
 ;; Checkout that el-get package is install
 (if (not (load "~/.emacs.d/el-get/el-get/el-get" t))
  (throw 'not-configured "Install el-get to get dependences: https://github.com/dimitri/el-get/     see also README in ~/.emacs.d for copy/paste install code"))
 (require 'el-get)
 (setq el-get-sources '(yasnippet smex color-theme js2-mode ack
-                          highlight-parentheses browse-kill-ring 
+                          highlight-parentheses browse-kill-ring ipython
+			  python-mode ; install: apt-get install bzr
                           ;(:name project-root
-                          ; :type hg
+                          ;:type hg
                           ; :url "http://hg.piranha.org.ua/project-root"
                           ; :features project-root
                           ;)
-                          ipython ))
+                          ))
+
 (el-get 'sync)
 ;; end el-get
 

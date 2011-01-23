@@ -24,8 +24,6 @@
 (setq initial-scratch-message nil)
 
 ;; Color theme
-(require 'color-theme)
-(color-theme-initialize)
 (if window-system
     (color-theme-hober))
 (if (not (window-system))
