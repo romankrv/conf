@@ -23,17 +23,25 @@
 (require 'el-get)
 (setq el-get-sources '(yasnippet smex color-theme js2-mode ack
                           highlight-parentheses browse-kill-ring ipython
-			  python-mode ; install: apt-get install bzr
-                          ;(:name project-root
+			  python-mode ; for  install: apt-get install bzr
+                          
+			  ;(:name project-root
                           ;:type hg
                           ; :url "http://hg.piranha.org.ua/project-root"
                           ; :features project-root
                           ;)
-                          ))
-
+			  
+			  (:name skype
+                          :type git
+                          :url "git://github.com/kiwanami/emacs-skype.git"
+                          :features skype
+			  :after (lambda ()
+				    (setq skype--my-user-handle "romanberry")))
+			  
+)                     )      
 (el-get 'sync)
 ;; end el-get
-
+;;(setq skype--my-user-handle "romanberry")
 
 ;; set indent-tabs-mode
 ;;(setq-default indent-tabs-mode nil)
@@ -61,6 +69,7 @@
 (load-file "~/.emacs.d/rc/django-mode.el")
 (load-file "~/.emacs.d/rc/python-mode.el")
 (load-file "~/.emacs.d/rc/yasnipet-conf.el")
+
 
 
 ;; project-root from http://hg.piranha.org.ua/project-root/
@@ -93,3 +102,4 @@
           "reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla "
           "pariatur. Excepteur sint occaecat cupidatat non proident, sunt in "
           "culpa qui officia deserunt mollit anim id est laborum."))
+
