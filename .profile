@@ -34,9 +34,6 @@ export EDITOR="emacs"
 
 ## Ruby RVM
 [ -z "$PS1" ] && return
-[[ -s "$HOME/.rvm/scripts/rvm" ]] && . "$HOME/.rvm/scripts/rvm"  # This loads RVM into a shell session.
-source ~/.rvm/scripts/rvm 
-export rvm_pretty_print_flag=1
+[[ -s "$HOME/.rvm/scripts/rvm" ]] && . "$HOME/.rvm/scripts/rvm"  && source ~/.rvm/scripts/rvm && export rvm_pretty_print_flag=1
 ##
-
 export HISTCONTROL=ignoreboth
