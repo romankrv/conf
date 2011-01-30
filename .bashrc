@@ -109,6 +109,10 @@ type -P ack-grep &>/dev/null && [ -L /usr/local/bin/ack ] || sudo ln -s /usr/bin
 alias ack="ack-grep"
 # end ack-grep
 
+## VIRTUALENVWRAPPER
+[ -d $HOME/VIRTUALENVS ] && export WORKON_HOME=$HOME/VIRTUALENVS || mkdir $HOME/VIRTUALENVS && export WORKON_HOME=$HOME/VIRTUALENVS && source /usr/local/bin/virtualenvwrapper.sh
+# end VIRTUALENVWRAPPER
+
 ## Improve bash's behaviour
  # join history from other sessions
 #shopt -s histappend cdspell

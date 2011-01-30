@@ -26,12 +26,7 @@ export LANGUAGE="ru:ru_UA:en"
            #-- romankrv's changes --#
           ##                          ##
 
-## VIRTUALENVWRAPPER
-[ -d $HOME/VIRTUALENVS ] && export WORKON_HOME=$HOME/VIRTUALENVS || mkdir $HOME/VIRTUALENVS && export WORKON_HOME=$HOME/VIRTUALENVS && source /usr/local/bin/virtualenvwrapper.sh
-# end VIRTUALENVWRAPPER
-
 export EDITOR="emacs"
-
 ## Ruby RVM
 [ -z "$PS1" ] && return
 [[ -s "$HOME/.rvm/scripts/rvm" ]] && . "$HOME/.rvm/scripts/rvm"  && source ~/.rvm/scripts/rvm && export rvm_pretty_print_flag=1
