@@ -111,7 +111,10 @@ alias ack="ack-grep"
 
 ## VIRTUALENVWRAPPER
 [ -d $HOME/VIRTUALENVS ] && export WORKON_HOME=$HOME/VIRTUALENVS || mkdir $HOME/VIRTUALENVS && export WORKON_HOME=$HOME/VIRTUALENVS && source /usr/local/bin/virtualenvwrapper.sh
-# end VIRTUALENVWRAPPER
+
+#This determine current virtual environment that allows work without parametr -E
+[ -d $HOME/VIRTUALENVS ] && export PIP_VIRTUALENV_BASE=$WORKON_HOME && export PIP_RESPECT_VIRTUALENV=true
+#end VIRTUALENVWRAPPER
 
 ## Improve bash's behaviour
  # join history from other sessions
