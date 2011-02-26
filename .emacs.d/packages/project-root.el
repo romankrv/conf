@@ -142,13 +142,15 @@
   (require 'outline)
   (require 'dired))
 
-(defun project-root-find-prune (paths)
+(defun project-root-find-prune (paths &optional no-default-directory)
   (mapconcat '(lambda (path)
-                (concat " -path \"" default-directory path "\" -prune "))
+                (if no-default-directory
+                    (concat " -path \"" path "\" -prune ")
+                  (concat " -path \"" default-directory path "\" -prune ")))
              paths "-o"))
 
 (defvar project-root-extra-find-args
-  (project-root-find-prune '("*/.hg" "*/.git" "*/.svn"))
+  (project-root-find-prune '("*/.hg" "*/.git" "*/.svn") t)
 ;  (find-to-string '(prune (name ".svn" ".git" ".hg")))
   "Extra find args that will be AND'd to the defaults (which are
 in `project-root-file-find-process')")
@@ -216,7 +218,7 @@ described in PROJECT."
   (let ((root (plist-get project :root))
         (new-root))
     (catch 'not-a-project
-      (mapcar
+      (mapc
        (lambda (test)
          (when (plist-get project (car test))
            ;; grab a potentially different root
@@ -403,18 +405,19 @@ current-directory."
 if not found. If `project-root' isn't defined then try and find
 one."
   (declare (indent 2))
-  (unless project-details (project-root-fetch))
-  `(if (project-root-p)
-       (let ((default-directory ,(cdr project-details))
-             (filename-regex (or ,(project-root-data :filename-regex) ".*"))
-             (exclude-paths ,(project-root-data :exclude-paths)))
-         ,@body)
-       (error "No project root found")))
+  `(progn
+     (unless project-details (project-root-fetch))
+     (if (project-root-p)
+         (let ((default-directory (cdr project-details))
+               (filename-regex (or (project-root-data :filename-regex) ".*"))
+               (exclude-paths (project-root-data :exclude-paths)))
+           ,@body)
+       (error "No project root found"))))
 
 (defun project-root-goto-root ()
   "Open up the project root in dired."
   (interactive)
-  (with-project-root (find-file (cdr project-details))))
+  (with-project-root (find-file default-directory)))
 
 (defun project-root-grep ()
   "Run the grep command from the current project root."
@@ -595,13 +598,14 @@ then the current project-details are used."
 `project-root-extra-find-args' and the hard-coded arguments in
 this function."
   (when anything-project-root
-      (start-process-shell-command "project-root-find"
-                                   nil
-                                   "find"
-                                   (cdr anything-project-root)
-                                   (find-to-string
-                                    `(and ,project-root-extra-find-args
-                                          (name ,(concat "*" pattern "*"))
-                                          (type "f"))))))
+      (start-process-shell-command
+       "project-root-find"
+       nil
+       "find"
+       (cdr anything-project-root)
+       (find-to-string
+        `(and ,project-root-extra-find-args
+              (name ,(concat "*" pattern "*"))
+              (type "f"))))))
 
 (provide 'project-root)
