@@ -30,3 +30,6 @@
 (global-set-key (kbd "C-c p d") 'project-root-goto-root)
 (global-set-key (kbd "C-c p l") 'project-root-browse-seen-projects)
 ;;
+
+;; Find file by wildcard
+(global-set-key (kbd "\C-c\C-f") 'find-name-dired)
