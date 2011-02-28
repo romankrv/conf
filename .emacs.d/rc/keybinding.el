@@ -32,4 +32,4 @@
 ;;
 
 ;; Find file by wildcard
-(global-set-key (kbd "\C-c\C-f") 'find-name-dired)
+(global-set-key (kbd "\C-c\C-d") 'find-name-dired)
