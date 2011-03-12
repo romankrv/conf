@@ -25,25 +25,27 @@
                           highlight-parentheses browse-kill-ring ipython
 			  python-mode ; for  install: apt-get install bzr
                           
-			  ;(:name project-root
-                          ;:type hg
-                          ; :url "http://hg.piranha.org.ua/project-root"
-                          ; :features project-root
-                          ;)
+                          (:name project-root
+                           :type hg
+                           :url "http://hg.piranha.org.ua/project-root"
+                           :features project-root
+			   :after (lambda ()
+			      (load-file "~/.emacs.d/rc/conf-project-root.el"))
+                          )
 			  
-			  (:name skype
-                          :type git
-			  ;:url "git://github.com/buzztaiki/emacs-skype.git" ; have proxy class
-			  ;:url "git://github.com/kiwanami/emacs-skype.git" ; origin repo
-			  :url "git@github.com:romankrv/emacs-skype.git"
-                          :features skype
-			  :after (lambda ()
-				    (setq skype--my-user-handle "romanberry")))
-			  
-)                     )
+                          (:name skype
+                           :type git
+                           ;:url "git://github.com/buzztaiki/emacs-skype.git" ; have proxy class
+                           ;:url "git://github.com/kiwanami/emacs-skype.git" ; origin repo
+                           :url "git@github.com:romankrv/emacs-skype.git"
+                           :features skype
+                           :after (lambda ()
+                               (setq skype--my-user-handle "romanberry"))
+                          )
+                      )
+)
 (el-get 'sync)
 ;; end el-get
-;;(setq skype--my-user-handle "romanberry")
 
 ;; set indent-tabs-mode
 ;;(setq-default indent-tabs-mode nil)
@@ -71,13 +73,6 @@
 (load-file "~/.emacs.d/rc/django-mode.el")
 (load-file "~/.emacs.d/rc/python-mode.el")
 (load-file "~/.emacs.d/rc/yasnipet-conf.el")
-
-
-
-;; project-root from http://hg.piranha.org.ua/project-root/
-(require 'project-root)
-(load-file "~/.emacs.d/rc/conf-project-root.el")
-;; end Loading additional configuration modes
 
 ;; conf for M-x customize-group 
 (setq custom-file "~/.emacs.d/rc/customs.el")
