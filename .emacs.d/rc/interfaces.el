@@ -23,6 +23,10 @@
 ;; Sets null message for scratch-buffer
 (setq initial-scratch-message nil)
 
+;; set indent-tabs-mode
+(setq-default indent-tabs-mode nil)
+;(setq tab-width 4)
+
 ;; Color theme
 (if window-system
     (color-theme-hober))

@@ -10,8 +10,7 @@
 (scroll-bar-mode -1)
 (tool-bar-mode -1)
 (menu-bar-mode -1)
-(set-face-attribute 'default nil :height 100)
-;
+(set-face-attribute 'default nil :height 100);
 
 (add-to-list 'load-path "~/.emacs.d/packages/")
 
@@ -23,16 +22,16 @@
 (require 'el-get)
 (setq el-get-sources '(yasnippet smex color-theme js2-mode ack
                           highlight-parentheses browse-kill-ring ipython
-			  python-mode ; for  install: apt-get install bzr
-                          
+                          python-mode ; for  install: apt-get install bzr
+
                           (:name project-root
                            :type hg
                            :url "http://hg.piranha.org.ua/project-root"
                            :features project-root
-			   :after (lambda ()
-			      (load-file "~/.emacs.d/rc/conf-project-root.el"))
+                           :after (lambda ()
+                                (load-file "~/.emacs.d/rc/conf-project-root.el"))
                           )
-			  
+
                           (:name skype
                            :type git
                            ;:url "git://github.com/buzztaiki/emacs-skype.git" ; have proxy class
@@ -46,11 +45,6 @@
 )
 (el-get 'sync)
 ;; end el-get
-
-;; set indent-tabs-mode
-;;(setq-default indent-tabs-mode nil)
-;(setq tab-width 4)
-
 
 ;; Tramp modxre
 (require 'tramp)
@@ -117,4 +111,3 @@
   (split-window-vertically)	
   )
 
-   
