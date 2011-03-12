@@ -20,9 +20,12 @@
 (if (not (load "~/.emacs.d/el-get/el-get/el-get" t))
  (throw 'not-configured "Install el-get to get dependences: https://github.com/dimitri/el-get/     see also README in ~/.emacs.d for copy/paste install code"))
 (require 'el-get)
-(setq el-get-sources '(yasnippet smex color-theme js2-mode ack
-                          highlight-parentheses browse-kill-ring ipython
-                          python-mode ; for  install: apt-get install bzr
+(setq el-get-sources '(yasnippet smex js2-mode ack
+                       color-theme
+                       color-theme-chocolate-rain
+                       color-theme-railscasts
+                       highlight-parentheses browse-kill-ring ipython
+                       python-mode ; for  install: apt-get install bzr
 
                           (:name project-root
                            :type hg
@@ -96,7 +99,7 @@
 
 
 (defun my-make-three-windows () 
-"
+"d
 |-----------+-----------|
 |           |           |
 |           |           |

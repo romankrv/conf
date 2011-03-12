@@ -28,10 +28,8 @@
 ;(setq tab-width 4)
 
 ;; Color theme
-(if window-system
-    (color-theme-hober))
-(if (not (window-system))
-    (color-theme-tty-dark))
+(load-file "~/.emacs.d/el-get/color-theme-railscasts/color-theme-railscasts.el")
+(color-theme-railscasts)
 
 ;; highlight-parentheses-mode
 (add-hook 'emacs-lisp-mode-hook
