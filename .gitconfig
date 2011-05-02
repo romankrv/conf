@@ -18,4 +18,4 @@
 	st = status
 	co = checkout
 [core]
-	editor = emacs
+	editor = emacs -nw -Q
