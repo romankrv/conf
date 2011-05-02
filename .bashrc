@@ -126,14 +126,3 @@ alias ack="ack-grep"
 
 #my alias
 alias h="history"
-
-#Oracle configuration 
-export ORACLE_HOME=/usr/lib/oracle/10.2.0.3/client
-export PATH=/usr/lib/oracle/10.2.0.3/client/bin:/usr/lib/oracle/10.2.0.3/client/bin:/usr/lib/oracle/10.2.0.3/client/bin:/bin:/home/r/VIRTUALENVS/PROJ_1/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games
-export LD_LIBRARY_PATH=/usr/lib/oracle/10.2.0.3/client/lib:
-export TNS_ADMIN=/home/r/oracle_conf
-export ASSESS_HOME=/home/r/assmt-web-app
-workon ASSESS
-cd /home/r/assmt-web-app
-
-
