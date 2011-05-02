@@ -110,11 +110,24 @@ type -P ack-grep &>/dev/null && [ -L /usr/local/bin/ack ] || sudo ln -s /usr/bin
 alias ack="ack-grep"
 # end ack-grep
 
+## pip install if not installed
+if [ ! `type -t pip` ]; then
+    file="pip-1.0.1.tar.gz"
+    folder="pip-1.0.1" 
+    wget http://pypi.python.org/packages/source/p/pip/$file
+    tar -xf $file
+    cd $folder
+    sudo python setup.py install
+    cd .. && rm $file && sudo rm -fr $folder 
+fi
+## end pip install
+
 ## VIRTUALENVWRAPPER
-[ -d $HOME/VIRTUALENVS ] && export WORKON_HOME=$HOME/VIRTUALENVS || mkdir $HOME/VIRTUALENVS && export WORKON_HOME=$HOME/VIRTUALENVS && source /usr/local/bin/virtualenvwrapper.sh
+f="VIRTUALENVS"
+[ -d $HOME/$f ] && export WORKON_HOME=$HOME/$f || mkdir $HOME/$f && export WORKON_HOME=$HOME/$f && source /usr/local/bin/virtualenvwrapper.sh
 
 #This determine current virtual environment that allows work without parametr -E
-[ -d $HOME/VIRTUALENVS ] && export PIP_VIRTUALENV_BASE=$WORKON_HOME && export PIP_RESPECT_VIRTUALENV=true
+[ -d $HOME/$f ] && export PIP_VIRTUALENV_BASE=$WORKON_HOME && export PIP_RESPECT_VIRTUALENV=true
 #end VIRTUALENVWRAPPER
 
 ## Improve bash's behaviour
