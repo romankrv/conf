@@ -29,8 +29,8 @@ export LANGUAGE="ru:ru_UA:en"
 export EDITOR="emacs"
 
 ## Ruby RVM
-[ -z "$PS1" ] && return
-[[ -s "$HOME/.rvm/scripts/rvm" ]] && . "$HOME/.rvm/scripts/rvm"  && source ~/.rvm/scripts/rvm && export rvm_pretty_print_flag=1
+#[ -z "$PS1" ] && return
+#[[ -s "$HOME/.rvm/scripts/rvm" ]] && . "$HOME/.rvm/scripts/rvm"  && source ~/.rvm/scripts/rvm && export rvm_pretty_print_flag=1
 ##
 export HISTCONTROL=ignorebothexport
 
