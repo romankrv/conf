@@ -25,7 +25,8 @@
                        color-theme
                        color-theme-chocolate-rain
                        color-theme-railscasts
-                       highlight-parentheses browse-kill-ring ipython
+                       highlight-parentheses 
+                       browse-kill-ring ipython
                        python-mode ; for  install: apt-get install bzr
 
                           (:name project-root
@@ -95,7 +96,7 @@
           "ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut "
           "aliquip ex ea commodo consequat. Duis aute irure dolor in "
           "reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla "
-          "pariatur. Excepteur sint occaecat cupidatat non proident, sunt in "
+          "paratur. Excepteur sint occaecat cupidatat non proident, sunt in "
           "culpa qui officia deserunt mollit anim id est laborum."))
 
 

@@ -31,6 +31,11 @@
 (load-file "~/.emacs.d/el-get/color-theme-railscasts/color-theme-railscasts.el")
 (color-theme-railscasts)
 
+;; To turn on syntax highlighting, parentheses matching
+(global-font-lock-mode 1)
+(show-paren-mode 1)
+(transient-mark-mode 1)
+
 ;; highlight-parentheses-mode
 (add-hook 'emacs-lisp-mode-hook
     '(lambda ()
