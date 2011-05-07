@@ -21,7 +21,7 @@
 (if (not (load "~/.emacs.d/el-get/el-get/el-get" t))
  (throw 'not-configured "Install el-get to get dependences: https://github.com/dimitri/el-get/     see also README in ~/.emacs.d for copy/paste install code"))
 (require 'el-get)
-(setq el-get-sources '(yasnippet smex js2-mode ack
+(setq el-get-sources '(yasnippet smex js2-mode ack el-get
                        color-theme
                        color-theme-chocolate-rain
                        color-theme-railscasts
@@ -50,6 +50,7 @@
 )
 (el-get 'sync)
 ;; end el-get
+
 
 ;; Tramp modxre
 (require 'tramp)
