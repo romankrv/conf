@@ -73,6 +73,8 @@
 (load-file "~/.emacs.d/rc/django-mode.el")
 (load-file "~/.emacs.d/rc/python-mode.el")
 (load-file "~/.emacs.d/rc/yasnipet-conf.el")
+(load-file "~/.emacs.d/rc/flymake-modes-conf.el")
+
 
 ;; conf for M-x customize-group 
 (setq custom-file "~/.emacs.d/rc/customs.el")
