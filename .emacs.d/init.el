@@ -12,7 +12,8 @@
 (if (not (load "~/.emacs.d/el-get/el-get/el-get" t))
   (throw 'not-configured 
        "Install el-get to get dependences: 
-           https://github.com/dimitri/el-get/     
+           https://github.com/dimitri/el-get/
+           it have dependency: cvs git bzr hg svn
            see how install it in:
             also README in ~/.emacs.d for copy/paste install code" ))
 (require 'el-get)
@@ -23,7 +24,7 @@
                        highlight-parentheses 
                        browse-kill-ring ipython
                        python-mode ; for  install: apt-get install bzr
-
+                       auto-complete
                           (:name project-root
                            :type hg
                            :url "http://hg.piranha.org.ua/project-root"
