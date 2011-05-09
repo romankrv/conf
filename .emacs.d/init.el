@@ -5,21 +5,16 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;;Interface
-
-(scroll-bar-mode -1)
-(tool-bar-mode -1)
-(menu-bar-mode -1)
-(set-face-attribute 'default nil :height 100);
-(global-linum-mode 1)
-
 (add-to-list 'load-path "~/.emacs.d/packages/")
 
-;; el-get (aka get-apt for emacs)
-
-;; Checkout that el-get package is install
+;; EL-GET is package --> aka get-apt for emacs
+    ;; checkout that el-get package is install
 (if (not (load "~/.emacs.d/el-get/el-get/el-get" t))
- (throw 'not-configured "Install el-get to get dependences: https://github.com/dimitri/el-get/     see also README in ~/.emacs.d for copy/paste install code"))
+  (throw 'not-configured 
+       "Install el-get to get dependences: 
+           https://github.com/dimitri/el-get/     
+           see how install it in:
+            also README in ~/.emacs.d for copy/paste install code" ))
 (require 'el-get)
 (setq el-get-sources '(yasnippet smex js2-mode ack el-get
                        color-theme
@@ -118,4 +113,3 @@
   (split-window-horizontally)
   (split-window-vertically)	
   )
-
