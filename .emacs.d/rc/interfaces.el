@@ -34,8 +34,8 @@
 ;(setq tab-width 4)
 
 ;; Color theme
-(load-file "~/.emacs.d/el-get/color-theme-railscasts/color-theme-railscasts.el")
-(color-theme-railscasts)
+;;(load-file "~/.emacs.d/el-get/color-theme-railscasts/color-theme-railscasts.el")
+(color-theme-comidia)
 
 ;; To turn on syntax highlighting, parentheses matching
 (global-font-lock-mode 1)
