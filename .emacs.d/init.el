@@ -31,16 +31,16 @@
                                 (load-file "~/.emacs.d/rc/conf-project-root.el"))
                           )
 
-                          (:name skype
-                           :type git
-                           ;:url "git://github.com/buzztaiki/emacs-skype.git" ; have proxy class
-                           ;:url "git://github.com/kiwanami/emacs-skype.git" ; origin repo
-                           :url "git@github.com:romankrv/emacs-skype.git"
-                           :features skype
-                           :after (lambda ()
-                               (setq skype--my-user-handle "romanberry"))
-                          )
-                      )
+                          ;;(:name skype
+                          ;; :type git
+                          ;; ;:url "git://github.com/buzztaiki/emacs-skype.git" ; have proxy class
+                          ;; ;:url "git://github.com/kiwanami/emacs-skype.git" ; origin repo
+                          ;; :url "git@github.com:romankrv/emacs-skype.git"
+                          ;; :features skype
+                          ;; :after (lambda ()
+                          ;;     (setq skype--my-user-handle "romanberry"))
+                          ;;)
+                      ;;)
 )
 (el-get 'sync)
 ;; end el-get
