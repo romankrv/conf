@@ -1,10 +1,11 @@
-;; Interface
 
+;; Interface
 (scroll-bar-mode -1)
 (tool-bar-mode -1)
 (menu-bar-mode -1)
 (set-face-attribute 'default nil :height 100);
-(global-linum-mode 1)
+;;(global-linum-mode 1)
+(display-time)
 
 ;; store recent files list
 (recentf-mode 1)

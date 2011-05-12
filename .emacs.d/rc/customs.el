@@ -4,6 +4,7 @@
   ;; If you edit it by hand, you could mess it up, so be careful.
   ;; Your init file should contain only one such instance.
   ;; If there is more than one, they won't work right.
+ '(display-time-24hr-format t)
  '(erc-email-userid "romankrv@gmail.com")
  '(erc-log-file-coding-system (quote utf-8))
  '(erc-log-write-after-insert t)
@@ -36,3 +37,9 @@
  (setq package-archives '(("ELPA" . "http://tromey.com/elpa/")
  ("gnu" . "http://elpa.gnu.org/packages/")))
  (package-initialize)
+(custom-set-faces
+  ;; custom-set-faces was added by Custom.
+  ;; If you edit it by hand, you could mess it up, so be careful.
+  ;; Your init file should contain only one such instance.
+  ;; If there is more than one, they won't work right.
+ )
