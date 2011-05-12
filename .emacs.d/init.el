@@ -40,7 +40,7 @@
                           ;; :after (lambda ()
                           ;;     (setq skype--my-user-handle "romanberry"))
                           ;;)
-                      ;;)
+                      )
 )
 (el-get 'sync)
 ;; end el-get
