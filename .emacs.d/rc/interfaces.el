@@ -4,7 +4,7 @@
 (tool-bar-mode -1)
 (menu-bar-mode -1)
 (set-face-attribute 'default nil :height 100);
-;;(global-linum-mode 1)
+(global-linum-mode 0)
 (display-time)
 
 ;; store recent files list
@@ -37,6 +37,7 @@
 ;; Color theme
 ;;(load-file "~/.emacs.d/el-get/color-theme-railscasts/color-theme-railscasts.el")
 (color-theme-comidia)
+(set-cursor-color "#a00000")
 
 ;; To turn on syntax highlighting, parentheses matching
 (global-font-lock-mode 1)
