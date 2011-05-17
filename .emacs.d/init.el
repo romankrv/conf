@@ -19,6 +19,8 @@
 (require 'el-get)
 (setq el-get-sources '(yasnippet smex js2-mode ack el-get
                        color-theme
+                       color-theme-chocolate-rain
+                       color-theme-railscasts
                        highlight-parentheses 
                        browse-kill-ring ipython
                        python-mode ; for  install: apt-get install bzr
