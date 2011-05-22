@@ -28,11 +28,9 @@
 
 ;; Color theme
 (if window-system
-  ;;  (load-file "~/.emacs.d/el-get/color-theme-railscasts/color-theme-railscasts.el")
-    (color-theme-chocolate-rain))
-;;(color-theme-railscasts)
-;;(color-theme-comidia)
-;;(set-cursor-color "#a00000")
+     (color-theme-chocolate-rain))
+     ;;(color-theme-railscasts)
+     ;;(color-theme-comidia)
 
 ;; To turn on syntax highlighting, parentheses matching
 (global-font-lock-mode 1)
