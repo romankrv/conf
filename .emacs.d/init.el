@@ -4,7 +4,7 @@
 ;; https://github.com/romankrv/conf       romankrv AT gmail.com
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
+(load-file "~/.emacs.d/rc/preload-interface.el")
 (add-to-list 'load-path "~/.emacs.d/packages/")
 
 ;; EL-GET is package --> aka get-apt for emacs
@@ -112,5 +112,5 @@
 (interactive)
   (delete-other-windows)
   (split-window-horizontally)
-  (split-window-vertically)	
+  (split-window-vertically)
   )
