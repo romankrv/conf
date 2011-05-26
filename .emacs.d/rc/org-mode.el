@@ -28,6 +28,10 @@
 ;; Checkout that folder for org-mode is exist otherwise create it
 (if (not (file-exists-p "~/org/" ))
     (make-directory "~/org/"))
+(if (not (file-exists-p "~/org/public" ))
+    (make-directory "~/org/public"))
+
+
 
 ;; 
 (setq org-agenda-files (list 

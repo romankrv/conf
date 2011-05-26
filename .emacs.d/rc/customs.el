@@ -23,7 +23,8 @@
  '(ido-save-directory-list-file "~/.emacs.d/temp/.ido.last")
  '(js2-enter-indents-newline t)
  '(js2-highlight-level 3)
- '(org-agenda-files (quote ("~/org/work.org")) t)
+ '(org-agenda-files (quote ("~/org/work.org")))
+ '(org-mobile-directory "~/org/public")
  '(setq erc-hide-timestamps)
  '(sr-speedbar-right-side nil))
 
