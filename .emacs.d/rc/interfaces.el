@@ -26,11 +26,14 @@
 (setq-default indent-tabs-mode nil)
 ;(setq tab-width 4)
 
-;; Color theme
+;; Color themes
+(load-file "~/.emacs.d/el-get/color-theme-railscasts/color-theme-railscasts.el")
+
 (if window-system
-     (color-theme-chocolate-rain))
-     ;;(color-theme-railscasts)
-     ;;(color-theme-comidia)
+   (color-theme-railscasts)
+   ;;(color-theme-comidia)
+   ;;(color-theme-chocolate-rain)
+)
 
 ;; To turn on syntax highlighting, parentheses matching
 (global-font-lock-mode 1)
