@@ -35,6 +35,17 @@
    ;;(color-theme-chocolate-rain)
 )
 
+(defun color-theme-override ()
+  (interactive)
+  (color-theme-install
+   '(color-theme-railscasts
+     ((cursor-color . "#d00000")))))
+
+;; sets color of color
+(color-theme-override)
+
+
+
 ;; To turn on syntax highlighting, parentheses matching
 (global-font-lock-mode 1)
 (show-paren-mode 1)
