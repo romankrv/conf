@@ -14,3 +14,4 @@ temp
 el-get
 *.elc
 TAGS
+.emacs.d/ac-comphist.dat
