@@ -25,6 +25,7 @@
                        browse-kill-ring ipython
                        python-mode ; for  install: apt-get install bzr
                        auto-complete
+                       moz-repl
                           (:name project-root
                            :type hg
                            :url "http://hg.piranha.org.ua/project-root"
@@ -114,3 +115,13 @@
   (split-window-horizontally)
   (split-window-vertically)
   )
+
+                           ;; Test section
+
+;; It is refresh firefox from emacs when pressed "C-x p"
+;; Checkout that you have mozrepl plugin in Firefox and start it.
+(global-set-key (kbd "C-x p")
+                  (lambda ()
+                    (interactive)
+                    (comint-send-string (inferior-moz-process)
+                                        "BrowserReload();")))
