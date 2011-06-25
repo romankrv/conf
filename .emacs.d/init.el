@@ -116,6 +116,12 @@
   (split-window-vertically)
   )
 
+(defun winpdb()
+    "Insert string with import for dubugging in winpdb"
+    (interactive)
+    (insert "import rpdb2; rpdb2.start_embedded_debugger('1')"))
+
+
                            ;; Test section
 
 ;; It is refresh firefox from emacs when pressed "C-x p"
