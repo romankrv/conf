@@ -110,17 +110,20 @@ type -P ack-grep &>/dev/null && [ -L /usr/local/bin/ack ] || sudo ln -s /usr/bin
 alias ack="ack-grep"
 # end ack-grep
 
-## pip install if not installed
-if [ ! `type -t pip` ]; then
-    file="pip-1.0.1.tar.gz"
-    folder="pip-1.0.1" 
-    wget http://pypi.python.org/packages/source/p/pip/$file
-    tar -xf $file
-    cd $folder
-    sudo python setup.py install
-    cd .. && rm $file && sudo rm -fr $folder 
-fi
-## end pip install
+## function that checkout some package is install or not and try install it.
+function check_installed {
+    if [ ! `type -t $1` ]; then
+        file=$2
+        folder=$3
+        wget http://pypi.python.org/packages/source/p/pip/$file
+        tar -xf $file
+        cd $folder
+        sudo python setup.py install
+        cd .. && rm $file && sudo rm -fr $folder
+    fi
+}
+
+check_installed "pip pip-1.0.1.tar.gz pip-1.0.1"
 
 ## VIRTUALENVWRAPPER
 f="VIRTUALENVS"
