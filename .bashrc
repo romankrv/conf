@@ -104,8 +104,12 @@ fi
                ##                          ## 
                 #-- romankrv's changes --#
                ##                          ##
+## checkout that aptitude package is installed
+type -t aptitude >/dev/null || sudo apt-get install -y aptitude
 ## ack-grep
 type -t ack-grep >/dev/null || sudo aptitude install -y ack-grep
+
+
 type -P ack-grep &>/dev/null && [ -L /usr/local/bin/ack ] || sudo ln -s /usr/bin/ack-grep /usr/local/bin/ack
 alias ack="ack-grep"
 # end ack-grep
