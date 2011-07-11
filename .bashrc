@@ -128,6 +128,7 @@ function check_installed {
 }
 
 check_installed "pip pip-1.0.1.tar.gz pip-1.0.1"
+check_installed "ipython ipython-0.10.2.tar.gz ipython-0.10.2"
 
 ## VIRTUALENVWRAPPER
 f="VIRTUALENVS"
