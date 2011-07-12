@@ -2,7 +2,7 @@
 
 #copy this file to ~/
 # open ~/.ipython/ipy_user_conf.py and add the string:
-# TODO insert here string
+# execf('~/configs/.virtualenv_ipython.py')
 #to def main() to  inside def main()  
 
 import site
