@@ -4,7 +4,7 @@
 ;; https://github.com/romankrv/conf       romankrv AT gmail.com
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(load-file "~/.emacs.d/rc/preload-interface.el")
+(load-file "~/.emacs.d/rc/preload.el")
 (add-to-list 'load-path "~/.emacs.d/packages/")
 
 ;; EL-GET is package --> aka get-apt for emacs
