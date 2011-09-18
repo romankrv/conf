@@ -7,7 +7,7 @@
 
 (column-number-mode 1)
 (line-number-mode 1)
-(setq visible-bell t)
+;;(setq visible-bell 1)
 (setq default-indicate-empty-lines t)
 (setq frame-title-format '(buffer-file-name "%f" ("%b")))
 (when (fboundp 'blink-cursor-mode) (blink-cursor-mode -1))
