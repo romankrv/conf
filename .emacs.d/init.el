@@ -9,13 +9,13 @@
 
 ;; EL-GET is package --> aka get-apt for emacs
     ;; checkout that el-get package is install
-(if (not (load "~/.emacs.d/el-get/el-get/el-get" t))
-  (throw 'not-configured 
-       "Install el-get to get dependences: 
-           https://github.com/dimitri/el-get/
-           it have dependency: cvs git bzr hg svn
-           see how install it in:
-            also README in ~/.emacs.d for copy/paste install code" ))
+;; (if (not (load "~/.emacs.d/el-get/el-get/el-get" t))
+;;   (throw 'not-configured 
+;;        "Install el-get to get dependences: 
+;;            https://github.com/dimitri/el-get/
+;;            it have dependency: cvs git bzr hg svn
+;;            see how install it in:
+;;             also README in ~/.emacs.d for copy/paste install code" ))
 (require 'el-get)
 (setq el-get-sources '(yasnippet smex js2-mode ack el-get
                        color-theme
