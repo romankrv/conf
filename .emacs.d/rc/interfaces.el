@@ -27,13 +27,13 @@
 ;(setq tab-width 4)
 
 ;; Color themes
-(load-file "~/.emacs.d/el-get/color-theme-railscasts/color-theme-railscasts.el")
+;;(load-file "~/.emacs.d/el-get/color-theme-railscasts/color-theme-railscasts.el")
 
-(if window-system
-   (color-theme-railscasts)
+;;(if window-system
+;;   (color-theme-railscasts)
    ;;(color-theme-comidia)
    ;;(color-theme-chocolate-rain)
-)
+;;)
 
 (defun color-theme-override ()
   (interactive)
@@ -42,7 +42,7 @@
      ((cursor-color . "#d00000")))))
 
 ;; sets color of color
-(color-theme-override)
+;;(color-theme-override)
 
 
 

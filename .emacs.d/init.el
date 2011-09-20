@@ -7,47 +7,28 @@
 (load-file "~/.emacs.d/rc/preload.el")
 (add-to-list 'load-path "~/.emacs.d/packages/")
 
-;; EL-GET is package --> aka get-apt for emacs
-    ;; checkout that el-get package is install
-;; (if (not (load "~/.emacs.d/el-get/el-get/el-get" t))
-;;   (throw 'not-configured 
-;;        "Install el-get to get dependences: 
-;;            https://github.com/dimitri/el-get/
-;;            it have dependency: cvs git bzr hg svn
-;;            see how install it in:
-;;             also README in ~/.emacs.d for copy/paste install code" ))
 (require 'el-get)
-(setq el-get-sources '(yasnippet smex js2-mode ack el-get
-                       color-theme
-                       color-theme-chocolate-rain
-                       color-theme-railscasts
-                       highlight-parentheses 
-                       browse-kill-ring ipython
-                       python-mode ; for  install: apt-get install bzr
-                       auto-complete
-                       moz-repl
-                          (:name project-root
-                           :type hg
-                           :url "http://hg.piranha.org.ua/project-root"
-                           :features project-root
-                           :after (lambda ()
-                                (load-file "~/.emacs.d/rc/conf-project-root.el"))
-                          )
-
-                          ;;(:name skype
-                          ;; :type git
-                          ;; ;:url "git://github.com/buzztaiki/emacs-skype.git" ; have proxy class
-                          ;; ;:url "git://github.com/kiwanami/emacs-skype.git" ; origin repo
-                          ;; :url "git@github.com:romankrv/emacs-skype.git"
-                          ;; :features skype
-                          ;; :after (lambda ()
-                          ;;     (setq skype--my-user-handle "romanberry"))
-                          ;;)
-                      )
+(setq my_packages
+       '( python-mode ;; install-->  bzr hg cvs svn git
+          smex 
+	  ack 
+	  js2-mode 
+	  yasnippet 
+	  color-theme 
+	  highlight-parentheses 
+	  browse-kill-ring 
+;;	  ipython
+	  auto-complete 
+	  moz-repl
+	  ;; '(:name project-root
+	  ;;    :type hg
+	  ;;    :url "http://hg.piranha.org.ua/project-root"
+	  ;;    :features project-root
+          ;;    :after (lambda () 
+	  ;;         (load-file "~/.emacs.d/rc/conf-project-root.el")))
+        )
 )
-(el-get 'sync)
-;; end el-get
-
+(el-get 'sync my_packages)
 
 ;; Tramp modxre
 (require 'tramp)
@@ -68,10 +49,8 @@
 (load-file "~/.emacs.d/rc//keybinding.el")
 (load-file "~/.emacs.d/rc/org-mode.el")
 (load-file "~/.emacs.d/rc/django-mode.el")
-(load-file "~/.emacs.d/rc/python-mode.el")
 (load-file "~/.emacs.d/rc/yasnipet-conf.el")
 (load-file "~/.emacs.d/rc/flymake-modes-conf.el")
-
 
 ;; conf for M-x customize-group 
 (setq custom-file "~/.emacs.d/rc/customs.el")
@@ -150,7 +129,7 @@
 
 (require 'moz)
 
-;;; Usage
+;; Usage
 ;; Run M-x moz-reload-mode to switch moz-reload on/off in the
 ;; current buffer.
 ;; When active, every change in the buffer triggers Firefox
