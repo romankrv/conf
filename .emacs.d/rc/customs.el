@@ -23,7 +23,7 @@
  '(ido-save-directory-list-file "~/.emacs.d/temp/.ido.last")
  '(js2-enter-indents-newline t)
  '(js2-highlight-level 3)
- '(org-agenda-files (quote ("~/org/work.org")))
+ '(org-agenda-files (quote ("~/org/work.org")) t)
  '(org-mobile-directory "~/org/public")
  '(setq erc-hide-timestamps)
  '(sr-speedbar-right-side nil))
@@ -46,4 +46,4 @@
   ;; If you edit it by hand, you could mess it up, so be careful.
   ;; Your init file should contain only one such instance.
   ;; If there is more than one, they won't work right.
- )
+ '(ido-only-match-face ((t nil))))
