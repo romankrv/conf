@@ -1,20 +1,15 @@
 #!/bin/bash
 
-# This loads RVM into a shell session.
-[[ -s $HOME/.rvm/scripts/rvm ]] && source $HOME/.rvm/scripts/rvm
-[[ -r $rvm_path/scripts/completion ]] && . $rvm_path/scripts/completion
-
-
 export PS1='\w # '
 alias r="reset"
 alias ll="ls -Al"
 
 
+# virtualenv automaticaly activation on entry to folder
 PREVPWD=`pwd`
 PREVENV_PATH=
 PREV_PS1=
 PREV_PATH=
-
 export PROMPT_COMMAND=handle_virtualenv
 handle_virtualenv(){
   if [ "$PWD" != "$PREVPWD" ]; then
@@ -40,3 +35,11 @@ handle_virtualenv(){
   fi
 }
 
+
+# This loads RVM into a shell session.
+[[ -s $HOME/.rvm/scripts/rvm ]] && source $HOME/.rvm/scripts/rvm
+[[ -r $rvm_path/scripts/completion ]] && . $rvm_path/scripts/completion
+
+
+# Homebrew
+source `brew --prefix`/Library/Contributions/brew_bash_completion.sh
