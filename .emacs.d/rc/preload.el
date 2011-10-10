@@ -10,9 +10,18 @@
 
 
 ;; Interface
-(scroll-bar-mode -1)
-(tool-bar-mode -1)
-(menu-bar-mode -1)
+(if window-system
+  (progn
+    (scroll-bar-mode -1)))
+
+(if window-system
+  (progn
+    (tool-bar-mode -1)))
+
+(if window-system
+  (progn
+    (menu-bar-mode -1)))
+
 (set-face-attribute 'default nil :height 130);
 ;;(global-linum-mode 0)
 (display-time)
