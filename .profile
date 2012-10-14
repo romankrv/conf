@@ -1,16 +1,24 @@
 #!/bin/bash
 
-export PS1='\w # '
 alias r="reset"
 alias ll="ls -Al"
 
 
-# virtualenv automaticaly activation on entry to folder
+export PS1="\[\033[1;34m\][\W]$\[\033[0m\] "
+
+# Virtualenv automaticaly activation on entry to folder
+ # Create in $HOME folder with name ".envs"
+ # in folder of project to create file with name ".venv" and 
+ # type VIRTUALENV_PATH=$HOME/.envs/myprojet_env there
+ #  e.g. VIRTUALENV_PATH=$HOME/.envs/myproject_env
+ #  cd `$HOME/.envs` and create virtualenv myproject_env
+
+
 PREVPWD=`pwd`
 PREVENV_PATH=
 PREV_PS1=
 PREV_PATH=
-export PROMPT_COMMAND=handle_virtualenv
+
 handle_virtualenv(){
   if [ "$PWD" != "$PREVPWD" ]; then
     PREVPWD="$PWD";
@@ -34,12 +42,19 @@ handle_virtualenv(){
     fi
   fi
 }
+export PROMPT_COMMAND=handle_virtualenv
 
 
-# This loads RVM into a shell session.
-[[ -s $HOME/.rvm/scripts/rvm ]] && source $HOME/.rvm/scripts/rvm
-[[ -r $rvm_path/scripts/completion ]] && . $rvm_path/scripts/completion
+if [ `uname` = "Darwin" ]; then
+    if  [ `which brew` ]; then
+       # set homebrew autocomletion on tab
+       source `brew --prefix`/Library/Contributions/brew_bash_completion.sh
+    fi
 
-
-# Homebrew
-source `brew --prefix`/Library/Contributions/brew_bash_completion.sh
+    if [ `which rvm` ] ; then
+        # This loads RVM into a shell session.
+        [[ -s $HOME/.rvm/scripts/rvm ]] && source $HOME/.rvm/scripts/rvm
+        [[ -r $rvm_path/scripts/completion ]] && . $rvm_path/scripts/completion
+        PATH=$PATH:/opt/macports/bin:/opt/macports/sbin
+    fi
+fi
