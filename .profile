@@ -50,11 +50,11 @@ if [ `uname` = "Darwin" ]; then
        # set homebrew autocomletion on tab
        source `brew --prefix`/Library/Contributions/brew_bash_completion.sh
     fi
+fi
 
-    if [ `which rvm` ] ; then
-        # This loads RVM into a shell session.
-        [[ -s $HOME/.rvm/scripts/rvm ]] && source $HOME/.rvm/scripts/rvm
-        [[ -r $rvm_path/scripts/completion ]] && . $rvm_path/scripts/completion
-        PATH=$PATH:/opt/macports/bin:/opt/macports/sbin
-    fi
+if [ `which rvm` ] ; then
+   # This loads RVM into a shell session.
+    [[ -s $HOME/.rvm/scripts/rvm ]] && source $HOME/.rvm/scripts/rvm
+    [[ -r $rvm_path/scripts/completion ]] && . $rvm_path/scripts/completion
+    PATH=$PATH:/opt/macports/bin:/opt/macports/sbin
 fi
