@@ -19,10 +19,6 @@
 (global-set-key (kbd "\C-w") 'backward-kill-word)
 (global-set-key (kbd "\C-x\C-k") 'kill-region)
 
-(global-set-key (kbd "\C-w") 'backward-kill-word)
-(global-set-key "\C-x\C-k" 'kill-region)
-(global-set-key (kbd "\C-c\C-k") 'kill-region)
-
 ;; project-root
 (global-set-key (kbd "C-c p f") 'project-root-find-file)
 (global-set-key (kbd "C-c p g") 'project-root-grep)
