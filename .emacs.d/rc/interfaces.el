@@ -3,11 +3,13 @@
 (recentf-mode 1)
 (setq recentf-max-menu-items 25)
 (global-set-key (kbd "C-c C-r") 'recentf-open-files)
-;;
 
 (column-number-mode 1)
 (line-number-mode 1)
-;;(setq visible-bell 1)
+
+;; set disable menu toolbar
+(menu-bar-mode 0)
+
 (setq default-indicate-empty-lines t)
 (setq frame-title-format '(buffer-file-name "%f" ("%b")))
 (when (fboundp 'blink-cursor-mode) (blink-cursor-mode -1))
@@ -26,24 +28,11 @@
 (setq-default indent-tabs-mode nil)
 ;(setq tab-width 4)
 
-;; Color themes
-
+;; color themes
 (if window-system
-   ;; ( color-theme-xemacs   )
-   ;; ( color-theme-comidia  )
-      ( color-theme-infodoc  )
+   ( color-theme-midnight )
 )
-
-(defun color-theme-override ()
-  (interactive)
-  (color-theme-install
-   '(color-theme-xemacs
-     ((cursor-color . "#d00000")))))
-
-;; sets color of color
-;(color-theme-override)
-
-
+( color-theme-midnight )
 
 ;; To turn on syntax highlighting, parentheses matching
 (global-font-lock-mode 1)
