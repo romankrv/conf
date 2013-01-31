@@ -1,9 +1,9 @@
 ;;
 (custom-set-variables
-  ;; custom-set-variables was added by Custom.
-  ;; If you edit it by hand, you could mess it up, so be careful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
  '(desktop-load-locked-desktop (quote ask))
  '(desktop-path (quote ("." "~/.emacs.d/" "")))
  '(desktop-save t)
@@ -25,6 +25,8 @@
  '(js2-highlight-level 3)
  '(org-agenda-files (quote ("~/org/work.org")) t)
  '(org-mobile-directory "~/org/public")
+ '(recentf-max-menu-items 15)
+ '(recentf-save-file "~/.emacs.d/temp/.recentf")
  '(setq erc-hide-timestamps)
  '(sr-speedbar-right-side nil))
 
@@ -42,8 +44,8 @@
  ("gnu" . "http://elpa.gnu.org/packages/")))
  (package-initialize)
 (custom-set-faces
-  ;; custom-set-faces was added by Custom.
-  ;; If you edit it by hand, you could mess it up, so be careful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
  '(ido-only-match-face ((t nil))))
