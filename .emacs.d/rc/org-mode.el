@@ -26,18 +26,18 @@
        ("DELEGATED" . (:foreground "white" :weight bold))))
 
 ;; Checkout that folder for org-mode is exist otherwise create it
-(if (not (file-exists-p "~/org/" ))
-    (make-directory "~/org/"))
-(if (not (file-exists-p "~/org/public" ))
-    (make-directory "~/org/public"))
+(if (not (file-exists-p "~/.emacs.d/temp/org/" ))
+    (make-directory "~/.emacs.d/temp/org/"))
+(if (not (file-exists-p "~/.emacs.d/temp/org/public" ))
+    (make-directory "~/.emacs.d/org/public"))
 
 
 
 ;; 
 (setq org-agenda-files (list 
-			    "~/org/work.org"
-                            "~/org/private.org" 
-                            "~/org/home.org"))
+			    "~/.emacs.d/temp/org/work.org"
+                            "~/.emacs.d/temp/org/private.org" 
+                            "~/.emacs.d/temp/org/home.org"))
 
 (setq org-agenda-custom-commands
            '(("p" todo "PROC")
