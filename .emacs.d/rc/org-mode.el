@@ -1,6 +1,6 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; GNU Emacs configuration
-;; (c) Roman Kalinichenko 2010     romankrv AT gmail.com
+;; (c) Roman Kalinichenko 2010 - 2013    romankrv AT gmail.com
 ;; https://github.com/romankrv/conf
 ;;
 ;; Org-Mode: Your Life in Plain Text 
@@ -29,7 +29,7 @@
 (if (not (file-exists-p "~/.emacs.d/temp/org/" ))
     (make-directory "~/.emacs.d/temp/org/"))
 (if (not (file-exists-p "~/.emacs.d/temp/org/public" ))
-    (make-directory "~/.emacs.d/org/public"))
+    (make-directory "~/.emacs.d/temp/org/public"))
 
 
 
