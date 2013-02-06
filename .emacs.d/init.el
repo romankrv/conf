@@ -46,6 +46,10 @@
  '(ido-mode (quote both) nil (ido)))
 (custom-set-faces)
 
+;;special custom settings
+'(setq smex-save-file "~/.emacs.d/temp/smex-items")
+'(recentf-save-file "~/.emacs.d/temp/.recentf")
+
 ;; Loading additional configuration modes
 (load-file "~/.emacs.d/rc/interfaces.el")
 (load-file "~/.emacs.d/rc/conf-smex.el")
