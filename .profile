@@ -58,3 +58,5 @@ if [ `which rvm` ] ; then
     [[ -r $rvm_path/scripts/completion ]] && . $rvm_path/scripts/completion
     PATH=$PATH:/opt/macports/bin:/opt/macports/sbin
 fi
+
+export PS1="\[\e[0;1m\]┌─( \[\e[31;1m\]\u@\h\[\e[0;1m\] ) - ( \[\e[36;1m\]\w\[\e[0;1m\] )\n└> \[\e[0m\]"
