@@ -1,21 +1,22 @@
 [Roman]
-	Kalinichenko = romankrv@gmail.com
+        Kalinichenko = romankrv@gmail.com
 [user]
-	name = Roman Kalinichenko
-	email = romankrv@gmail.com
+        name = Roman Kalinichenko
+        email = romankrv@gmail.com
 [giggle]
-	main-window-maximized = true
-	main-window-geometry = 700x550+64+44
-	main-window-view = HistoryView
-	history-view-vpane-position = 385
-	file-view-vpane-position = 549
+        main-window-maximized = true
+        main-window-geometry = 700x550+64+44
+        main-window-view = HistoryView
+        history-view-vpane-position = 385
+        file-view-vpane-position = 549
 [sendemail]
-	smtpserver = smtp.gmail.com
-	smtpserverport = 587
-	smtpencryption = tls
-	smtpuser = romankrv@gmail.com
+        smtpserver = smtp.gmail.com
+        smtpserverport = 587
+        smtpencryption = tls
+        smtpuser = romankrv@gmail.com
 [alias]
-	st = status
-	co = checkout
+        st = status
+        co = checkout
+        d = diff
 [core]
-	editor = emacs -nw -Q
+        editor = emacs -nw -Q

@@ -6,6 +6,10 @@ alias ll="ls -Al"
 
 export PS1="\[\033[1;34m\][\W]$\[\033[0m\] "
 
+# improve history section
+export HISTCONTROL=ignoredups
+export HISTIGNORE="pwd:ls:ls -ltr:ll:ls -la:emacs:history:gitk:c:cd ~:cd -:git st:git status:git diff:tree:"
+
 # Virtualenv automaticaly activation on entry to folder
  # Create in $HOME folder with name ".envs"
  # in folder of project to create file with name ".venv" and 
@@ -59,5 +63,5 @@ if [ `which rvm` ] ; then
     PATH=$PATH:/opt/macports/bin:/opt/macports/sbin
 fi
 
-export PS1="\[\e[0;1m\]┌─( \[\e[31;1m\]\u@\h\[\e[0;1m\] ) - ( \[\e[36;1m\]\w\[\e[0;1m\] )\n└> \[\e[0m\]"
+export PS1="\[\e[0;1m\]( \[\e[31;1m\]\u@\h\[\e[0;1m\] ) - ( \[\e[36;1m\]\w\[\e[0;1m\] )\n└> \[\e[0m\]"
 alias c=clear

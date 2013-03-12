@@ -40,6 +40,9 @@
 ;; sr-speedbar
 (require 'sr-speedbar)
 
+;; highlight-indentation 
+(require 'highlight-indentation)
+
 ;; IDO plugin
 (custom-set-variables
  '(ido-enable-flex-matching t)
