@@ -109,3 +109,5 @@
     "Insert string with import for dubugging in winpdb"
     (interactive)
     (insert "import rpdb2; rpdb2.start_embedded_debugger('1')"))
+
+(highlight-indentation-mode '1)
