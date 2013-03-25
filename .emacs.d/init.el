@@ -61,7 +61,6 @@
 (load-file "~/.emacs.d/rc/interfaces.el")
 (load-file "~/.emacs.d/rc/conf-smex.el")
 (load-file "~/.emacs.d/rc//keybinding.el")
-(load-file "~/.emacs.d/rc/org-mode.el")
 (load-file "~/.emacs.d/rc/django-mode.el")
 (load-file "~/.emacs.d/rc/flymake-modes-conf.el")
 
