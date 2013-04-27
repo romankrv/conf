@@ -25,7 +25,6 @@ PREV_PATH=
 ENV=".VENVS"
 
 handle_virtualenv(){
-  echo $HOME
   if [ "$PWD" != "$PREVPWD" ]; then
     PREVPWD="$PWD";
     if [ -n "$PREVENV_PATH" ]; then
