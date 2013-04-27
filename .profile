@@ -57,6 +57,7 @@ if [ `uname` = "Darwin" ]; then
     if  [ `which brew` ]; then
        # set homebrew autocomletion on tab
        source `brew --prefix`/Library/Contributions/brew_bash_completion.sh
+       PATH=$PATH:/usr/local/Cellar/gettext/0.18.2/bin/
     fi
 fi
 
@@ -68,3 +69,4 @@ if [ `which rvm` ] ; then
 fi
 
 export PS1="\[\e[0;1m\]( \[\e[31;1m\]\u@\h\[\e[0;1m\] ) - ( \[\e[36;1m\]\w\[\e[0;1m\] )\n└> \[\e[0m\]"
+
