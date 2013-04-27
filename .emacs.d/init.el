@@ -15,13 +15,6 @@
   '(
      (:name magit
        :after (global-set-key (kbd "C-x C-z") 'magit-status))
-
-      ;; (:name project-root
-      ;;  :type hg
-      ;;  :url "http://hg.piranha.org.ua/project-root"
-      ;;  :features project-root
-      ;;  :after (lambda ()
-      ;;  (load-file "~/.emacs.d/rc/conf-project-root.el")))
 ))
 
 ;; standart sources from el-get repository of recipet  
