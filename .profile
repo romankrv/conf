@@ -50,7 +50,14 @@ handle_virtualenv(){
 export PROMPT_COMMAND=handle_virtualenv
 export WORKON_HOME=$HOME/$ENV
 export VIRTUALENVWRAPPER_VIRTUALENV_ARGS='--no-site-packages'
-source /usr/local/bin/virtualenvwrapper.sh
+
+if [ ! -f /usr/local/bin/virtualenvwrapper.sh ];
+then
+    echo "Pease install virtualenvwraper: sudo pip install virtualenvwrapper"
+else
+    source /usr/local/bin/virtualenvwrapper.sh
+fi
+
 # 
 
 if [ `uname` = "Darwin" ]; then
