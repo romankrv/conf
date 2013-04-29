@@ -14,8 +14,8 @@
 ;; local sources
 (setq el-get-sources
   '(
-     (:name magit
-       :after (global-set-key (kbd "C-x C-z") 'magit-status))
+;;     (:name magit
+;;       :after (global-set-key (kbd "C-x C-z") 'magit-status))
 ))
 
 ;; standart sources from el-get repository of recipet
