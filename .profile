@@ -18,6 +18,7 @@ export HISTIGNORE="pwd:ls:ls -ltr:ll:ls -la:emacs:history:gitk:c:cd ~:cd -:git s
  # type VIRTUALENV_PATH=$HOME/.VENVS/myprojet_env there
  #  e.g. VIRTUALENV_PATH=$HOME/.VENVS/myproject_env
  #  cd `$HOME/.VENVS` and create virtualenv myproject_env
+
 PREVPWD=`pwd`
 PREVENV_PATH=
 PREV_PS1=
@@ -48,13 +49,13 @@ handle_virtualenv(){
   fi
 }
 export PROMPT_COMMAND=handle_virtualenv
-export WORKON_HOME=$HOME/$ENV
-export VIRTUALENVWRAPPER_VIRTUALENV_ARGS='--no-site-packages'
 
 if [ ! -f /usr/local/bin/virtualenvwrapper.sh ];
 then
-    echo "Pease install virtualenvwraper: sudo pip install virtualenvwrapper"
+    echo "You can use virtualenvwraper so please install virtualenvwraper: pip install virtualenvwrapper"
 else
+    export WORKON_HOME=$HOME/$ENV
+    export VIRTUALENVWRAPPER_VIRTUALENV_ARGS='--no-site-packages'
     source /usr/local/bin/virtualenvwrapper.sh
 fi
 
