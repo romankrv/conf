@@ -52,7 +52,7 @@ export PROMPT_COMMAND=handle_virtualenv
 
 if [ ! -f /usr/local/bin/virtualenvwrapper.sh ];
 then
-    echo "You can use virtualenvwraper so please install virtualenvwraper: pip install virtualenvwrapper"
+    echo "You could use virtualenvwraper, so please install virtualenvwraper: pip install virtualenvwrapper"
 else
     export WORKON_HOME=$HOME/$ENV
     export VIRTUALENVWRAPPER_VIRTUALENV_ARGS='--no-site-packages'
