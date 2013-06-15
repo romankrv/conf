@@ -69,6 +69,14 @@ if [ `uname` = "Darwin" ]; then
     fi
 fi
 
+
+if [ `uname` = "Linux" ]; then
+    if [ -f /etc/bash_completion ]; then
+       # set autocomletion on tab (for git and other stuff)
+       source  /etc/bash_completion
+    fi
+fi
+
 if [ `which rvm` ] ; then
    # This loads RVM into a shell session.
     [[ -s $HOME/.rvm/scripts/rvm ]] && source $HOME/.rvm/scripts/rvm
