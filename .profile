@@ -1,6 +1,9 @@
-#!/bin/bash
+#!`which bash`
 
-#alias section
+# congigure file for terminal app design by Roman Kalinichenko aka romankrv © 2011-2013
+# romankrATgmailDOTcom
+
+# section
 alias r="reset"
 alias ll="ls -Al"
 alias c=clear
@@ -10,7 +13,7 @@ export PS1="\[\033[1;34m\][\W]$\[\033[0m\] "
 
 # improve history section
 export HISTCONTROL=ignoredups
-export HISTIGNORE="pwd:ls:ls -ltr:ll:ls -la:emacs:history:gitk:c:cd ~:cd -:git st:git status:git diff:tree:"
+export HISTIGNORE="pwd:ls:ls -ltr:ll:ls -la:emacs:history:gitk:c:cd ~:cd -:git st:git status:git diff:tree"
 
 
 # Virtualenv automaticaly activation on entry to folder
@@ -51,8 +54,8 @@ handle_virtualenv(){
 }
 export PROMPT_COMMAND=handle_virtualenv
 
-if [ ! -f /usr/local/bin/virtualenvwrapper.sh ];
-then
+
+if [ ! -f /usr/local/bin/virtualenvwrapper.sh ]; then
     echo "You could use virtualenvwraper, so please install virtualenvwraper: pip install virtualenvwrapper"
 else
     export WORKON_HOME=$HOME/$ENV
@@ -60,13 +63,17 @@ else
     source /usr/local/bin/virtualenvwrapper.sh
 fi
 
-# 
 
 if [ `uname` = "Darwin" ]; then
     if  [ `which brew` ]; then
        # set homebrew autocomletion on tab
        source `brew --prefix`/Library/Contributions/brew_bash_completion.sh
        PATH=$PATH:/usr/local/Cellar/gettext/0.18.2/bin/
+    fi
+
+    if [ `which git` ]; then
+        # sets git autocomplete on tab-button  
+        source /usr/share/git-core/git-completion.bash
     fi
 fi
 
