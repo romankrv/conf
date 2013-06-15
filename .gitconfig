@@ -18,5 +18,6 @@
         st = status
         co = checkout
         d = diff
+        br = branch
 [core]
         editor = emacs -nw -Q

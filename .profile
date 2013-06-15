@@ -4,6 +4,7 @@
 alias r="reset"
 alias ll="ls -Al"
 alias c=clear
+alias ack="ack-grep"
 
 export PS1="\[\033[1;34m\][\W]$\[\033[0m\] "
 
@@ -98,3 +99,7 @@ fi
 
 # Django tab autocomplete for a command's manage.py
 . $HOME/django_bash_completion.sh
+
+
+# Specific command 
+alias ARC_STOMATOLOG="cd ~/django_sites/ && ls -al | grep 'stomatolog.tar'  && rm stomatolog.tar && tar -zcf stomatolog.tar stomatolog && ll | grep 'stomatolog.tar' && cd -"
