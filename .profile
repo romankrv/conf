@@ -13,7 +13,7 @@ export PS1="\[\033[1;34m\][\W]$\[\033[0m\] "
 
 # improve history section
 export HISTCONTROL=ignoredups
-export HISTIGNORE="pwd:ls:ls -ltr:ll:ls -la:emacs:history:gitk:c:cd ~:cd -:git st:git status:git diff:tree"
+export HISTIGNORE="pwd:ls:ls -ltr:ll:ls -la:emacs:history:gitk:c:cd ~:cd -:git status:git diff:tree"
 
 
 # Virtualenv automaticaly activation on entry to folder
