@@ -9,27 +9,24 @@ alias ll="ls -Al"
 alias c=clear
 alias ack="ack-grep"
 
-export PS1="\[\033[1;34m\][\W]$\[\033[0m\] "
-
-# improve history section
+export WORKON_HOME=$HOME/$ENV
+export PS1="\[\e[0;1m\][\[\e[31;1m\]\u@\h\[\e[0;1m\]]-[\[\e[36;1m\]\w\[\e[0;1m\]]\n└> \[\e[0m\]"
 export HISTCONTROL=ignoredups
 export HISTIGNORE="pwd:ls:ls -ltr:ll:ls -la:emacs:history:gitk:c:cd ~:cd -:git status:git diff:tree"
 
-
-# Virtualenv automaticaly activation on entry to folder
- # Create in $HOME folder with name ".VENVS"
- # in folder of project to create file with name ".VENVS" and 
- # type VIRTUALENV_PATH=$HOME/.VENVS/myprojet_env there
- #  e.g. VIRTUALENV_PATH=$HOME/.VENVS/myproject_env
- #  cd `$HOME/.VENVS` and create virtualenv myproject_env
+CONF_PATH=$HOME/conf
 
 PREVPWD=`pwd`
 PREVENV_PATH=
 PREV_PS1=
 PREV_PATH=
-ENV=".VENVS"
-
+ENV=".virtualenv"
 handle_virtualenv(){
+  # Automaticaly activation of the virtualenv
+  # Create in $HOME the folder '.virtualenv'
+  # In the folder to create file ".virtualenv"
+  # In ".virtualenv" must  VIRTUALENV_PATH=$WORKON_HOME/my_env
+  # cd $HOME/.virtualenv and create virtualenv my_env
   if [ "$PWD" != "$PREVPWD" ]; then
     PREVPWD="$PWD";
     if [ -n "$PREVENV_PATH" ]; then
@@ -48,21 +45,20 @@ handle_virtualenv(){
       PREVENV_PATH="$PWD"
       source $PWD/$ENV
       source $VIRTUALENV_PATH/bin/activate
-      echo "> Virtualenv `basename $VIRTUALENV_PATH` activated"
+      echo "> Virtualenv $VIRTUALENV_PATH activated"
     fi
   fi
 }
 export PROMPT_COMMAND=handle_virtualenv
 
-
+# Verification that virtualenvwrapper has been installed.
 if [ ! -f /usr/local/bin/virtualenvwrapper.sh ]; then
-    echo "You could use virtualenvwraper, so please install virtualenvwraper: pip install virtualenvwrapper"
+    echo "Please install virtualenvwrapper"
 else
     export WORKON_HOME=$HOME/$ENV
     export VIRTUALENVWRAPPER_VIRTUALENV_ARGS='--no-site-packages'
     source /usr/local/bin/virtualenvwrapper.sh
 fi
-
 
 if [ `uname` = "Darwin" ]; then
     if  [ `which brew` ]; then
@@ -77,7 +73,6 @@ if [ `uname` = "Darwin" ]; then
     fi
 fi
 
-
 if [ `uname` = "Linux" ]; then
     if [ -f /etc/bash_completion ]; then
        # set autocomletion on tab (for git and other stuff)
@@ -85,28 +80,10 @@ if [ `uname` = "Linux" ]; then
     fi
 fi
 
-if [ `which rvm` ] ; then
-   # This loads RVM into a shell session.
-    [[ -s $HOME/.rvm/scripts/rvm ]] && source $HOME/.rvm/scripts/rvm
-    [[ -r $rvm_path/scripts/completion ]] && . $rvm_path/scripts/completion
-    PATH=$PATH:/opt/macports/bin:/opt/macports/sbin
-fi
-
-export PS1="\[\e[0;1m\]( \[\e[31;1m\]\u@\h\[\e[0;1m\] ) - ( \[\e[36;1m\]\w\[\e[0;1m\] )\n└> \[\e[0m\]"
-
-
-# Check out that virtualenvwrapper has installed
-if [ ! -f /usr/local/bin/virtualenvwrapper.sh ];
-then
-    echo "File not found!"
-    echo "Pease install virtualenvwraper: sudo pip install virtualenvwrapper"
-else
-    source /usr/local/bin/virtualenvwrapper.sh
-fi
-
 # Django tab autocomplete for a command's manage.py
-. $HOME/django_bash_completion.sh
+source $CONF_PATH/django_bash_completion.sh
 
-
-# Specific command 
-alias ARC_STOMATOLOG="cd ~/django_sites/ && ls -al | grep 'stomatolog.tar'  && rm stomatolog.tar && tar -zcf stomatolog.tar stomatolog && ll | grep 'stomatolog.tar' && cd -"
+# Specific command                                                                                            
+if [ -f $CONF_PATH/local.sh ]; then
+    source $CONF_PATH/local.sh
+fi
