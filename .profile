@@ -68,8 +68,8 @@ if [ `uname` = "Darwin" ]; then
     fi
 
     if [ `which git` ]; then
-        # sets git autocomplete on tab-button  
-        source /usr/share/git-core/git-completion.bash
+        # sets git autocomplete on tab-button
+        source $CONF_PATH/git/git-completion.bash
     fi
 fi
 
@@ -83,7 +83,7 @@ fi
 # Django tab autocomplete for a command's manage.py
 source $CONF_PATH/django_bash_completion.sh
 
-# Specific command                                                                                            
+# Specific command
 if [ -f $CONF_PATH/local.sh ]; then
     source $CONF_PATH/local.sh
 fi
