@@ -1,31 +1,19 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; GNU Emacs configuration
 ;; (c) Roman Kalinichenko 2010-2013
-;; https://github.com/romankrv/conf       romankrv AT gmail.com
+;; romankrv AT gmail.com
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (load-file "~/.emacs.d/rc/preload.el")
+
+;; Loading additional configuration modes
+(load-file "~/.emacs.d/rc/interfaces.el")
+(load-file "~/.emacs.d/rc/conf-smex.el")
+(load-file "~/.emacs.d/rc//keybinding.el")
+(load-file "~/.emacs.d/rc/django-mode.el")
+(load-file "~/.emacs.d/rc/flymake-modes-conf.el")
+
 (add-to-list 'load-path "~/.emacs.d/packages/")
-
-
-;; el-get Package Manager for Emacs like apt-get, macport, brew etc 
-(require 'el-get)
-
-;; local sources
-(setq el-get-sources
-  '(
-;;     (:name magit
-;;       :after (global-set-key (kbd "C-x C-z") 'magit-status))
-))
-
-;; standart sources from el-get repository of recipet
-(setq my-packages
-      (append
-       '(el-get python-mode smex ack js2-mode color-theme 
-         highlight-parentheses browse-kill-ring auto-complete)
-       (mapcar 'el-get-source-name el-get-sources)))
-(el-get 'sync my-packages)
-
 
 ;; Tramp modxre
 (require 'tramp)
@@ -46,13 +34,6 @@
 ;;special custom settings
 '(setq smex-save-file "~/.emacs.d/temp/smex-items")
 '(recentf-save-file "~/.emacs.d/temp/.recentf")
-
-;; Loading additional configuration modes
-(load-file "~/.emacs.d/rc/interfaces.el")
-(load-file "~/.emacs.d/rc/conf-smex.el")
-(load-file "~/.emacs.d/rc//keybinding.el")
-(load-file "~/.emacs.d/rc/django-mode.el")
-(load-file "~/.emacs.d/rc/flymake-modes-conf.el")
 
 ;; conf for M-x customize-group
 (setq custom-file "~/.emacs.d/rc/customs.el")
