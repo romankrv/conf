@@ -3,16 +3,23 @@
 # congigure file for terminal app design by Roman Kalinichenko aka romankrv © 2011-2013
 # romankrATgmailDOTcom
 
-# section
+# common alias section
 alias r="reset"
 alias ll="ls -Al"
 alias c=clear
 alias ack="ack-grep"
 
+#editor section
+export ALTERNATE_EDITOR=""
+alias em="emacsclient -nw -c'$@'"
+alias kill_emacs="emacsclient -e '(kill-emacs)'"
+
+#
 export WORKON_HOME=$HOME/$ENV
 export PS1="\[\e[0;1m\][\[\e[31;1m\]\u@\h\[\e[0;1m\]]-[\[\e[36;1m\]\w\[\e[0;1m\]]\n└> \[\e[0m\]"
 export HISTCONTROL=ignoredups
 export HISTIGNORE="pwd:ls:ls -ltr:ll:ls -la:emacs:history:gitk:c:cd ~:cd -:git status:git diff:tree"
+
 
 CONF_PATH=$HOME/conf
 

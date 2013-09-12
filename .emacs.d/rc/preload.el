@@ -38,4 +38,5 @@
 
 (set-face-attribute 'default nil :height 130);
 ;;(global-linum-mode 0)
-;;(display-time)
+
+

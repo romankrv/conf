@@ -1,4 +1,3 @@
-
 ;; store recent files list
 (recentf-mode 1)
 (setq recentf-max-menu-items 25)
@@ -11,8 +10,11 @@
 (menu-bar-mode 0)
 
 (setq default-indicate-empty-lines t)
+
 (setq frame-title-format '(buffer-file-name "%f" ("%b")))
+
 (when (fboundp 'blink-cursor-mode) (blink-cursor-mode -1))
+
 (fset 'yes-or-no-p 'y-or-n-p)
 
 ;; Not allow type "yes" if file or buffer exist
@@ -30,9 +32,8 @@
 
 ;; color themes
 (if window-system
-   ( color-theme-midnight )
-)
-( color-theme-midnight )
+   (color-theme-midnight)
+  (color-theme-comidia))
 
 ;; To turn on syntax highlighting, parentheses matching
 (global-font-lock-mode 1)
