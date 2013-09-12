@@ -21,3 +21,6 @@
         br = branch
 [core]
         editor = emacs -nw -Q
+
+[push]
+        default = current
