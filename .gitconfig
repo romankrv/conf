@@ -1,14 +1,7 @@
-[Roman]
-        Kalinichenko = romankrv@gmail.com
 [user]
         name = Roman Kalinichenko
         email = romankrv@gmail.com
-[giggle]
-        main-window-maximized = true
-        main-window-geometry = 700x550+64+44
-        main-window-view = HistoryView
-        history-view-vpane-position = 385
-        file-view-vpane-position = 549
+
 [sendemail]
         smtpserver = smtp.gmail.com
         smtpserverport = 587
@@ -21,3 +14,6 @@
         br = branch
 [core]
         editor = emacs -nw -Q
+
+[push]
+        default = current
