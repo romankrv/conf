@@ -1,13 +1,16 @@
 #!`which bash`
 
-# congigure file for terminal app design by Roman Kalinichenko aka romankrv © 2011-2013
-# romankrATgmailDOTcom
+# Congiguration  for a terminal session design by Roman Kalinichenko aka romankrv © 2011-2013
+# romankrv AT gmail DOT com
 
 # common alias section
 alias r="reset"
 alias ll="ls -Al"
 alias c=clear
-alias ack="ack-grep"
+
+if [ `uname` == 'Linux' ]; then
+  alias ack="ack-grep"
+fi
 
 #editor section
 export ALTERNATE_EDITOR=""
@@ -18,7 +21,14 @@ alias kill_emacs="emacsclient -e '(kill-emacs)'"
 export WORKON_HOME=$HOME/$ENV
 export PS1="\[\e[0;1m\][\[\e[31;1m\]\u@\h\[\e[0;1m\]]-[\[\e[36;1m\]\w\[\e[0;1m\]]\n└> \[\e[0m\]"
 export HISTCONTROL=ignoredups
-export HISTIGNORE="pwd:ls:ls -ltr:ll:ls -la:emacs:history:gitk:c:cd ~:cd -:git status:git diff:tree"
+export HISTIGNORE="pwd:ls:ls -ltr:ll:ls -la:history:gitk:c:git status:git diff:tree"
+
+#editor section
+export EDITOR="emacsclient"
+export ALTERNATE_EDITOR=""
+alias em="emacsclient -nw -c'$@'"
+alias em_kill="emacsclient -e '(kill-emacs)'"
+
 
 
 CONF_PATH=$HOME/conf
@@ -30,16 +40,16 @@ PREV_PATH=
 ENV=".virtualenv"
 handle_virtualenv(){
   # Automaticaly activation of the virtualenv
-  # Create in $HOME the folder '.virtualenv'
-  # In the folder to create file ".virtualenv"
-  # In ".virtualenv" must  VIRTUALENV_PATH=$WORKON_HOME/my_env
-  # cd $HOME/.virtualenv and create virtualenv my_env
+  # Create in $HOME the folder: '.virtualenv'
+  # In the folder to create the file: '.virtualenv'
+  # In '.virtualenv' put the line: VIRTUALENV_PATH=$WORKON_HOME/my_env
+  # Run: cd $HOME/.virtualenv and create: virtualenv my_env
   if [ "$PWD" != "$PREVPWD" ]; then
     PREVPWD="$PWD";
     if [ -n "$PREVENV_PATH" ]; then
-      if [ "`echo "$PWD" | grep -c $PREVENV_PATH`" = "0"  ]; then
+      if [ "`echo "$PWD" | grep -c $PREVENV_PATH`" = "0" ]; then
          source $PREVENV_PATH/$ENV
-         echo "> Virtualenv `basename $VIRTUALENV_PATH` deactivated"
+         echo "> Virtualenv: `basename $VIRTUALENV_PATH` deactivated"
          PS1=$PREV_PS1
          PATH=$PREV_PATH
          PREVENV_PATH=
@@ -52,7 +62,7 @@ handle_virtualenv(){
       PREVENV_PATH="$PWD"
       source $PWD/$ENV
       source $VIRTUALENV_PATH/bin/activate
-      echo "> Virtualenv $VIRTUALENV_PATH activated"
+      echo "> Virtualenv: $VIRTUALENV_PATH activated"
     fi
   fi
 }
@@ -60,7 +70,7 @@ export PROMPT_COMMAND=handle_virtualenv
 
 # Verification that virtualenvwrapper has been installed.
 if [ ! -f /usr/local/bin/virtualenvwrapper.sh ]; then
-    echo "Please install virtualenvwrapper"
+    echo "Please, install virtualenvwrapper"
 else
     export WORKON_HOME=$HOME/$ENV
     export VIRTUALENVWRAPPER_VIRTUALENV_ARGS='--no-site-packages'
@@ -68,15 +78,15 @@ else
 fi
 
 if [ `uname` = "Darwin" ]; then
+
     if  [ `which brew` ]; then
-       # set homebrew autocomletion on tab
+       # homebrew autocomletion
        source `brew --prefix`/Library/Contributions/brew_bash_completion.sh
-       PATH=$PATH:/usr/local/Cellar/gettext/0.18.2/bin/
     fi
 
     if [ `which git` ]; then
-        # sets git autocomplete on tab-button
-        source $CONF_PATH/git/git-completion.bash
+        # git autocompletn
+        source $CONF_PATH/git-completion.bash
     fi
 fi
 

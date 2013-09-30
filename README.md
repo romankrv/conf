@@ -1,4 +1,4 @@
 conf repository
 ====
-My environment configuration files: 
-emacs .profile and other configuration files.
+My environment configuration files.
+
