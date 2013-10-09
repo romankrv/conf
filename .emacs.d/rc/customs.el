@@ -26,6 +26,7 @@
  '(org-agenda-files (quote ("~/org/work.org")) t)
  '(org-mobile-directory "~/org/public")
  '(recentf-save-file "~/.emacs.d/temp/.recentf")
+ '(auto-save-list-file-prefix "~/.emacs.d/temp/auto-save-list/.saves-")
  '(safe-local-variable-values (quote ((eval ignore-errors "Write-contents-functions is a buffer-local alternative to before-save-hook" (add-hook (quote write-contents-functions) (lambda nil (delete-trailing-whitespace) nil)) (require (quote whitespace)) "Sometimes the mode needs to be toggled off and on." (whitespace-mode 0) (whitespace-mode 1)) (whitespace-line-column . 80) (whitespace-style face trailing lines-tail) (require-final-newline . t))))
  '(setq erc-hide-timestamps)
  '(sr-speedbar-right-side nil))
