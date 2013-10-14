@@ -19,7 +19,7 @@ alias kill_emacs="emacsclient -e '(kill-emacs)'"
 
 #
 export WORKON_HOME=$HOME/$ENV
-export PS1="\[\e[0;1m\][\[\e[31;1m\]\u@\h\[\e[0;1m\]]-[\[\e[36;1m\]\w\[\e[0;1m\]]\n└> \[\e[0m\]"
+PS1="\e[0;33m\]\u@\h\[\e[0;32m\] \e[0;36m\]\w\[\e[0;32m\]\n└> \[\e[0m\]"
 export HISTCONTROL=ignoredups
 export HISTIGNORE="pwd:ls:ls -ltr:ll:ls -la:history:gitk:c:git status:git diff:tree"
 
