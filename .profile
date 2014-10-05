@@ -7,6 +7,7 @@
 alias r="reset"
 alias ll="ls -Al"
 alias c=clear
+alias du="du -hs"
 
 if [ `uname` == 'Linux' ]; then
   alias ack="ack-grep"
@@ -28,7 +29,7 @@ export EDITOR="emacsclient"
 export ALTERNATE_EDITOR=""
 alias em="emacsclient -nw -c'$@'"
 alias em_kill="emacsclient -e '(kill-emacs)'"
-
+alias emacs="/Applications/Emacs.app/Contents/MacOS/Emacs -nw"
 
 
 CONF_PATH=$HOME/conf
