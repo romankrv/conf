@@ -16,3 +16,4 @@ el-get
 TAGS
 .emacs.d/ac-comphist.dat
 /.project
+.DS_Store
