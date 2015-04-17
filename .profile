@@ -18,8 +18,6 @@ export ALTERNATE_EDITOR=""
 alias em="emacsclient -nw -c'$@'"
 alias kill_emacs="emacsclient -e '(kill-emacs)'"
 
-#
-export WORKON_HOME=$HOME/$ENV
 PS1="\e[0;33m\]\u@\h\[\e[0;32m\] \e[0;36m\]\w\[\e[0;32m\]\n└> \[\e[0m\]"
 export HISTCONTROL=ignoredups
 export HISTIGNORE="pwd:ls:ls -ltr:ll:ls -la:history:gitk:c:git status:git diff:tree"
@@ -69,6 +67,8 @@ handle_virtualenv(){
 }
 export PROMPT_COMMAND=handle_virtualenv
 
+
+#VIRTUALENVWRAPPER
 # Verification that virtualenvwrapper has been installed.
 if [ ! -f /usr/local/bin/virtualenvwrapper.sh ]; then
     echo "Please, install virtualenvwrapper"
@@ -105,3 +105,7 @@ source $CONF_PATH/django_bash_completion.sh
 if [ -f $CONF_PATH/local.sh ]; then
     source $CONF_PATH/local.sh
 fi
+
+# MYSQL SECTION
+#export PATH=/usr/local/mysql/bin:$PATH"
+export PATH=$PATH:/usr/local/mysql/bin
