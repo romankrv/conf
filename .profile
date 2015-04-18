@@ -18,7 +18,9 @@ export ALTERNATE_EDITOR=""
 alias em="emacsclient -nw -c'$@'"
 alias kill_emacs="emacsclient -e '(kill-emacs)'"
 
+
 PS1="\e[0;33m\]\u@\h\[\e[0;32m\] \e[0;36m\]\w\[\e[0;32m\]\n└> \[\e[0m\]"
+
 export HISTCONTROL=ignoredups
 export HISTIGNORE="pwd:ls:ls -ltr:ll:ls -la:history:gitk:c:git status:git diff:tree"
 
