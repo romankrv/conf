@@ -33,7 +33,7 @@
 (line-number-mode   t)
 (global-linum-mode  t)
 (column-number-mode t)
-(setq linum-format " %d")
+(setq linum-format "|%d|")
 
 
 (set-terminal-coding-system 'utf-8)
