@@ -1,0 +1,36 @@
+#+TITLE: Roman Kalinichenko's Emacs configuration
+#+AUTHOR: Roman Kalinichenko
+#+email: romankrv at gmail.com
+#+DESCRIPTION: A literate programming style exposition of my Emacs configuration
+
+* Introduction
+This is my =.emacs= file ... well, the top-level of it anyway.
+I've written it in a [[http://www.orgmode.org][literate style]], to make it easy to explain.
+
+** About this file
+
+If you're viewing the Org file, you can open source code blocks (those
+are the ones in begin_src) in a separate buffer by moving your point
+inside them and typing C-c ' (=org-edit-special=). This opens another
+buffer in =emacs-lisp-mode=, so you can use =M-x eval-buffer= to load
+the changes. If you want to explore how functions work, use =M-x
+edebug-defun= to set up debugging for that function, and then call it.
+You can learn more about edebug in the [[http://www.gnu.org/software/emacs/manual/html_node/elisp/Edebug.html][Emacs Lisp]] manual.
+
+I like using =(setq ...)= more than Customize because I can neatly
+organize my configuration that way. Ditto for =use-package= - I mostly
+use it to group together package-related config without lots of
+=with-eval-after-load= calls, and it also makes declaring keybindings
+easier.
+
+** Starting up
+
+Here's how we start:
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+;; Tangle Org-s files when we'll to save them.
+(defun tangle-on-save-org-mode-file()
+  (when (string= (message "%s" major-mode) "org-mode")
+    (org-babel-tangle)))
+(add-hook 'after-save-hook 'tangle-on-save-org-mode-file)
+#+END_SRC
