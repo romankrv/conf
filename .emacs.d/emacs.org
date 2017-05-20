@@ -23,6 +23,22 @@ use it to group together package-related config without lots of
 =with-eval-after-load= calls, and it also makes declaring keybindings
 easier.
 
+* Modernizing Emacs
+
+   With a long history of working on small machines without gigabytes
+   of RAM, we might as well let Emacs be the beast it has always
+   dreamed.
+
+   First, let’s increase the cache before starting garbage collection:
+   #+BEGIN_SRC elisp
+     (setq gc-cons-threshold 50000000)
+   #+END_SRC
+
+   Found [[https://github.com/wasamasa/dotemacs/blob/master/init.org#init][here]] how to remove the warnings from the GnuTLS library when
+   using HTTPS... increase the minimum prime bits size:
+   #+BEGIN_SRC elisp
+     (setq gnutls-min-prime-bits 4096)
+   #+END_SRC
 
 * Technical Artifacts
 
