@@ -23,14 +23,21 @@ use it to group together package-related config without lots of
 =with-eval-after-load= calls, and it also makes declaring keybindings
 easier.
 
-** Starting up
 
-Here's how we start:
+* Technical Artifacts
 
-#+BEGIN_SRC emacs-lisp :tangle yes
-;; Tangle Org-s files when we'll to save them.
-(defun tangle-on-save-org-mode-file()
-  (when (string= (message "%s" major-mode) "org-mode")
-    (org-babel-tangle)))
-(add-hook 'after-save-hook 'tangle-on-save-org-mode-file)
-#+END_SRC
+** Run org-babel-tangle on saving this file(emacs.org)
+
+   Stroke C-x C-s on the modified file and you see message like this:
+   =Tangled 1 code block from emacs.org=
+
+   #+BEGIN_SRC elisp
+   ;; Tangle Org-s files when we'll to save them.
+   (defun tangle-on-save-org-mode-file()
+     (when (string= (message "%s" major-mode) "org-mode")
+     (org-babel-tangle)))
+   (add-hook 'after-save-hook 'tangle-on-save-org-mode-file)
+   #+END_SRC
+
+#+PROPERTY:    tangle ~/.emacs.d/emacs.el
+
