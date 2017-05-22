@@ -23,7 +23,102 @@ use it to group together package-related config without lots of
 =with-eval-after-load= calls, and it also makes declaring keybindings
 easier.
 
-* Modernizing Emacs
+** Emacs Executable
+
+   While I often use [[http://emacsformacosx.com/builds][Emacs for Mac]], lately, I've been building Emacs
+   from source using [[http://brew.sh/][Homebrew]]. I start by adding the following dependency:
+
+   #+BEGIN_SRC sh :tangle no
+     brew cask install xquartz
+   #+END_SRC
+
+   *Note:* I've been running into an issue where I want Emacs to display
+   ligatures as well as work with the visual regular expression
+   package.  To get the both to work, I find I need to build from
+   source after applying [[https://github.com/minimal/emacs/commit/812dd5119645a09bc025a9dddedad9474d12ecb6][this patch]]. According to the Homebrew
+   documentation (see [[https://github.com/Homebrew/brew/blob/master/share/doc/homebrew/Formula-Cookbook.md#patches][the Patches section]]), we first:
+
+   #+BEGIN_SRC sh :tangle no
+     brew edit emacs
+   #+END_SRC
+
+   And add the following section
+
+   #+BEGIN_EXAMPLE
+   patch do
+     url "https://github.com/minimal/emacs/commit/812dd5119645a09bc025a9dddedad9474d12ecb6.diff"
+   end
+   #+END_EXAMPLE
+
+   And then build from source especially for the Mac:
+
+   #+BEGIN_SRC sh :tangle no
+     brew install emacs --HEAD --use-git-head --with-cocoa --with-gnutls --srgb
+                        --with-librsvg --with-ns --with-imagemagick
+     brew linkapps emacs
+   #+END_SRC
+
+   Not only does this install the latest version of Emacs in
+   =/usr/local/bin/emacs=, but it also links a GUI version in
+   =/Application/Emacs.app=.
+
+   All Homebrew options for Emacs can be seen with the command:
+
+   #+BEGIN_SRC sh :tangle no
+     brew options emacs
+   #+END_SRC
+
+* General Settings
+** My Directory Location
+
+   Normally, the =user-emacs-directory= stores everything in a
+   =.emacs.d= directory in the home directory, however, Aquamacs
+   overrides that, and since I now feel the need to use these settings
+   for both editors (sure feels like XEmacs all over again).
+
+   Any way, I have a new global variable for that:
+
+   #+BEGIN_SRC elisp
+     (defconst RK/emacs-directory (concat (getenv "HOME") "/.emacs.d/"))
+
+     (defun RK/emacs-subdirectory (d) (expand-file-name d RK/emacs-directory))
+   #+END_SRC
+
+** Directory Structure
+
+   In case this is the first time running this on a computer, we need
+   to make sure the following directories have been created.
+
+   #+BEGIN_SRC elisp
+    (let* ((subdirs '("elisp" "backups"))
+            (fulldirs (mapcar (lambda (d) (RK/emacs-subdirectory d)) subdirs)))
+       (dolist (dir fulldirs)
+         (when (not (file-exists-p dir))
+           (message "Make directory: %s" dir)
+           (make-directory dir))))
+   #+END_SRC
+
+** Customization Section
+
+   While I would rather program my configurations, sometimes the Emacs
+   menu system is "good enough", but I want it in its own file:
+
+   #+BEGIN_SRC elisp
+     (setq custom-file (expand-file-name "custom.el" RK/emacs-directory))
+     (when (file-exists-p custom-file)
+       (load custom-file))
+   #+END_SRC
+
+** Setting up the Load Path
+
+   Extra packages not available via the package manager go in my
+   personal stash at: =$HOME/.emacs.d/elisp=
+
+   #+BEGIN_SRC elisp
+     (add-to-list 'load-path (RK/emacs-subdirectory "elisp"))
+   #+END_SRC
+
+** Modernizing Emacs
 
    With a long history of working on small machines without gigabytes
    of RAM, we might as well let Emacs be the beast it has always
@@ -40,8 +135,42 @@ easier.
      (setq gnutls-min-prime-bits 4096)
    #+END_SRC
 
-* Technical Artifacts
+* Display Settings
 
+  I've been using Emacs for many years, and appreciate a certain
+  minimalist approach to its display. While you can turn these off
+  with the menu items now, it is just as easy to set them here.
+
+  #+BEGIN_SRC elisp
+    (setq initial-scratch-message "") ;; Uh, I know what Scratch is for
+    (setq visible-bell t)             ;; Get rid of the beeps
+
+    (when (window-system)
+      (tool-bar-mode 0)               ;; Toolbars were only cool with XEmacs
+       (blink-cursor-mode 0)
+      (when (fboundp 'horizontal-scroll-bar-mode)
+        (horizontal-scroll-bar-mode -1))
+      (scroll-bar-mode -1))            ;; Scrollbars are waste screen estate
+  #+END_SRC
+
+* Package Initialization
+** Package Manager
+   Emacs has become like every other operating system, and now has a package manager with its own collection
+   repository, but since it is so conservative, we need to add more repositories to get all the sweet goodness, I demand.
+
+   #+BEGIN_SRC elisp :tangle no
+     (require 'package)
+
+     (setq package-archives '(("org"       . "http://orgmode.org/elpa/")
+                              ("gnu"       . "http://elpa.gnu.org/packages/")
+                              ("melpa"     . "http://melpa.org/packages/")
+                              ("marmalade" . "http://marmalade-repo.org/packages/")))
+
+     (package-initialize)
+     (package-refresh-contents)
+   #+END_SRC
+
+* Technical Artifacts
 ** Run org-babel-tangle on saving this file(emacs.org)
 
    Stroke C-x C-s on the modified file and you see message like this:

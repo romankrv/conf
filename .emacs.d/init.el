@@ -6,5 +6,5 @@
       (load-file "~/.emacs.d/emacs.el")
       (message "You are running from the rest of emacs.el"))
   (progn
-    (org-babel-tangle-file "~/.emacs.d/emacs.org")
+    ;(org-babel-tangle-file "~/.emacs.d/emacs.org")
     (org-babel-load-file (expand-file-name "~/.emacs.d/emacs.org"))))
