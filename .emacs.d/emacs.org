@@ -135,7 +135,194 @@ easier.
      (setq gnutls-min-prime-bits 4096)
    #+END_SRC
 
+* Package Initialization
+** Package Manager
+   Emacs has become like every other operating system, and now has a package manager with its own collection
+   repository, but since it is so conservative, we need to add more repositories to get all the sweet goodness, I demand.
+
+   #+BEGIN_SRC elisp
+     (require 'package)
+     (setq package-enable-at-startup nil)
+     (setq package-archives '(("org"       . "http://orgmode.org/elpa/")
+                              ("gnu"       . "http://elpa.gnu.org/packages/")
+                              ("melpa"     . "http://melpa.org/packages/")
+                              ("marmalade" . "http://marmalade-repo.org/packages/")))     
+     (package-initialize)
+     (package-refresh-contents)
+   #+END_SRC
+** Use-Package
+
+   Using [[https://github.com/jwiegley/use-package][use-package]] to automatically install certain packages, as
+   well as the ease of lazily loading them.
+
+   #+BEGIN_SRC elisp
+     (unless (package-installed-p 'use-package)
+       (package-refresh-contents)
+       (package-install 'use-package))
+     (setq use-package-verbose t)
+
+     (require 'use-package)
+     (use-package auto-compile
+       :config (auto-compile-on-load-mode))
+   #+END_SRC
+
+** Init File Support
+
+   Load up my collection of enhancements to Emacs Lisp, including [[https://github.com/magnars/dash.el][dash]]
+   and [[https://github.com/magnars/s.el][s]] for string manipulation, as much of my initialization code
+   depends on it.
+
+   #+BEGIN_SRC elisp
+     (require 'cl)
+
+     (use-package dash
+       :ensure t
+       :config (eval-after-load "dash" '(dash-enable-font-lock)))
+
+     (use-package s
+       :ensure t)
+    #+END_SRC
+
+* Variables
+
+  General settings about me that other packages can use. The biggest
+  problem is guessing my email address based on what computer I am using:
+
+  #+BEGIN_SRC elisp
+    (if (equal "howard.abrams" user-login-name)
+        (setq user-mail-address "howard.abrams@workday.com")
+      (setq user-mail-address "howard.abrams@gmail.com"))
+  #+END_SRC
+
+** Tabs vs Spaces
+
+   I have learned to distrust tabs in my source code, so let's make
+   sure that we only have spaces. See [[http://ergoemacs.org/emacs/emacs_tabs_space_indentation_setup.html][this discussion]] for details.
+
+   #+BEGIN_SRC elisp
+     (setq-default indent-tabs-mode nil)
+     (setq tab-width 2)
+   #+END_SRC
+
+   Make tab key do indent first then completion.
+
+   #+BEGIN_SRC elisp
+     (setq-default tab-always-indent 'complete)
+   #+END_SRC
+
+** Encrypting Files
+
+   Synchronize notes formatted in org-mode across multiple computers
+   with cloud storage services, like Dropbox? Those files are /cached/
+   in various other storage facilities... so, I use symmetric key
+   encryption with [[http://en.wikipedia.org/wiki/Pretty_Good_Privacy][PGP]].
+
+   To get started on the Mac, install the goodies:
+
+   #+BEGIN_SRC sh :tangle no
+     brew install gpg
+   #+END_SRC
+
+   Now, any file loaded with a =gpg= extension, e.g. =some.org.gpg=,
+   will prompt for a password (and then use =org-mode=).  Since these
+   files are for my eyes only, I don’t need the key-ring prompt:
+
+   #+BEGIN_SRC elisp
+     (setq epa-file-select-keys 2)
+   #+END_SRC
+
+   If you trust your Emacs session on your computer, you can have
+   Emacs cache the password.
+
+   #+BEGIN_SRC elisp
+     (setq epa-file-cache-passphrase-for-symmetric-encryption t)
+   #+END_SRC
+
+** Misc Variable Settings
+
+   Does anyone type =yes= anymore?
+   #+BEGIN_SRC elisp
+     (fset 'yes-or-no-p 'y-or-n-p)
+   #+END_SRC
+
+   Fix the scrolling to keep point in the center:
+   #+BEGIN_SRC elisp
+     (setq scroll-conservatively 10000
+           scroll-preserve-screen-position t)
+   #+END_SRC
+
+   I've been using Emacs for too long to need to re-enable each
+   feature bit-by-bit:
+   #+BEGIN_SRC elisp
+     (setq disabled-command-function nil)
+   #+END_SRC
+
 * Display Settings
+
+  I've been using Emacs for many years, and appreciate a certain
+  minimalist approach to its display. While you can turn these off
+  with the menu items now, it is just as easy to set them here.
+
+  #+BEGIN_SRC elisp
+    (setq initial-scratch-message "") ;; Uh, I know what Scratch is for
+    (setq visible-bell t)             ;; Get rid of the beeps
+
+    (when (window-system)
+      (tool-bar-mode 0)               ;; Toolbars were only cool with XEmacs
+      (when (fboundp 'horizontal-scroll-bar-mode)
+        (horizontal-scroll-bar-mode -1))
+      (scroll-bar-mode -1))            ;; Scrollbars are waste screen estate
+  #+END_SRC
+
+  My mode line has become quite complicated, so I've pulled it out
+  into its own file:
+
+  #+BEGIN_SRC elisp
+    ;(require 'init-mode-line2)
+  #+END_SRC
+
+  And the best colored highlighting of selected text needs to be both
+  bright, but not obscure the white text in the foreground (see
+  =list-colors-display=). Favorites so far are =purple4= and =DarkOrange3=:
+
+  #+BEGIN_SRC elisp
+    (set-face-background 'region "blue3")
+  #+END_SRC
+
+  Most of the display settings actually come from the [[file:emacs-mac.org][Mac initialization file]].
+
+** Whitespace Mode
+
+   You don't want this on all the time, but nice to turn it on every
+   now and then:
+
+   #+BEGIN_SRC elisp
+     (use-package whitespace
+       :bind ("C-c T w" . whitespace-mode)
+       :init
+       (setq whitespace-line-column nil
+             whitespace-display-mappings '((space-mark 32 [183] [46])
+                                           (newline-mark 10 [9166 10])
+                                           (tab-mark 9 [9654 9] [92 9])))
+       :config
+       (set-face-attribute 'whitespace-space       nil :foreground "#666666" :background nil)
+       (set-face-attribute 'whitespace-newline     nil :foreground "#666666" :background nil)
+       (set-face-attribute 'whitespace-indentation nil :foreground "#666666" :background nil)
+       :diminish whitespace-mode)
+   #+END_SRC
+
+** Fill Mode
+
+   Automatically wrapping when you get to the end of a line (or the
+   fill-region):
+
+   #+BEGIN_SRC elisp
+     (use-package fill
+       :bind (("C-c T f" . auto-fill-mode)
+              ("C-c T t" . toggle-truncate-lines))
+       :init (add-hook 'org-mode-hook 'turn-on-auto-fill)
+       :diminish auto-fill-mode)
+   #+END_SRC
 
   I've been using Emacs for many years, and appreciate a certain
   minimalist approach to its display. While you can turn these off
@@ -152,24 +339,6 @@ easier.
         (horizontal-scroll-bar-mode -1))
       (scroll-bar-mode -1))            ;; Scrollbars are waste screen estate
   #+END_SRC
-
-* Package Initialization
-** Package Manager
-   Emacs has become like every other operating system, and now has a package manager with its own collection
-   repository, but since it is so conservative, we need to add more repositories to get all the sweet goodness, I demand.
-
-   #+BEGIN_SRC elisp :tangle no
-     (require 'package)
-
-     (setq package-archives '(("org"       . "http://orgmode.org/elpa/")
-                              ("gnu"       . "http://elpa.gnu.org/packages/")
-                              ("melpa"     . "http://melpa.org/packages/")
-                              ("marmalade" . "http://marmalade-repo.org/packages/")))
-
-     (package-initialize)
-     (package-refresh-contents)
-   #+END_SRC
-
 * Technical Artifacts
 ** Run org-babel-tangle on saving this file(emacs.org)
 
