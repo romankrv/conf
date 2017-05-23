@@ -188,11 +188,17 @@ easier.
   General settings about me that other packages can use. The biggest
   problem is guessing my email address based on what computer I am using:
 
-  #+BEGIN_SRC elisp
-    (if (equal "howard.abrams" user-login-name)
-        (setq user-mail-address "howard.abrams@workday.com")
-      (setq user-mail-address "howard.abrams@gmail.com"))
+  #+BEGIN_SRC :tangle no
+    (if (equal "roman.kalinichenko" user-login-name)
+        (setq user-mail-address "romankrv@gmail.com")
+      (setq user-mail-address "romankrv@gmail.com"))
   #+END_SRC
+** Personal information
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(setq user-full-name "Roman Kalinichenko"
+      user-mail-address "romankrv@gmail.com")
+#+END_SRC
 
 ** Tabs vs Spaces
 
