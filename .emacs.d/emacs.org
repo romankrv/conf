@@ -185,17 +185,9 @@ easier.
 
 * Variables
 
-  General settings about me that other packages can use. The biggest
-  problem is guessing my email address based on what computer I am using:
-
-  #+BEGIN_SRC :tangle no
-    (if (equal "roman.kalinichenko" user-login-name)
-        (setq user-mail-address "romankrv@gmail.com")
-      (setq user-mail-address "romankrv@gmail.com"))
-  #+END_SRC
 ** Personal information
 
-#+BEGIN_SRC emacs-lisp :tangle yes
+#+BEGIN_SRC elisp
 (setq user-full-name "Roman Kalinichenko"
       user-mail-address "romankrv@gmail.com")
 #+END_SRC
@@ -262,7 +254,6 @@ easier.
    #+BEGIN_SRC elisp
      (setq disabled-command-function nil)
    #+END_SRC
-
 * Display Settings
 
   I've been using Emacs for many years, and appreciate a certain
@@ -345,6 +336,32 @@ easier.
         (horizontal-scroll-bar-mode -1))
       (scroll-bar-mode -1))            ;; Scrollbars are waste screen estate
   #+END_SRC
+
+* Miscellaneous Settings
+** Transpose word
+
+Hacking Emacs to change the behavior of existing functions.
+Essentially, I show a little trick, but then show how to use
+defadvice to change the behavior of transpose-words. 
+
+#+BEGIN_SRC elisp
+(defun my/transpose-words (arg)
+  (interactive "p")
+(if (looking-at "$")
+    (backward-word 1))
+(transpose-words arg))
+
+(defadvice transpose-words
+  (before my/traspose-words)
+  "Transpose last two words when at end of line."
+  (if (looking-at "$")
+      (backward-word 1)))
+
+(ad-activate 'transpose-words)
+
+(global-set-key (kbd "M-t") 'my/transpose-words)
+
+#+END_SRC
 * Technical Artifacts
 ** Run org-babel-tangle on saving this file(emacs.org)
 
