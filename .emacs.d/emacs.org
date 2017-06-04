@@ -337,6 +337,58 @@ easier.
       (scroll-bar-mode -1))            ;; Scrollbars are waste screen estate
   #+END_SRC
 
+* Fonts
+** Coding & writable fonts
+
+  Try to use [http://input.fontbureau.com/] 
+  Input font Fonts for code from DJR & Font Bureau
+
+  #+BEGIN_SRC elisp
+  ;; set a default font
+  (when (member "Input Mono" (font-family-list))
+   (set-face-attribute 'default nil :font "Input Mono"))
+
+  (when (eq system-type 'darwin)
+    (set-face-attribute 'default nil :family "Input Mono" :height 160))
+
+  #+END_SRC
+
+** Readable fonts =Novel Reading Mode=
+
+   Here's a command to make current window suitable for reading long
+   text.
+   #+BEGIN_SRC elisp
+   (defun my/toggle-read-novel-mode ()
+     "Setup current buffer to be suitable for reading long novel/article text.
+   • Line wrap at word boundaries.
+   • Set a right margin.
+   • line spacing is increased.
+   • variable width font is used.
+
+   Call again to toggle back.
+   URL 'http://ergoemacs.org/emacs/emacs_novel_reading_mode.html'
+   Version 2017-02-27"
+     (interactive)
+     (if (null (get this-command 'state-on-p))
+         (progn
+           (set-window-margins nil 0 9)
+           (variable-pitch-mode 1)
+           (setq line-spacing 0.4)
+           (setq word-wrap t)
+           (put this-command 'state-on-p t))
+       (progn
+         (set-window-margins nil 0 0)
+         (variable-pitch-mode 0)
+         (setq line-spacing nil)
+         (setq word-wrap nil)
+         (put this-command 'state-on-p nil)))
+     (redraw-frame (selected-frame)))
+
+#+END_SRC
+
+#+RESULTS:
+: xah-toggle-read-novel-mode
+
 * Miscellaneous Settings
 ** Transpose word
 
@@ -409,6 +461,19 @@ defadvice to change the behavior of transpose-words.
 
        :bind ("A-k" . linum-new-mode)
              ("s-k" . linum-new-mode))   ;; For Linux
+   #+END_SRC
+
+** Save File Position
+
+   Save the point position for every file, and restore it when that
+   file is reloaded.
+
+   #+BEGIN_SRC elisp
+     (use-package saveplace
+        :init
+        (setq-default save-place t)
+        (setq save-place-forget-unreadable-files t
+              save-place-skip-check-regexp "\\`/\\(?:cdrom\\|floppy\\|mnt\\|/[0-9]\\|\\(?:[^@/:]*@\\)?[^@/:]*[^@/:.]:\\)"))
    #+END_SRC
 
 * Technical Artifacts
