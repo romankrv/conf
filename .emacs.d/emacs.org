@@ -1,7 +1,7 @@
 #+TITLE: Roman Kalinichenko's Emacs configuration
 #+AUTHOR: Roman Kalinichenko
 #+email: romankrv at gmail.com
-#+DESCRIPTION: A literate programming style exposition of my Emacs configuration
+#+DESCRIPTION: A literate programming style exposition
 
 * Introduction
 This is my =.emacs= file ... well, the top-level of it anyway.
@@ -146,7 +146,7 @@ easier.
      (setq package-archives '(("org"       . "http://orgmode.org/elpa/")
                               ("gnu"       . "http://elpa.gnu.org/packages/")
                               ("melpa"     . "http://melpa.org/packages/")
-                              ("marmalade" . "http://marmalade-repo.org/packages/")))     
+                              ("marmalade" . "http://marmalade-repo.org/packages/")))
      (package-initialize)
      (package-refresh-contents)
    #+END_SRC
@@ -254,6 +254,141 @@ easier.
    #+BEGIN_SRC elisp
      (setq disabled-command-function nil)
    #+END_SRC
+* Loading and Finding Files
+** SMEX
+
+   Built using [[*IDO%20(Interactively%20DO%20Things)][IDO]] to do something similar but with =M-x= commands:
+
+   #+BEGIN_SRC elisp
+     (use-package smex
+       :ensure t
+       :init (setq smex-save-file "~/.emacs.d/backups/smex-items")
+             (smex-initialize)
+       :bind ("M-x" . smex)
+             ("M-X" . smex-major-mode-commands))
+   #+END_SRC
+
+** Recent File List
+
+   According to [[http://www.emacswiki.org/emacs-es/RecentFiles][this article]], Emacs already has the recent file
+   listing available, just not turned on.
+
+   #+BEGIN_SRC elisp
+     (use-package recentf
+       :init
+       (setq recentf-save-file "~/.emacs.d/backups/recentf")
+       (setq recentf-max-menu-items 25
+             recentf-auto-cleanup 'never
+             recentf-keep '(file-remote-p file-readable-p))
+       (recentf-mode 1)
+       (let ((last-ido "~/.emacs.d/backups/ido.last"))
+         (when (file-exists-p last-ido)
+           (delete-file last-ido)))
+       :bind ("C-c f f" . recentf-open-files))
+   #+END_SRC
+
+   We do not want to stat all the files when Emacs starts up because
+   files read by Tramp will slow down the start time.
+
+** Controlling Window Placement
+   Change window configuration and then return to the old
+   configuration with [[http://www.emacswiki.org/emacs/WinnerMode][winner-mode]].  Use =Control-C Arrow= keys to
+   cycle through window/frame configurations.
+
+   #+BEGIN_SRC elisp
+     (use-package winner
+       :ensure t
+       :init (winner-mode 1))
+   #+END_SRC
+
+   But I would like to jump between different layout configurations
+   based on purpose or project. I started with Eyebrowse, but I'm
+   currently experimenting with other options.
+** Backup Settings
+
+   This setting moves all backup files to a central location.
+   Got it from [[http://whattheemacsd.com/init.el-02.html][this page]].
+
+   Backup files are so very annoying, until the day they save
+   your hide. That's when you don't want to look back and say
+   "Man, I really shouldn't have disabled those stupid backups."
+   These settings move all backup files to a central location.
+   Bam! No longer annoying. As an added bonus, that last line
+   makes sure your files are backed up even when the files are
+   in version control. Do it.
+
+   #+BEGIN_SRC elisp
+     (setq backup-directory-alist
+           `(("." . ,(expand-file-name
+                      (RK/emacs-subdirectory "backups")))))
+   #+END_SRC
+
+   Tramp should do the same:
+   #+BEGIN_SRC elisp
+     (setq tramp-backup-directory-alist backup-directory-alist)
+   #+END_SRC
+
+   Make backups of files, even when they're in version control:
+   #+BEGIN_SRC elisp
+     (setq vc-make-backup-files t)
+   #+END_SRC
+
+   And let’s make sure our files are saved if we wander off and
+   defocus the Emacs application:
+
+   #+BEGIN_SRC elisp
+     (defun save-all ()
+       "Save all dirty buffers without asking for confirmation."
+       (interactive)
+       (save-some-buffers t))
+
+     (add-hook 'focus-out-hook 'save-all)
+   #+END_SRC
+
+   Move 'auto-save-list' directory to the custom directory
+   #+BEGIN_SRC
+     (setq auto-save-list-file-prefix "~/.emacs.d/backups/auto-save-list/.saves-")
+   #+END_SRC
+
+** IDO (Interactively DO Things)
+   According to [[http://www.masteringemacs.org/articles/2010/10/10/introduction-to-ido-mode/][Mickey]], IDO is the greatest thing.
+
+   +BEGIN_SRC
+     (use-package ido
+       :ensure t
+       :init  (setq ido-enable-flex-matching t
+                    ido-ignore-extensions t
+                    ido-use-virtual-buffers t
+                    ido-everywhere t)
+       :config
+       (ido-mode 1)
+       (ido-everywhere 1)
+       (add-to-list 'completion-ignored-extensions ".pyc"))
+   +END_SRC
+   Add to IDO, the [[https://github.com/lewang/flx][FLX]] package:
+
+   +BEGIN_SRC
+     (use-package flx-ido
+        :ensure t
+        :init (setq ido-enable-flex-matching t
+                    ido-use-faces nil)
+        :config (flx-ido-mode 1))
+   +END_SRC
+
+   According to [[https://gist.github.com/rkneufeld/5126926][Ryan Neufeld]], we could make IDO work vertically,
+   which is much easier to read. For this, I use [[https://github.com/gempesaw/ido-vertical-mode.el][ido-vertically]]:
+
+   +BEGIN_SRC
+     (use-package ido-vertical-mode
+       :ensure t
+       :init               ; I like up and down arrow keys:
+       (setq ido-vertical-define-keys 'C-n-C-p-up-and-down)
+       :config
+       (ido-vertical-mode 1))
+   +END_SRC
+
+
+
 * Display Settings
 
   I've been using Emacs for many years, and appreciate a certain
@@ -287,6 +422,15 @@ easier.
   #+END_SRC
 
   Most of the display settings actually come from the [[file:emacs-mac.org][Mac initialization file]].
+
+  Maximize window in GUI mode
+
+  #+BEGIN_SRC elisp
+    (when window-system (setq initial-frame-alist
+  '((width . 140)(height . 55))))
+  #+END_SRC
+
+  #+RESULTS:
 
 ** Whitespace Mode
 
@@ -340,7 +484,7 @@ easier.
 * Fonts
 ** Coding & writable fonts
 
-  Try to use [http://input.fontbureau.com/] 
+  Try to use [http://input.fontbureau.com/]
   Input font Fonts for code from DJR & Font Bureau
 
   #+BEGIN_SRC elisp
@@ -350,7 +494,7 @@ easier.
 
   (when (eq system-type 'darwin)
     (set-face-attribute 'default nil :family "Input Mono" :height 160))
-
+(setq line-spacing 0.0)
   #+END_SRC
 
 ** Readable fonts =Novel Reading Mode=
@@ -389,12 +533,45 @@ easier.
 #+RESULTS:
 : xah-toggle-read-novel-mode
 
+* Tools
+** Magit
+
+   Git is [[http://emacswiki.org/emacs/Git][already part of Emacs]]. However, [[http://philjackson.github.com/magit/magit.html][Magit]] is sweet.
+   Don't believe me? Check out [[https://www.youtube.com/watch?v=vQO7F2Q9DwA][this video]].
+
+   #+BEGIN_SRC elisp
+     (use-package magit
+       :ensure t
+       :commands magit-status magit-blame
+       :init
+       (defadvice magit-status (around magit-fullscreen activate)
+         (window-configuration-to-register :magit-fullscreen)
+         ad-do-it
+         (delete-other-windows))
+       :config
+       (setq magit-branch-arguments nil
+             ;; use ido to look for branches
+             magit-completing-read-function 'magit-ido-completing-read
+             ;; don't put "origin-" in front of new branch names by default
+             magit-default-tracking-name-function 'magit-default-tracking-name-branch-only
+             magit-push-always-verify nil
+             ;; Get rid of the previous advice to go into fullscreen
+             magit-restore-window-configuration t)
+
+       :bind ("C-x g" . magit-status))
+   #+END_SRC
+
+   I like having Magit to run in a /full screen/ mode, and add the
+   above =defadvice= idea from [[https://github.com/magnars/.emacs.d/blob/master/setup-magit.el][Sven Magnars]].
+
+   *Note:* Use the [[https://github.com/jwiegley/emacs-release/blob/master/lisp/vc/smerge-mode.el][smerge-mode]] that is now part of Emacs.
+
 * Miscellaneous Settings
 ** Transpose word
 
 Hacking Emacs to change the behavior of existing functions.
 Essentially, I show a little trick, but then show how to use
-defadvice to change the behavior of transpose-words. 
+defadvice to change the behavior of transpose-words.
 
 #+BEGIN_SRC elisp
 (defun my/transpose-words (arg)
@@ -476,6 +653,17 @@ defadvice to change the behavior of transpose-words.
               save-place-skip-check-regexp "\\`/\\(?:cdrom\\|floppy\\|mnt\\|/[0-9]\\|\\(?:[^@/:]*@\\)?[^@/:]*[^@/:.]:\\)"))
    #+END_SRC
 
+** Strip Whitespace on Save
+
+   When I save, I want to always, and I do mean always strip all
+   trailing whitespace from the file.
+
+   #+BEGIN_SRC elisp
+     (add-hook 'before-save-hook 'delete-trailing-whitespace)
+   #+END_SRC
+
+* Configs from old conf as temp
+**  Save point position between sessions
 * Technical Artifacts
 ** Run org-babel-tangle on saving this file(emacs.org)
 
@@ -491,4 +679,3 @@ defadvice to change the behavior of transpose-words.
    #+END_SRC
 
 #+PROPERTY:    tangle ~/.emacs.d/emacs.el
-
