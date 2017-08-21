@@ -640,6 +640,26 @@ defadvice to change the behavior of transpose-words.
              ("s-k" . linum-new-mode))   ;; For Linux
    #+END_SRC
 
+** Save point position between sessions
+
+The saveplace package is part of Emacs, and remembers the position
+of point - even between emacs sessions.  The last line sets the path
+to where saveplace stores your position data. Change it at your peril!
+
+#+BEGIN_SRC elisp
+;; Save point position between sessions
+(setq save-place-file "~/.emacs.d/backups/saved-places")
+(require 'saveplace)
+(setq-default save-place t)
+
+;; remember cursor position, for emacs 25.1 or later
+(if (version< emacs-version "25.0")
+    (progn
+      (require 'saveplace)
+      (setq-default save-place t))
+  (save-place-mode 1))
+#+END_SRC
+
 ** Save File Position
 
    Save the point position for every file, and restore it when that
