@@ -1,10 +1,11 @@
-;; This's file is a handler/wraper for emacs.org file
+;; This's the file is a handler/wraper for emacs.org file
 ;; which has a literate style of the configuration.
 
 (require 'package)
 (setq package-enable-at-startup nil)
-(add-to-list 'package-archives
-	     '("melpa" . "https://melpa.org/packages/"))
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+(add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/"))
+
 (package-initialize)
 
 ;;Bootstrap `use-package'

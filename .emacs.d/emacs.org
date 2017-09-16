@@ -34,7 +34,7 @@ easier.
 
    *Note:* I've been running into an issue where I want Emacs to display
    ligatures as well as work with the visual regular expression
-   package.  To get the both to work, I find I need to build from
+   package. To get the both to work, I find I need to build from
    source after applying [[https://github.com/minimal/emacs/commit/812dd5119645a09bc025a9dddedad9474d12ecb6][this patch]]. According to the Homebrew
    documentation (see [[https://github.com/Homebrew/brew/blob/master/share/doc/homebrew/Formula-Cookbook.md#patches][the Patches section]]), we first:
 
@@ -76,11 +76,10 @@ easier.
    overrides that, and since I now feel the need to use these settings
    for both editors (sure feels like XEmacs all over again).
 
-   Any way, I have a new global variable for that:
+   Anyway, I have a new global variable for that:
 
    #+BEGIN_SRC elisp
      (defconst RK/emacs-directory (concat (getenv "HOME") "/.emacs.d/"))
-
      (defun RK/emacs-subdirectory (d) (expand-file-name d RK/emacs-directory))
    #+END_SRC
 
@@ -137,10 +136,12 @@ easier.
 
 * Package Initialization
 ** Package Manager
+
    Emacs has become like every other operating system, and now has a package manager with its own collection
    repository, but since it is so conservative, we need to add more repositories to get all the sweet goodness, I demand.
 
-   #+BEGIN_SRC elisp
+   This section put here as nominally and this code moved to init.el
+   #+BEGIN_SRC elisp :tangle no
      (require 'package)
      (setq package-enable-at-startup nil)
      (setq package-archives '(("org"       . "http://orgmode.org/elpa/")
@@ -150,12 +151,14 @@ easier.
      (package-initialize)
      (package-refresh-contents)
    #+END_SRC
+
 ** Use-Package
 
    Using [[https://github.com/jwiegley/use-package][use-package]] to automatically install certain packages, as
    well as the ease of lazily loading them.
 
-   #+BEGIN_SRC elisp
+   This section put here as nominally and this code moved to init.el
+   #+BEGIN_SRC elisp :tangle no
      (unless (package-installed-p 'use-package)
        (package-refresh-contents)
        (package-install 'use-package))
@@ -184,7 +187,6 @@ easier.
     #+END_SRC
 
 * Variables
-
 ** Personal information
 
 #+BEGIN_SRC elisp
@@ -254,6 +256,54 @@ easier.
    #+BEGIN_SRC elisp
      (setq disabled-command-function nil)
    #+END_SRC
+
+* Navigation
+** Anzu - displays current match and total matches information in the mode-line
+
+anzu.el is an Emacs port of anzu.vim which provides
+a minor mode which displays current match and total
+matches information in the mode-line in various search modes.
+
+ #+BEGIN_SRC elisp
+ (use-package anzu
+  :ensure t
+  :config
+  (progn
+    (global-anzu-mode t)
+    (diminish 'anzu-mode)
+    (global-set-key [remap query-replace-regexp] 'anzu-query-replace-regexp)
+    (global-set-key [remap query-replace] 'anzu-query-replace)))
+ #+END_SRC
+
+
+** Move to beginning of line
+Copied from http://emacsredux.com/blog/2013/05/22/smarter-navigation-to-the-beginning-of-a-line/
+
+Move point to the first non-whitespace character on this line.
+If point is already there, move to the beginning of the line.
+Effectively toggle between the first non-whitespace character
+and the beginning of the line. If ARG is not nil or 1, move
+forward ARG - 1 lines first. If point reaches the beginning
+or end of the buffer, stop there.
+
+ #+BEGIN_SRC elisp
+(defun my/smarter-move-beginning-of-line (arg)
+  (interactive "^p")
+  (setq arg (or arg 1))
+  ;; Move lines first
+  (when (/= arg 1)
+    (let ((line-move-visual nil))
+      (forward-line (1- arg))))
+  (let ((orig-point (point)))
+    (back-to-indentation)
+    (when (= orig-point (point))
+      (move-beginning-of-line 1))))
+
+;; remap C-a to `smarter-move-beginning-of-line'
+(global-set-key [remap move-beginning-of-line]
+                'my/smarter-move-beginning-of-line)
+#+END_SRC
+
 * Loading and Finding Files
 ** SMEX
 
@@ -387,8 +437,6 @@ easier.
        (ido-vertical-mode 1))
    +END_SRC
 
-
-
 * Display Settings
 
   I've been using Emacs for many years, and appreciate a certain
@@ -430,57 +478,6 @@ easier.
   '((width . 140)(height . 55))))
   #+END_SRC
 
-  #+RESULTS:
-
-** Whitespace Mode
-
-   You don't want this on all the time, but nice to turn it on every
-   now and then:
-
-   #+BEGIN_SRC elisp
-     (use-package whitespace
-       :bind ("C-c T w" . whitespace-mode)
-       :init
-       (setq whitespace-line-column nil
-             whitespace-display-mappings '((space-mark 32 [183] [46])
-                                           (newline-mark 10 [9166 10])
-                                           (tab-mark 9 [9654 9] [92 9])))
-       :config
-       (set-face-attribute 'whitespace-space       nil :foreground "#666666" :background nil)
-       (set-face-attribute 'whitespace-newline     nil :foreground "#666666" :background nil)
-       (set-face-attribute 'whitespace-indentation nil :foreground "#666666" :background nil)
-       :diminish whitespace-mode)
-   #+END_SRC
-
-** Fill Mode
-
-   Automatically wrapping when you get to the end of a line (or the
-   fill-region):
-
-   #+BEGIN_SRC elisp
-     (use-package fill
-       :bind (("C-c T f" . auto-fill-mode)
-              ("C-c T t" . toggle-truncate-lines))
-       :init (add-hook 'org-mode-hook 'turn-on-auto-fill)
-       :diminish auto-fill-mode)
-   #+END_SRC
-
-  I've been using Emacs for many years, and appreciate a certain
-  minimalist approach to its display. While you can turn these off
-  with the menu items now, it is just as easy to set them here.
-
-  #+BEGIN_SRC elisp
-    (setq initial-scratch-message "") ;; Uh, I know what Scratch is for
-    (setq visible-bell t)             ;; Get rid of the beeps
-
-    (when (window-system)
-      (tool-bar-mode 0)               ;; Toolbars were only cool with XEmacs
-       (blink-cursor-mode 0)
-      (when (fboundp 'horizontal-scroll-bar-mode)
-        (horizontal-scroll-bar-mode -1))
-      (scroll-bar-mode -1))            ;; Scrollbars are waste screen estate
-  #+END_SRC
-
 * Fonts
 ** Coding & writable fonts
 
@@ -494,7 +491,7 @@ easier.
 
   (when (eq system-type 'darwin)
     (set-face-attribute 'default nil :family "Input Mono" :height 160))
-(setq line-spacing 0.0)
+  (setq line-spacing 0.0)
   #+END_SRC
 
 ** Readable fonts =Novel Reading Mode=
@@ -530,41 +527,38 @@ easier.
 
 #+END_SRC
 
-#+RESULTS:
-: xah-toggle-read-novel-mode
-
 * Tools
 ** Magit
 
-   Git is [[http://emacswiki.org/emacs/Git][already part of Emacs]]. However, [[http://philjackson.github.com/magit/magit.html][Magit]] is sweet.
-   Don't believe me? Check out [[https://www.youtube.com/watch?v=vQO7F2Q9DwA][this video]].
+  Git is [[http://emacswiki.org/emacs/Git][already part of Emacs]]. However, [[http://philjackson.github.com/magit/magit.html][Magit]] is sweet.
+  Don't believe me? Check out [[https://www.youtube.com/watch?v=vQO7F2Q9DwA][this video]].
+  #+BEGIN_SRC elisp
+    (use-package magit
+      :ensure t
+      :commands magit-status magit-blame
+      :init
+      (defadvice magit-status (around magit-fullscreen activate)
+        (window-configuration-to-register :magit-fullscreen)
+        ad-do-it
+        (delete-other-windows))
+      :config
+      (setq magit-branch-arguments nil
+         ;; use ido to look for branches
+         magit-completing-read-function 'magit-ido-completing-read
+         ;; don't put "origin-" in front of new branch names by default
+         magit-default-tracking-name-function 'magit-default-tracking-name-branch-only
+         magit-push-always-verify nil
+         ;; Get rid of the previous advice to go into fullscreen
+         magit-restore-window-configuration t)
+      :bind ("C-x g" . magit-status))
+  #+END_SRC
 
-   #+BEGIN_SRC elisp
-     (use-package magit
-       :ensure t
-       :commands magit-status magit-blame
-       :init
-       (defadvice magit-status (around magit-fullscreen activate)
-         (window-configuration-to-register :magit-fullscreen)
-         ad-do-it
-         (delete-other-windows))
-       :config
-       (setq magit-branch-arguments nil
-             ;; use ido to look for branches
-             magit-completing-read-function 'magit-ido-completing-read
-             ;; don't put "origin-" in front of new branch names by default
-             magit-default-tracking-name-function 'magit-default-tracking-name-branch-only
-             magit-push-always-verify nil
-             ;; Get rid of the previous advice to go into fullscreen
-             magit-restore-window-configuration t)
+  I like having Magit to run in a /full screen/ mode, and add the
+  above =defadvice= idea from [[https://github.com/magnars/.emacs.d/blob/master/setup-magit.el][Sven Magnars]].
+  *Note:* Use the [[https://github.com/jwiegley/emacs-release/blob/master/lisp/vc/smerge-mode.el][smerge-mode]] that is now part of Emacs.
 
-       :bind ("C-x g" . magit-status))
-   #+END_SRC
-
-   I like having Magit to run in a /full screen/ mode, and add the
-   above =defadvice= idea from [[https://github.com/magnars/.emacs.d/blob/master/setup-magit.el][Sven Magnars]].
-
-   *Note:* Use the [[https://github.com/jwiegley/emacs-release/blob/master/lisp/vc/smerge-mode.el][smerge-mode]] that is now part of Emacs.
+* Programming Language
+** Python
 
 * Miscellaneous Settings
 ** Transpose word
@@ -682,8 +676,6 @@ to where saveplace stores your position data. Change it at your peril!
      (add-hook 'before-save-hook 'delete-trailing-whitespace)
    #+END_SRC
 
-* Configs from old conf as temp
-**  Save point position between sessions
 * Technical Artifacts
 ** Run org-babel-tangle on saving this file(emacs.org)
 
