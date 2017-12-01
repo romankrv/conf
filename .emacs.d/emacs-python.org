@@ -1,0 +1,46 @@
+#+TITLE:  Emacs Settings for Python
+#+AUTHOR: Roman Kalinichenko
+#+EMAIL:  romankrv@gmail.com
+#+TAGS:   emacs python
+
+For learning Python, read the [[https://docs.python.org/3/tutorial/index.html][basic tutorial]]. If you already know
+Python, perhaps check out some [[http://docs.python-guide.org/en/latest/][best practices]].  I initially stole my
+Emacs setup from [[https://github.com/gabrielelanaro/emacs-for-python][Gabriel Elanaro's git project]], but now it mostly
+revolves around the [[https://elpy.readthedocs.io/en/latest/introduction.html][Elpy Project]].
+
+
+#+BEGIN_SRC elisp
+(use-package pyenv-mode
+    :ensure t
+    :config
+      (defun projectile-pyenv-mode-set ()
+        "Set pyenv version matching project name."
+       (let ((project (projectile-project-name)))
+          (if (member project (pyenv-mode-versions))
+              (pyenv-mode-set project)
+            (pyenv-mode-unset))))
+      (add-hook 'projectile-switch-project-hook 'projectile-pyenv-mode-set)
+      (add-hook 'python-mode-hook 'pyenv-mode))
+#+END_SRC
+
+* Technical Artifacts
+
+  Make sure that we can simply =require= this library.
+
+  #+BEGIN_SRC elisp
+    (provide 'init-python)
+  #+END_SRC
+
+  Before you can build this on a new system, make sure that you put
+  the cursor over any of these properties, and hit: =C-c C-c=
+
+#+DESCRIPTION: A literate programming version of my Emacs Initialization of Python
+
+#+PROPERTY:    header-args:elisp  :tangle ~/.emacs.d/elisp/init-python.el
+#+PROPERTY:    header-args:sh     :tangle no
+#+PROPERTY:    header-args:python :tangle no
+#+PROPERTY:    header-args:       :results silent   :eval no-export   :comments org
+
+#+OPTIONS:     num:nil toc:nil todo:nil tasks:nil tags:nil
+#+OPTIONS:     skip:nil author:nil email:nil creator:nil timestamp:nil
+#+INFOJS_OPT:  view:nil toc:nil ltoc:t mouse:underline buttons:0 path:http://orgmode.org/org-info.js

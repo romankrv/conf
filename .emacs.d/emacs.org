@@ -1,11 +1,10 @@
-#+TITLE: Roman Kalinichenko's Emacs configuration
+#+TITLE: Emacs Configuration Main File
 #+AUTHOR: Roman Kalinichenko
-#+email: romankrv at gmail.com
-#+DESCRIPTION: A literate programming style exposition
+#+EMAIL: romankrv@gmail.com
 
 * Introduction
 This is my =.emacs= file ... well, the top-level of it anyway.
-I've written it in a [[http://www.orgmode.org][literate style]], to make it easy to explain.
+I've written it in a [[http://www.orgmode.org][literate style], to make it easy to explain.
 
 ** About this file
 
@@ -67,7 +66,6 @@ easier.
    #+BEGIN_SRC sh :tangle no
      brew options emacs
    #+END_SRC
-
 * General Settings
 ** My Directory Location
 
@@ -78,6 +76,7 @@ easier.
 
    Anyway, I have a new global variable for that:
 
+   This section put here as nominally and this code moved to init.el
    #+BEGIN_SRC elisp
      (defconst RK/emacs-directory (concat (getenv "HOME") "/.emacs.d/"))
      (defun RK/emacs-subdirectory (d) (expand-file-name d RK/emacs-directory))
@@ -88,6 +87,7 @@ easier.
    In case this is the first time running this on a computer, we need
    to make sure the following directories have been created.
 
+   This section put here as nominally and this code moved to init.el
    #+BEGIN_SRC elisp
     (let* ((subdirs '("elisp" "backups"))
             (fulldirs (mapcar (lambda (d) (RK/emacs-subdirectory d)) subdirs)))
@@ -133,7 +133,6 @@ easier.
    #+BEGIN_SRC elisp
      (setq gnutls-min-prime-bits 4096)
    #+END_SRC
-
 * Package Initialization
 ** Package Manager
 
@@ -158,6 +157,7 @@ easier.
    well as the ease of lazily loading them.
 
    This section put here as nominally and this code moved to init.el
+
    #+BEGIN_SRC elisp :tangle no
      (unless (package-installed-p 'use-package)
        (package-refresh-contents)
@@ -240,12 +240,15 @@ easier.
 
 ** Misc Variable Settings
 
+   Lazy people like me never want to type “yes” when “y” will suffice.
    Does anyone type =yes= anymore?
+
    #+BEGIN_SRC elisp
      (fset 'yes-or-no-p 'y-or-n-p)
    #+END_SRC
 
    Fix the scrolling to keep point in the center:
+
    #+BEGIN_SRC elisp
      (setq scroll-conservatively 10000
            scroll-preserve-screen-position t)
@@ -256,104 +259,50 @@ easier.
    #+BEGIN_SRC elisp
      (setq disabled-command-function nil)
    #+END_SRC
-
 * Navigation
-** Anzu - displays current match and total matches information in the mode-line
+** Smex
 
-anzu.el is an Emacs port of anzu.vim which provides
-a minor mode which displays current match and total
-matches information in the mode-line in various search modes.
-
- #+BEGIN_SRC elisp
- (use-package anzu
+#+BEGIN_SRC elisp
+(use-package smex
   :ensure t
-  :config
-  (progn
-    (global-anzu-mode t)
-    (diminish 'anzu-mode)
-    (global-set-key [remap query-replace-regexp] 'anzu-query-replace-regexp)
-    (global-set-key [remap query-replace] 'anzu-query-replace)))
- #+END_SRC
-
-
-** Move to beginning of line
-Copied from http://emacsredux.com/blog/2013/05/22/smarter-navigation-to-the-beginning-of-a-line/
-
-Move point to the first non-whitespace character on this line.
-If point is already there, move to the beginning of the line.
-Effectively toggle between the first non-whitespace character
-and the beginning of the line. If ARG is not nil or 1, move
-forward ARG - 1 lines first. If point reaches the beginning
-or end of the buffer, stop there.
-
- #+BEGIN_SRC elisp
-(defun my/smarter-move-beginning-of-line (arg)
-  (interactive "^p")
-  (setq arg (or arg 1))
-  ;; Move lines first
-  (when (/= arg 1)
-    (let ((line-move-visual nil))
-      (forward-line (1- arg))))
-  (let ((orig-point (point)))
-    (back-to-indentation)
-    (when (= orig-point (point))
-      (move-beginning-of-line 1))))
-
-;; remap C-a to `smarter-move-beginning-of-line'
-(global-set-key [remap move-beginning-of-line]
-                'my/smarter-move-beginning-of-line)
+  :init (setq smex-save-file "~/.emacs.d/backups/smex-items")
+   (smex-initialize)
+  :bind ("M-x" . smex)
+        ("M-X" . smex-major-mode-commands))
 #+END_SRC
 
-* Loading and Finding Files
-** SMEX
+** Goto Chg
 
-   Built using [[*IDO%20(Interactively%20DO%20Things)][IDO]] to do something similar but with =M-x= commands:
+  Goto last change in current buffer. Repeat to go to earlier changes. Negative arg
+  to go back to more recent changes. With argument 0 (C-u 0) you get a description
 
-   #+BEGIN_SRC elisp
-     (use-package smex
-       :ensure t
-       :init (setq smex-save-file "~/.emacs.d/backups/smex-items")
-             (smex-initialize)
-       :bind ("M-x" . smex)
-             ("M-X" . smex-major-mode-commands))
-   #+END_SRC
+  M-. can conflict with etags tag search. But C-. can get overwritten by
+  flyspell-auto-correct-word. And goto-last-change needs a really fast key.
+
+  #+BEGIN_SRC elisp
+  (use-package goto-chg
+    :ensure t
+    :bind (([(control ?.)] . goto-last-change) ([(meta .)] . goto-last-change)))
+  #+END_SRC
 
 ** Recent File List
 
    According to [[http://www.emacswiki.org/emacs-es/RecentFiles][this article]], Emacs already has the recent file
-   listing available, just not turned on.
 
-   #+BEGIN_SRC elisp
-     (use-package recentf
-       :init
-       (setq recentf-save-file "~/.emacs.d/backups/recentf")
-       (setq recentf-max-menu-items 25
-             recentf-auto-cleanup 'never
-             recentf-keep '(file-remote-p file-readable-p))
-       (recentf-mode 1)
-       (let ((last-ido "~/.emacs.d/backups/ido.last"))
-         (when (file-exists-p last-ido)
-           (delete-file last-ido)))
-       :bind ("C-c f f" . recentf-open-files))
-   #+END_SRC
+#+BEGIN_SRC elisp
+(use-package recentf
+  :init
+  (setq recentf-save-file "~/.emacs.d/backups/recentf")
+  (setq recentf-max-menu-items 200
+        recentf-auto-cleanup 'never
+        recentf-keep '(file-remote-p file-readable-p))
+  (recentf-mode 1)
+  (let ((last-ido "~/.emacs.d/backups/ido.last"))
+    (when (file-exists-p last-ido)
+      (delete-file last-ido)))
+  :bind ("C-c f f" . recentf-open-files))
+#+END_SRC
 
-   We do not want to stat all the files when Emacs starts up because
-   files read by Tramp will slow down the start time.
-
-** Controlling Window Placement
-   Change window configuration and then return to the old
-   configuration with [[http://www.emacswiki.org/emacs/WinnerMode][winner-mode]].  Use =Control-C Arrow= keys to
-   cycle through window/frame configurations.
-
-   #+BEGIN_SRC elisp
-     (use-package winner
-       :ensure t
-       :init (winner-mode 1))
-   #+END_SRC
-
-   But I would like to jump between different layout configurations
-   based on purpose or project. I started with Eyebrowse, but I'm
-   currently experimenting with other options.
 ** Backup Settings
 
    This setting moves all backup files to a central location.
@@ -400,6 +349,64 @@ or end of the buffer, stop there.
      (setq auto-save-list-file-prefix "~/.emacs.d/backups/auto-save-list/.saves-")
    #+END_SRC
 
+** More window movement
+
+   Offer a *visual* way to choose a window to switch to
+
+#+BEGIN_SRC elisp
+(use-package switch-window
+  :ensure t
+  :bind (("C-x o" . switch-window))
+  :bind (("C-x 1" . switch-window-then-maximize))
+  :bind (("C-x 2" . switch-window-then-split-below))
+  :bind (("C-x 3" . switch-window-then-split-right))
+  :bind (("C-x 4" . switch-window-then-split-delete)))
+#+END_SRC
+
+** Move to beginning of line
+   Copied from http://emacsredux.com/blog/2013/05/22/smarter-navigation-to-the-beginning-of-a-line/
+
+   Move point to the first non-whitespace character on this line. If point is
+   already there, move to the beginning of the line. Effectively toggle between
+   the first non-whitespace character and the beginning of the line. If ARG is
+   not nil or 1, move forward ARG - 1 lines first. If point reaches the beginning
+   or end of the buffer, stop there.
+
+#+BEGIN_SRC elisp
+(defun my/smarter-move-beginning-of-line (arg)
+  (interactive "^p")
+  (setq arg (or arg 1))
+  ;; Move lines first
+  (when (/= arg 1)
+    (let ((line-move-visual nil))
+      (forward-line (1- arg))))
+  (let ((orig-point (point)))
+    (back-to-indentation)
+    (when (= orig-point (point))
+      (move-beginning-of-line 1))))
+
+;; remap C-a to `smarter-move-beginning-of-line'
+(global-set-key [remap move-beginning-of-line]
+                'my/smarter-move-beginning-of-line)
+#+END_SRC
+
+** Copy filename to clipboard
+
+   http://emacsredux.com/blog/2013/03/27/copy-filename-to-the-clipboard/
+   https://github.com/bbatsov/prelude
+
+#+BEGIN_SRC elisp
+(defun prelude-copy-file-name-to-clipboard ()
+  "Copy the current buffer file name to the clipboard."
+  (interactive)
+  (let ((filename (if (equal major-mode 'dired-mode)
+                      default-directory
+                    (buffer-file-name))))
+    (when filename
+      (kill-new filename)
+      (message "Copied buffer file name '%s' to the clipboard." filename))))
+#+END_SRC
+
 ** IDO (Interactively DO Things)
    According to [[http://www.masteringemacs.org/articles/2010/10/10/introduction-to-ido-mode/][Mickey]], IDO is the greatest thing.
 
@@ -435,26 +442,130 @@ or end of the buffer, stop there.
        (setq ido-vertical-define-keys 'C-n-C-p-up-and-down)
        :config
        (ido-vertical-mode 1))
-   +END_SRC
+       +END_SRC
 
+** Desktop (saving emacs sessions)
+
+   Use the desktop library to save the state of Emacs from one session to another.
+   Once you save the Emacs desktop—the buffers, their file names, major modes,
+   buffer positions, and so on—then subsequent Emacs sessions reload the saved desktop.
+
+#+BEGIN_SRC elisp
+   (desktop-save-mode 1)
+   (setq desktop-path '("~/.emacs.d/backups"))
+   (setq desktop-dirname "~/.emacs.d/backups")
+   (setq desktop-base-file-name "emacs-desktop")
+   ;; remove desktop after it's been read
+   (add-hook 'desktop-after-read-hook
+	     '(lambda ()
+                ;; desktop-remove clears desktop-dirname
+                (setq desktop-dirname-tmp desktop-dirname)
+                (desktop-remove)
+                (setq desktop-dirname desktop-dirname-tmp)))
+
+   (defun saved-session ()
+     (file-exists-p (concat desktop-dirname "/" desktop-base-file-name)))
+
+   ;; use session-restore to restore the desktop manually
+   (defun session-restore ()
+     "Restore a saved emacs session."
+     (interactive)
+     (if (saved-session)
+         (desktop-read)
+       (message "No desktop found.")))
+   ;; use session-save to save the desktop manually
+   (defun session-save ()
+     "Save an emacs session."
+     (interactive)
+     (if (saved-session)
+         (if (y-or-n-p "Overwrite existing desktop? ")
+             (desktop-save-in-desktop-dir)
+           (message "Session not saved."))
+       (desktop-save-in-desktop-dir)))
+
+   ;; ask user whether to restore desktop at start-up
+   ;(add-hook 'after-init-hook
+   ;          '(lambda ()
+   ;             (if (saved-session)
+   ;                 (if (y-or-n-p "Restore desktop? ")
+   ;                     (session-restore)))))
+#+END_SRC
+
+  Specifying Files Not to be Opened
+  You can specify buffers which should not be saved, by name or by mode:
+
+#+BEGIN_SRC elisp
+   (setq desktop-buffers-not-to-save
+        (concat "\\("
+                "^nn\\.a[0-9]+\\|\\.log\\|(ftp)\\|^tags\\|^TAGS"
+                "\\|\\.emacs.*\\|\\.diary\\|\\.newsrc-dribble\\|\\.bbdb"
+	        "\\)$"))
+   (add-to-list 'desktop-modes-not-to-save 'dired-mode)
+   (add-to-list 'desktop-modes-not-to-save 'Info-mode)
+   (add-to-list 'desktop-modes-not-to-save 'info-lookup-mode)
+   (add-to-list 'desktop-modes-not-to-save 'fundamental-mode)
+#+END_SRC
+
+** Windmove (switching between windows)
+
+   Windmove lets you move between windows with something more natural than
+   cycling through =C-x o= (=other-window=). Windmove doesn't behave well
+   with Org, so we need to use different keybindings.
+
+#+BEGIN_SRC elisp
+(use-package windmove
+  :ensure
+  :bind
+  (("<f2> <right>" . windmove-right)
+   ("<f2> <left>" . windmove-left)
+   ("<f2> <up>" . windmove-up)
+   ("<f2> <down>" . windmove-down)))
+#+END_SRC
+
+** Winner mode (undo/redo window configuration)
+
+   Winner Mode is a global minor mode. When activated, it allows you to “undo”
+   (and “redo”) changes in the window configuration with the key commands
+   ‘C-c left’ and ‘C-c right’
+
+#+BEGIN_SRC elisp
+(when (fboundp 'winner-mode)
+      (winner-mode 1))
+#+END_SRC
+** Anzu (display the typed matches in the mode-line)
+
+   anzu is an Emacs port of anzu.vim that provides a minor mode which displays
+   current match and total matches information in the mode-line in various search modes.
+
+ #+BEGIN_SRC elisp
+ (use-package anzu
+  :ensure t
+  :config
+  (progn
+    (global-anzu-mode t)
+    (diminish 'anzu-mode)
+    (global-set-key [remap query-replace-regexp] 'anzu-query-replace-regexp)
+    (global-set-key [remap query-replace] 'anzu-query-replace)))
+ #+END_SRC
 * Display Settings
 
-  I've been using Emacs for many years, and appreciate a certain
+  I've been using Emacs for several years, and appreciate a certain
   minimalist approach to its display. While you can turn these off
   with the menu items now, it is just as easy to set them here.
 
-  #+BEGIN_SRC elisp
-    (setq initial-scratch-message "") ;; Uh, I know what Scratch is for
-    (setq visible-bell t)             ;; Get rid of the beeps
+#+BEGIN_SRC elisp
+    (setq initial-scratch-message "") ;Uh, I know what Scratch is for
+    (setq visible-bell t)             ;Get rid of the beeps
+    (global-hl-line-mode +1)          ;Highlight Current Line
+    (scroll-bar-mode -1)              ;Scrollbars are waste screen estate
 
     (when (window-system)
       (tool-bar-mode 0)               ;; Toolbars were only cool with XEmacs
       (when (fboundp 'horizontal-scroll-bar-mode)
-        (horizontal-scroll-bar-mode -1))
-      (scroll-bar-mode -1))            ;; Scrollbars are waste screen estate
-  #+END_SRC
+        (horizontal-scroll-bar-mode -1)))
+#+END_SRC
 
-  My mode line has become quite complicated, so I've pulled it out
+My mode line has become quite complicated, so I've pulled it out
   into its own file:
 
   #+BEGIN_SRC elisp
@@ -469,22 +580,41 @@ or end of the buffer, stop there.
     (set-face-background 'region "blue3")
   #+END_SRC
 
-  Most of the display settings actually come from the [[file:emacs-mac.org][Mac initialization file]].
-
+  Most of the display settings actually come from next:
   Maximize window in GUI mode
 
   #+BEGIN_SRC elisp
-    (when window-system (setq initial-frame-alist
-  '((width . 140)(height . 55))))
+ (add-to-list 'default-frame-alist '(fullscreen . maximized))
   #+END_SRC
 
+  Show white spaces at the end of lines
+  Do not show the cursor in non-active window
+  When on a TAB, the cursor has the TAB length
+
+  #+BEGIN_SRC elisp
+  (setq-default
+   show-trailing-whitespace t
+   cursor-in-non-selected-windows nil
+   use-dialog-box nil
+   x-stretch-cursor t)
+  #+END_SRC
+
+* Clipboard
+
+#+BEGIN_SRC elisp :tangle no
+(use-package clipmon
+  :disabled t
+  :init (progn
+          (setq clipmon-action 'kill-new clipmon-timeout nil clipmon-sound nil
+                clipmon-cursor-color nil clipmon-suffix nil) (clipmon-mode)))
+#+END_SRC
 * Fonts
 ** Coding & writable fonts
 
   Try to use [http://input.fontbureau.com/]
   Input font Fonts for code from DJR & Font Bureau
 
-  #+BEGIN_SRC elisp
+  #+BEGIN_SRC
   ;; set a default font
   (when (member "Input Mono" (font-family-list))
    (set-face-attribute 'default nil :font "Input Mono"))
@@ -527,7 +657,77 @@ or end of the buffer, stop there.
 
 #+END_SRC
 
+
+** Font scaling
+
+#+BEGIN_SRC elisp
+
+(use-package default-text-scale
+  :ensure t
+  :config
+  (global-set-key (kbd "C-M-=") 'default-text-scale-increase)
+  (global-set-key (kbd "C-M--") 'default-text-scale-decrease))
+#+END_SRC
+* Themes
+
+#+BEGIN_SRC elisp
+(use-package color-theme
+  :ensure t)
+
+(use-package moe-theme
+  :ensure t)
+
+(use-package powerline
+  :ensure t
+  :config
+  (powerline-moe-theme))
+
+(moe-dark)
+#+END_SRC
+
 * Tools
+** Git
+
+   I like [[https://github.com/syohex/emacs-git-gutter-fringe][git-gutter-fringe]]:
+
+   #+BEGIN_SRC elisp
+     (use-package git-gutter-fringe
+        :ensure t
+        :diminish git-gutter-mode
+        :init (setq git-gutter-fr:side 'right-fringe)
+        :config (global-git-gutter-mode t))
+   #+END_SRC
+
+   I want to have special mode for Git's =configuration= file:
+
+   #+BEGIN_SRC elisp
+     (use-package gitconfig-mode
+       :ensure t)
+
+     (use-package gitignore-mode
+       :ensure t)
+   #+END_SRC
+
+   Finally, I want to play with [[https://github.com/pidu/git-timemachine][Git Time Machine]] project for stepping
+   backward through the version history of a file:
+
+
+   Visit a git-controlled file and issue M-x git-timemachine (or bind it to a keybinding of your choice). If you just need to toggle the time machine you can use M-x git-timemachine-toggle.
+
+   Use the following keys to navigate historic version of the file
+
+   p Visit previous historic version
+   n Visit next historic version
+   w Copy the abbreviated hash of the current historic version
+   W Copy the full hash of the current historic version
+   g Goto nth revision
+   q Exit the time machine.
+   b Run magit-blame on the currently visited revision (if magit available).
+   #+BEGIN_SRC elisp
+     (use-package git-timemachine
+       :ensure t)
+   #+END_SRC
+
 ** Magit
 
   Git is [[http://emacswiki.org/emacs/Git][already part of Emacs]]. However, [[http://philjackson.github.com/magit/magit.html][Magit]] is sweet.
@@ -557,9 +757,67 @@ or end of the buffer, stop there.
   above =defadvice= idea from [[https://github.com/magnars/.emacs.d/blob/master/setup-magit.el][Sven Magnars]].
   *Note:* Use the [[https://github.com/jwiegley/emacs-release/blob/master/lisp/vc/smerge-mode.el][smerge-mode]] that is now part of Emacs.
 
-* Programming Language
-** Python
+** Google-translate
 
+   Google-translate
+
+   #+BEGIN_SRC elisp
+   (use-package google-translate
+     :ensure t
+     :config
+     (progn
+       (setq google-translate-default-source-language "en")
+       (setq google-translate-default-target-language "ru")
+       (global-set-key "\C-ct" 'google-translate-at-point)
+       (global-set-key "\C-cT" 'google-translate-query-translate)
+       (global-set-key "\C-cl" 'google-translate-at-point-reverse)
+       (global-set-key "\C-cL" 'google-translate-query-translate-reverse)
+       (set-face-attribute 'google-translate-translation-face nil :height 1.7)))
+   #+END_SRC
+
+** HTTP REST client tool
+
+   This is a tool to manually explore and test HTTP REST webservices.
+   Runs queries from a plain-text query sheet, displays results as a
+   pretty-printed XML, JSON and even images.
+
+   restclient-mode is a major mode which does a bit of highlighting
+   and supports a few additional keypresses:
+
+   ;; C-c C-c: runs the query under the cursor, tries to pretty-print the response (if possible)
+   ;; C-c C-r: same, but doesn't do anything with the response, just shows the buffer
+   ;; C-c C-v: same as C-c C-c, but doesn't switch focus to other window
+   ;; C-c C-p: jump to the previous query
+   ;; C-c C-n: jump to the next query
+   ;; C-c C-.: mark the query under the cursor
+   ;; C-c C-u: copy query under the cursor as a curl command
+
+   More examples can be found https://github.com/pashky/restclient.el/blob/master/examples/httpbin
+
+   #+BEGIN_SRC elisp
+   (use-package restclient
+     :ensure t
+     :defer t)
+   #+END_SRC
+* Org-mode
+
+  #+BEGIN_SRC elisp
+    (require 'init-org-mode)
+  #+END_SRC
+
+* Programming Language (Coding)
+** Python
+  #+BEGIN_SRC elisp
+    (require 'init-python)
+  #+END_SRC
+
+** Show column number
+
+   I sometimes need to know where I am in a line.
+
+#+BEGIN_SRC elisp
+(column-number-mode 1)
+#+END_SRC
 * Miscellaneous Settings
 ** Transpose word
 
@@ -677,7 +935,7 @@ to where saveplace stores your position data. Change it at your peril!
    #+END_SRC
 
 * Technical Artifacts
-** Run org-babel-tangle on saving this file(emacs.org)
+** Run org-babel-tangle on saving that file
 
    Stroke C-x C-s on the modified file and you see message like this:
    =Tangled 1 code block from emacs.org=
@@ -690,4 +948,18 @@ to where saveplace stores your position data. Change it at your peril!
    (add-hook 'after-save-hook 'tangle-on-save-org-mode-file)
    #+END_SRC
 
-#+PROPERTY:    tangle ~/.emacs.d/emacs.el
+** Load up the Local Configuration
+
+   #+BEGIN_SRC elisp
+     (provide 'init-main)
+   #+END_SRC
+
+   Note: Toggles the file make by hit: C-c C-v t
+
+#+DESCRIPTION: A literate programming version of my Emacs Initialization script, loaded by the .emacs file.
+#+PROPERTY:    header-args:elisp  :tangle ~/.emacs.d/elisp/init-main.el
+#+PROPERTY:    header-args:shell  :tangle no
+#+PROPERTY:    header-args        :results silent   :eval no-export   :comment org
+#+OPTIONS:     num:nil toc:nil todo:nil tasks:nil tags:nil
+#+OPTIONS:     skip:nil author:nil email:nil creator:nil timestamp:nil
+#+INFOJS_OPT:  view:nil toc:nil ltoc:t mouse:underline buttons:0 path:http://orgmode.org/org-info.js

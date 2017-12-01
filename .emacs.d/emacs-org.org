@@ -1,0 +1,194 @@
+#+TITLE:  Emacs Org-Mode Settings
+#+AUTHOR: Roman Kalinichenko
+#+EMAIL:  romankrv@gmail.com
+#+TAGS:   emacs
+
+The [[http://orgmode.org][Org Mode]] feature was a big reason in my recent re-kindling of my
+Emacs love affair.
+
+* Initial Settings
+
+  Initialization of Org Mode by hooking it into YASnippets, and other settings.
+
+  org-use-speed-commands  --> M-x org-speed-command-help,
+                             or ? when cursor is at the beginning of an Org headline
+
+  org-hide-emphasis-marker --> I want to hide these markup symbols, so the *bold*
+                               becomes bold, just like links hide their square brackets.
+
+  org-return-follows-link --> To follow links with RET, rather than a 2 key combo:
+
+#+BEGIN_SRC elisp
+(use-package org
+  :ensure org-plus-contrib
+  :init
+  (setq org-use-speed-commands t
+        org-hide-emphasis-markers t
+        org-return-follows-link t
+        org-src-fontify-natively t
+        org-src-tab-acts-natively t
+        org-confirm-babel-evaluate nil
+        org-src-tab-acts-natively t
+        org-src-preserve-indentation t
+        org-outline-path-complete-in-steps nil
+        org-completion-use-ido t
+        org-todo-keywords
+          '((sequence "TODO(t)" "STARTED(s)" "WAITING(w@/!)" "SOMEDAY(.)" "|" "DONE(x!)" "CANCELLED(c@)")
+            (sequence "LEARN" "TRY" "TEACH" "|" "COMPLETE(x)")
+            ;(sequence "TOSKETCH" "SKETCHED" "|" "POSTED")
+            ;(sequence "TOBUY" "TOSHRINK" "TOCUT"  "TOSEW" "|" "DONE(x)")
+            (sequence "TODELEGATE(-)" "DELEGATED(d)" "|" "COMPLETE(x)"))
+        org-todo-keyword-faces '(("TODO" . (:foreground "green" :weight bold ))
+                                 ("DONE" . (:foreground "cyan" :weight bold))
+                                 ("WAITING" . (:foreground "red" :weight bold))
+                                 ("SOMEDAY" . (:foreground "gray" :weight bold)))
+        ))
+#+END_SRC
+
+This is a extension of Emacs that provide auto-complete sources for org-mode.
+You'll be able to use auto-complete as substitute for pcomplete which is bound to M-TAB
+
+#+BEGIN_SRC elisp
+(use-package org-ac
+  :ensure t
+  :init (org-ac/config-default))
+#+END_SRC
+
+#+BEGIN_SRC elisp
+(use-package org-bullets
+  :ensure t
+  :config
+    (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
+#+END_SRC
+
+* Local Key Bindings
+** Better Org Return
+
+   From [[http://kitchingroup.cheme.cmu.edu/blog/2017/04/09/A-better-return-in-org-mode/][this discussion]], I got the code to replace ~M-RET~ in lists with
+   just ~RET~, so that Org acts more like other word processors. Double
+   press RET key that to delete the last headline.
+
+   #+BEGIN_SRC elisp
+   (defun RK/org-return (&optional ignore)
+     "Add new list item, heading or table row with RET.
+     A double return on an empty element deletes it.
+     Use a prefix arg to get regular RET. "
+     (interactive "P")
+     (if ignore
+         (org-return)
+       (cond
+        ;; Open links like usual
+        ((eq 'link (car (org-element-context)))
+         (org-return))
+        ;; lists end with two blank lines, so we need to make sure we are also not
+        ;; at the beginning of a line to avoid a loop where a new entry gets
+        ;; created with only one blank line.
+        ((and (org-in-item-p) (not (bolp)))
+         (if (org-element-property :contents-begin (org-element-context))
+             (org-insert-heading)
+           (beginning-of-line)
+           (setf (buffer-substring
+                  (line-beginning-position) (line-end-position)) "")
+           (org-return)))
+        ((org-at-heading-p)
+         (if (not (string= "" (org-element-property :title (org-element-context))))
+             (progn (org-end-of-meta-data)
+                    (org-insert-heading))
+           (beginning-of-line)
+           (setf (buffer-substring
+                  (line-beginning-position) (line-end-position)) "")))
+        ((org-at-table-p)
+         (if (-any?
+              (lambda (x) (not (string= "" x)))
+              (nth
+               (- (org-table-current-dline) 1)
+                 (org-table-to-lisp)))
+             (org-return)
+           ;; empty row
+           (beginning-of-line)
+           (setf (buffer-substring
+                  (line-beginning-position) (line-end-position)) "")
+           (org-return)))
+        (t
+         (org-return)))))
+
+   (define-key org-mode-map (kbd "RET")  #'RK/org-return)
+#+END_SRC
+
+* Color and Display
+
+  Displaying the headers using various bullets are nice for my presentations.
+
+  #+BEGIN_SRC elisp
+  (use-package org-bullets
+    :ensure t
+    :init (add-hook 'org-mode-hook 'org-bullets-mode))
+  #+END_SRC
+
+  Here is my approach for quickly making the initial asterisks for
+  listing items and whatnot, appear as Unicode bullets (without
+  actually affecting the text file or the behavior).
+
+
+  #+BEGIN_SRC elisp
+    (use-package org
+       :init
+       (font-lock-add-keywords 'org-mode
+                               '(("^ +\\([-*]\\) "
+                                  (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•")))))))
+  #+END_SRC
+
+  Before we load =org-mode= proper, we need to set the following
+  syntax high-lighting parameters. These are used to help bring out
+  the source code during literate programming mode.
+
+** Better Headers
+   I like some of the ideas in the EMagicians Starter Kit, particularly how
+   the headers are larger, instead of different colors. My code in this case is
+   particular nasty and needs a major simplification, but here is the gist for you:
+
+   #+BEGIN_SRC elisp
+   (set-face-attribute 'default nil :height 160)
+
+   (when (window-system)
+     (let* ((variable-tuple (cond ((x-list-fonts "Source Sans Pro") '(:font "Source Sans Pro"))
+                                  ((x-list-fonts "Lucida Grande")   '(:font "Lucida Grande"))
+                                  ((x-list-fonts "Verdana")         '(:font "Verdana"))
+                                  ((x-family-fonts "Sans Serif")    '(:family "Sans Serif"))
+                                  (nil (warn "Cannot find a Sans Serif Font.  Install Source Sans Pro."))))
+            (base-font-color     (face-foreground 'default nil 'default))
+            (headline           `(:inherit default :weight bold :foreground ,base-font-color)))
+
+       (custom-theme-set-faces 'user
+                               `(org-level-8 ((t (,@headline ,@variable-tuple))))
+                               `(org-level-7 ((t (,@headline ,@variable-tuple))))
+                               `(org-level-6 ((t (,@headline ,@variable-tuple))))
+                               `(org-level-5 ((t (,@headline ,@variable-tuple))))
+                               `(org-level-4 ((t (,@headline ,@variable-tuple :height 1.1))))
+                               `(org-level-3 ((t (,@headline ,@variable-tuple :height 1.25))))
+                               `(org-level-2 ((t (,@headline ,@variable-tuple :height 1.5))))
+                               `(org-level-1 ((t (,@headline ,@variable-tuple :height 1.75))))
+                               `(org-document-title ((t (,@headline ,@variable-tuple :height 1.5 :underline nil)))))))
+   #+END_SRC
+
+* Technical Artifacts
+
+  Need to provide the =init-org-mode= so that I can require this
+  package.
+
+  #+BEGIN_SRC elisp
+    (provide 'init-org-mode)
+  #+END_SRC
+
+  Before you can build this on a new system, make sure that you put
+  the cursor over any of these properties, and hit: =C-c C-c=
+
+#+DESCRIPTION: A literate programming version of my Emacs Initialization of Org-Mode
+
+#+PROPERTY:    header-args:elisp  :tangle ~/.emacs.d/elisp/init-org-mode.el
+#+PROPERTY:    header-args:sh     :tangle no
+#+PROPERTY:    header-args:       :results silent   :eval no-export   :comments org
+
+#+OPTIONS:     num:nil toc:nil todo:nil tasks:nil tags:nil
+#+OPTIONS:     skip:nil author:nil email:nil creator:nil timestamp:nil
+#+INFOJS_OPT:  view:nil toc:nil ltoc:t mouse:underline buttons:0 path:http://orgmode.org/org-info.js

@@ -1,10 +1,10 @@
-;; This's the file is a handler/wraper for emacs.org file
-;; which has a literate style of the configuration.
-
+;; This's the file of the manage of emacs.org file.
 (require 'package)
 (setq package-enable-at-startup nil)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/"))
+(add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/"))
+
 
 (package-initialize)
 
@@ -13,15 +13,27 @@
         (package-refresh-contents)
         (package-install 'use-package))
 
-(require 'use-package)
-(use-package auto-compile
-  :config (auto-compile-on-load-mode))
+
+(defconst RK/emacs-directory (concat (getenv "HOME") "/.emacs.d/"))
+(defun RK/emacs-subdirectory (d) (expand-file-name d RK/emacs-directory))
 
 
-(if (file-exists-p "~/.emacs.d/emacs.el")
+(let* ((subdirs '("elisp" "backups"))
+       (fulldirs (mapcar (lambda (d) (RK/emacs-subdirectory d)) subdirs)))
+  (dolist (dir fulldirs)
+    (when (not (file-exists-p dir))
+      (message "Make directory: %s" dir)
+      (make-directory dir))))
+
+
+(defconst MAIN-LOAD-FILE (concat RK/emacs-directory "elisp/init-main.el"))
+(defconst MAIN-BABEL-FILE (concat RK/emacs-directory "emacs.org"))
+
+
+(if (file-exists-p MAIN-LOAD-FILE)
     (progn
-      (load-file "~/.emacs.d/emacs.el")
-      (message "You are running from the rest of emacs.el"))
+    (load-file MAIN-LOAD-FILE)
+    (message "You are running from MAIN-LOAD-FILE"))
   (progn
-    (org-babel-load-file (expand-file-name "~/.emacs.d/emacs.org")
-                         (message "You are running from the rest of emacs.org"))))
+    (org-babel-load-file MAIN-BABEL-FILE)
+    (message "You are running from MAIN-BABEL-FILE")))
