@@ -534,18 +534,18 @@ easier.
 #+END_SRC
 ** Anzu (display the typed matches in the mode-line)
 
-   anzu is an Emacs port of anzu.vim that provides a minor mode which displays
+   Anzu is an Emacs port of anzu.vim that provides a minor mode which displays
    current match and total matches information in the mode-line in various search modes.
 
  #+BEGIN_SRC elisp
  (use-package anzu
-  :ensure t
-  :config
-  (progn
-    (global-anzu-mode t)
-    (diminish 'anzu-mode)
-    (global-set-key [remap query-replace-regexp] 'anzu-query-replace-regexp)
-    (global-set-key [remap query-replace] 'anzu-query-replace)))
+   :ensure t
+   :config
+    (progn
+      (global-anzu-mode t)
+      (global-set-key [remap query-replace-regexp] 'anzu-query-replace-regexp)
+      (global-set-key [remap query-replace] 'anzu-query-replace)))
+   :diminish anzu-mode
  #+END_SRC
 * Display Settings
 
@@ -601,7 +601,7 @@ My mode line has become quite complicated, so I've pulled it out
 
 * Clipboard
 
-#+BEGIN_SRC elisp :tangle no
+#+BEGIN_SRC elisp
 (use-package clipmon
   :disabled t
   :init (progn
@@ -764,6 +764,7 @@ My mode line has become quite complicated, so I've pulled it out
    #+BEGIN_SRC elisp
    (use-package google-translate
      :ensure t
+     :defer 2
      :config
      (progn
        (setq google-translate-default-source-language "en")

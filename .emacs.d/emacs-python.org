@@ -12,6 +12,7 @@ revolves around the [[https://elpy.readthedocs.io/en/latest/introduction.html][E
 #+BEGIN_SRC elisp
 (use-package pyenv-mode
     :ensure t
+    :defer 2
     :config
       (defun projectile-pyenv-mode-set ()
         "Set pyenv version matching project name."
