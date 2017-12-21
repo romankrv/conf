@@ -76,7 +76,7 @@ easier.
 
    Anyway, I have a new global variable for that:
 
-   This section put here as nominally and this code moved to init.el
+   *This section put here as nominally and this code moved to init.el*
    #+BEGIN_SRC elisp
      (defconst RK/emacs-directory (concat (getenv "HOME") "/.emacs.d/"))
      (defun RK/emacs-subdirectory (d) (expand-file-name d RK/emacs-directory))
@@ -87,7 +87,7 @@ easier.
    In case this is the first time running this on a computer, we need
    to make sure the following directories have been created.
 
-   This section put here as nominally and this code moved to init.el
+   *This section put here as nominally and this code moved to init.el*
    #+BEGIN_SRC elisp
     (let* ((subdirs '("elisp" "backups"))
             (fulldirs (mapcar (lambda (d) (RK/emacs-subdirectory d)) subdirs)))
@@ -103,7 +103,7 @@ easier.
    menu system is "good enough", but I want it in its own file:
 
    #+BEGIN_SRC elisp
-     (setq custom-file (expand-file-name "custom.el" RK/emacs-directory))
+     (setq custom-file (expand-file-name "backups/custom.el" RK/emacs-directory))
      (when (file-exists-p custom-file)
        (load custom-file))
    #+END_SRC
@@ -112,7 +112,6 @@ easier.
 
    Extra packages not available via the package manager go in my
    personal stash at: =$HOME/.emacs.d/elisp=
-
    #+BEGIN_SRC elisp
      (add-to-list 'load-path (RK/emacs-subdirectory "elisp"))
    #+END_SRC
@@ -172,8 +171,7 @@ easier.
 ** Init File Support
 
    Load up my collection of enhancements to Emacs Lisp, including [[https://github.com/magnars/dash.el][dash]]
-   and [[https://github.com/magnars/s.el][s]] for string manipulation, as much of my initialization code
-   depends on it.
+   and [[https://github.com/magnars/s.el][s]] for string manipulation, and [[https://github.com/rejeep/f.el][f]] for file manipulation.
 
    #+BEGIN_SRC elisp
      (require 'cl)
@@ -182,8 +180,8 @@ easier.
        :ensure t
        :config (eval-after-load "dash" '(dash-enable-font-lock)))
 
-     (use-package s
-       :ensure t)
+     (use-package s :ensure t)
+     (use-package f :ensure t)
     #+END_SRC
 
 * Variables
@@ -455,6 +453,7 @@ easier.
    (setq desktop-path '("~/.emacs.d/backups"))
    (setq desktop-dirname "~/.emacs.d/backups")
    (setq desktop-base-file-name "emacs-desktop")
+
    ;; remove desktop after it's been read
    (add-hook 'desktop-after-read-hook
 	     '(lambda ()
@@ -473,6 +472,7 @@ easier.
      (if (saved-session)
          (desktop-read)
        (message "No desktop found.")))
+
    ;; use session-save to save the desktop manually
    (defun session-save ()
      "Save an emacs session."
@@ -553,7 +553,7 @@ easier.
   minimalist approach to its display. While you can turn these off
   with the menu items now, it is just as easy to set them here.
 
-#+BEGIN_SRC elisp
+  #+BEGIN_SRC elisp
     (setq initial-scratch-message "") ;Uh, I know what Scratch is for
     (setq visible-bell t)             ;Get rid of the beeps
     (global-hl-line-mode +1)          ;Highlight Current Line
@@ -563,34 +563,15 @@ easier.
       (tool-bar-mode 0)               ;; Toolbars were only cool with XEmacs
       (when (fboundp 'horizontal-scroll-bar-mode)
         (horizontal-scroll-bar-mode -1)))
-#+END_SRC
-
-My mode line has become quite complicated, so I've pulled it out
-  into its own file:
-
-  #+BEGIN_SRC elisp
-    ;(require 'init-mode-line2)
   #+END_SRC
 
-  And the best colored highlighting of selected text needs to be both
-  bright, but not obscure the white text in the foreground (see
-  =list-colors-display=). Favorites so far are =purple4= and =DarkOrange3=:
-
   #+BEGIN_SRC elisp
-    (set-face-background 'region "blue3")
-  #+END_SRC
-
-  Most of the display settings actually come from next:
-  Maximize window in GUI mode
-
-  #+BEGIN_SRC elisp
- (add-to-list 'default-frame-alist '(fullscreen . maximized))
+   (add-to-list 'default-frame-alist '(fullscreen . maximized))
   #+END_SRC
 
   Show white spaces at the end of lines
   Do not show the cursor in non-active window
   When on a TAB, the cursor has the TAB length
-
   #+BEGIN_SRC elisp
   (setq-default
    show-trailing-whitespace t
@@ -608,23 +589,76 @@ My mode line has become quite complicated, so I've pulled it out
           (setq clipmon-action 'kill-new clipmon-timeout nil clipmon-sound nil
                 clipmon-cursor-color nil clipmon-suffix nil) (clipmon-mode)))
 #+END_SRC
+
 * Fonts
-** Coding & writable fonts
+** Font Coding
 
-  Try to use [http://input.fontbureau.com/]
-  Input font Fonts for code from DJR & Font Bureau
+  Try to use http://input.fontbureau.com/
+  *Input font Fonts for code from DJR & Font Bureau*
 
-  #+BEGIN_SRC
-  ;; set a default font
-  (when (member "Input Mono" (font-family-list))
-   (set-face-attribute 'default nil :font "Input Mono"))
+  Also good font: http://www.janfromm.de/typefaces/camingomono/camingocode/
 
+  exemple lisp code:
+   (set-face-attribute
+    'default nil :family "Input Mono"
+    :weight 'light
+    :slant 'italic)
+
+  :weight
+  _Font weight—one of the symbols (from densest to faintest)_
+  =ultra-bold, extra-bold, bold, semi-bold, normal,
+  semi-light, light, extra-light, or ultra-light.=
+
+  On text terminals which support variable-brightness text,
+  any weight greater than normal is displayed as extra bright,
+  and any weight less than normal is displayed as half-bright.
+
+  :slant
+  _Font slant—one of the symbols_:
+  =italic, oblique, normal, reverse-italic, or reverse-oblique=.
+  On text terminals that support variable-brightness text,
+  slanted text is displayed as half-bright.
+
+  _Nice list of the fonts for coding_:
+  =:family "Input Mono"=
+  =:family "Input Mono Narrow"=
+  =:family "Input Mono Compressed"=
+  =:family "Input Mono Condensed"=
+  =:family "Input Sans"=
+  =:family "Input Serif"=
+  =:family "Monaco"=
+  =:family "Inconsolata"=
+  =:family "Anonymous Pro"=
+  =:family "Inconsolata-g"=
+  =:family "DejaVu Sans Mono"=
+  =:family "CamingoCode"=
+  =:family "Fantasque Sans Mono"=
+
+  exemple lisp code:
   (when (eq system-type 'darwin)
-    (set-face-attribute 'default nil :family "Input Mono" :height 160))
-  (setq line-spacing 0.0)
-  #+END_SRC
+  (set-face-attribute 'default nil :family "Input Mono" :height 220))
 
-** Readable fonts =Novel Reading Mode=
+  #+BEGIN_SRC elisp
+
+   (defconst RK/FONT "CamingoCode")
+
+    (when (member RK/FONT (font-family-list))
+      (set-face-attribute
+       'default nil
+       :family RK/FONT
+       :stipple nil
+       :height 220
+       :inverse-video nil
+       :box nil
+       :strike-through nil
+       :overline nil
+       :underline nil
+       :slant 'normal
+       :weight 'light
+       :foundry "outline"))
+   #+END_SRC
+
+** Readable fonts (Novel Reading Mode)
 
    Here's a command to make current window suitable for reading long
    text.
@@ -654,9 +688,7 @@ My mode line has become quite complicated, so I've pulled it out
          (setq word-wrap nil)
          (put this-command 'state-on-p nil)))
      (redraw-frame (selected-frame)))
-
-#+END_SRC
-
+   #+END_SRC
 
 ** Font scaling
 
@@ -668,29 +700,25 @@ My mode line has become quite complicated, so I've pulled it out
   (global-set-key (kbd "C-M-=") 'default-text-scale-increase)
   (global-set-key (kbd "C-M--") 'default-text-scale-decrease))
 #+END_SRC
+
 * Themes
 
 #+BEGIN_SRC elisp
-(use-package color-theme
-  :ensure t)
-
-(use-package moe-theme
-  :ensure t)
-
-(use-package powerline
-  :ensure t
-  :config
-  (powerline-moe-theme))
-
-(moe-dark)
+  (use-package powerline :ensure t :config (powerline-default-theme))
+  (use-package color-theme :ensure t)
+  ;(use-package green-phosphor-theme :ensure t)
+  ;(load-theme 'deeper-blue t)
+  ;(use-package boron-theme :ensure t)
+  ;(use-package solarized-theme :ensure t)
+  ;(load-theme 'boron t)
+  ;(load-theme 'zenburn t)
 #+END_SRC
 
 * Tools
 ** Git
 
    I like [[https://github.com/syohex/emacs-git-gutter-fringe][git-gutter-fringe]]:
-
-   #+BEGIN_SRC elisp
+   #+BEGIN_SRC
      (use-package git-gutter-fringe
         :ensure t
         :diminish git-gutter-mode
@@ -701,21 +729,17 @@ My mode line has become quite complicated, so I've pulled it out
    I want to have special mode for Git's =configuration= file:
 
    #+BEGIN_SRC elisp
-     (use-package gitconfig-mode
-       :ensure t)
-
-     (use-package gitignore-mode
-       :ensure t)
+     (use-package gitconfig-mode :ensure t)
+     (use-package gitignore-mode :ensure t)
    #+END_SRC
 
    Finally, I want to play with [[https://github.com/pidu/git-timemachine][Git Time Machine]] project for stepping
    backward through the version history of a file:
+   Visit a git-controlled file and issue M-x git-timemachine (or bind it to a
+   keybinding of your choice). If you just need to toggle the time machine you can use
+   *M-x git-timemachine-toggle.*
 
-
-   Visit a git-controlled file and issue M-x git-timemachine (or bind it to a keybinding of your choice). If you just need to toggle the time machine you can use M-x git-timemachine-toggle.
-
-   Use the following keys to navigate historic version of the file
-
+   _Use the following keys to navigate historic version of the file_:
    p Visit previous historic version
    n Visit next historic version
    w Copy the abbreviated hash of the current historic version
@@ -724,8 +748,7 @@ My mode line has become quite complicated, so I've pulled it out
    q Exit the time machine.
    b Run magit-blame on the currently visited revision (if magit available).
    #+BEGIN_SRC elisp
-     (use-package git-timemachine
-       :ensure t)
+     (use-package git-timemachine :ensure t)
    #+END_SRC
 
 ** Magit
@@ -764,7 +787,6 @@ My mode line has become quite complicated, so I've pulled it out
    #+BEGIN_SRC elisp
    (use-package google-translate
      :ensure t
-     :defer 2
      :config
      (progn
        (setq google-translate-default-source-language "en")
@@ -773,7 +795,7 @@ My mode line has become quite complicated, so I've pulled it out
        (global-set-key "\C-cT" 'google-translate-query-translate)
        (global-set-key "\C-cl" 'google-translate-at-point-reverse)
        (global-set-key "\C-cL" 'google-translate-query-translate-reverse)
-       (set-face-attribute 'google-translate-translation-face nil :height 1.7)))
+       (set-face-attribute 'google-translate-translation-face nil :height 1.0)))
    #+END_SRC
 
 ** HTTP REST client tool
@@ -800,7 +822,11 @@ My mode line has become quite complicated, so I've pulled it out
      :ensure t
      :defer t)
    #+END_SRC
+
 * Org-mode
+
+  Pre-Install for Org-mode:
+  =$ gem install taskjuggler=
 
   #+BEGIN_SRC elisp
     (require 'init-org-mode)
@@ -808,17 +834,11 @@ My mode line has become quite complicated, so I've pulled it out
 
 * Programming Language (Coding)
 ** Python
+
   #+BEGIN_SRC elisp
     (require 'init-python)
   #+END_SRC
 
-** Show column number
-
-   I sometimes need to know where I am in a line.
-
-#+BEGIN_SRC elisp
-(column-number-mode 1)
-#+END_SRC
 * Miscellaneous Settings
 ** Transpose word
 
