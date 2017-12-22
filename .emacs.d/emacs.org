@@ -173,6 +173,9 @@ easier.
    Load up my collection of enhancements to Emacs Lisp, including [[https://github.com/magnars/dash.el][dash]]
    and [[https://github.com/magnars/s.el][s]] for string manipulation, and [[https://github.com/rejeep/f.el][f]] for file manipulation.
 
+   'Diminish' is a package that implements hiding or abbreviation
+    of the mode line displays (lighters) of minor-modes.
+
    #+BEGIN_SRC elisp
      (require 'cl)
 
@@ -182,6 +185,7 @@ easier.
 
      (use-package s :ensure t)
      (use-package f :ensure t)
+     (use-package diminish :ensure t)
     #+END_SRC
 
 * Variables
@@ -540,13 +544,14 @@ easier.
  #+BEGIN_SRC elisp
  (use-package anzu
    :ensure t
+   :diminish anzu-mode nil
    :config
     (progn
       (global-anzu-mode t)
       (global-set-key [remap query-replace-regexp] 'anzu-query-replace-regexp)
       (global-set-key [remap query-replace] 'anzu-query-replace)))
-   :diminish anzu-mode
  #+END_SRC
+
 * Display Settings
 
   I've been using Emacs for several years, and appreciate a certain
@@ -590,13 +595,10 @@ easier.
                 clipmon-cursor-color nil clipmon-suffix nil) (clipmon-mode)))
 #+END_SRC
 
-
-
 * Tools
 ** Git
-
    I like [[https://github.com/syohex/emacs-git-gutter-fringe][git-gutter-fringe]]:
-   #+BEGIN_SRC
+   #+BEGIN_SRC elisp
      (use-package git-gutter-fringe
         :ensure t
         :diminish git-gutter-mode
@@ -720,28 +722,27 @@ easier.
 * Miscellaneous Settings
 ** Transpose word
 
-Hacking Emacs to change the behavior of existing functions.
-Essentially, I show a little trick, but then show how to use
-defadvice to change the behavior of transpose-words.
+   Hacking Emacs to change the behavior of existing functions.
+   Essentially, I show a little trick, but then show how to use
+   defadvice to change the behavior of transpose-words.
 
-#+BEGIN_SRC elisp
-(defun my/transpose-words (arg)
-  (interactive "p")
-(if (looking-at "$")
-    (backward-word 1))
-(transpose-words arg))
+   #+BEGIN_SRC elisp
+   (defun my/transpose-words (arg)
+     (interactive "p")
+     (if (looking-at "$")
+         (backward-word 1))
+     (transpose-words arg))
 
-(defadvice transpose-words
-  (before my/traspose-words)
-  "Transpose last two words when at end of line."
-  (if (looking-at "$")
-      (backward-word 1)))
+   (defadvice transpose-words
+     (before my/traspose-words)
+     "Transpose last two words when at end of line."
+     (if (looking-at "$")
+       (backward-word 1)))
 
-(ad-activate 'transpose-words)
-
-(global-set-key (kbd "M-t") 'my/transpose-words)
-
+   (ad-activate 'transpose-words)
+   (global-set-key (kbd "M-t") 'my/transpose-words)
 #+END_SRC
+
 ** Line Numbers
 
    Turn =linum-mode= on/off with =Command-K= (see the [[*Macintosh][Macintosh]]
@@ -860,6 +861,13 @@ to where saveplace stores your position data. Change it at your peril!
 
 ** Load up the Local Configuration
 
+   Before we finish, we need to check if there is a local file for us to load and evaluate.
+   We assume the local file has been tangled and provides the init-local key:
+   #+BEGIN_SRC elisp
+      (require 'init-local nil t)
+   #+END_SRC
+
+   *Make sure that we can simply require this library.*
    #+BEGIN_SRC elisp
      (provide 'init-main)
    #+END_SRC
