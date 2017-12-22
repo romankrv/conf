@@ -173,6 +173,9 @@ easier.
    Load up my collection of enhancements to Emacs Lisp, including [[https://github.com/magnars/dash.el][dash]]
    and [[https://github.com/magnars/s.el][s]] for string manipulation, and [[https://github.com/rejeep/f.el][f]] for file manipulation.
 
+   'Diminish' is a package that implements hiding or abbreviation
+    of the mode line displays (lighters) of minor-modes.
+
    #+BEGIN_SRC elisp
      (require 'cl)
 
@@ -182,6 +185,7 @@ easier.
 
      (use-package s :ensure t)
      (use-package f :ensure t)
+     (use-package diminish :ensure t)
     #+END_SRC
 
 * Variables
@@ -540,13 +544,14 @@ easier.
  #+BEGIN_SRC elisp
  (use-package anzu
    :ensure t
+   :diminish anzu-mode nil
    :config
     (progn
       (global-anzu-mode t)
       (global-set-key [remap query-replace-regexp] 'anzu-query-replace-regexp)
       (global-set-key [remap query-replace] 'anzu-query-replace)))
-   :diminish anzu-mode
  #+END_SRC
+
 * Display Settings
 
   I've been using Emacs for several years, and appreciate a certain
@@ -590,11 +595,8 @@ easier.
                 clipmon-cursor-color nil clipmon-suffix nil) (clipmon-mode)))
 #+END_SRC
 
-
-
 * Tools
 ** Git
-
    I like [[https://github.com/syohex/emacs-git-gutter-fringe][git-gutter-fringe]]:
    #+BEGIN_SRC
      (use-package git-gutter-fringe
@@ -860,6 +862,13 @@ to where saveplace stores your position data. Change it at your peril!
 
 ** Load up the Local Configuration
 
+   Before we finish, we need to check if there is a local file for us to load and evaluate.
+   We assume the local file has been tangled and provides the init-local key:
+   #+BEGIN_SRC elisp
+      (require 'init-local nil t)
+   #+END_SRC
+
+   *Make sure that we can simply require this library.*
    #+BEGIN_SRC elisp
      (provide 'init-main)
    #+END_SRC
