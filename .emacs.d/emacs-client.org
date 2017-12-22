@@ -1,0 +1,157 @@
+#+TITLE:  Client Configuration for Emacs
+#+AUTHOR: Roman Kalinichenko
+#+EMAIL:  romankrv@gmail.com
+#+TAGS:   emacs
+
+* Fonts
+** Font Coding
+
+  Try to use http://input.fontbureau.com/
+  *Input font Fonts for code from DJR & Font Bureau*
+
+  Also good font: http://www.janfromm.de/typefaces/camingomono/camingocode/
+
+  exemple lisp code:
+   (set-face-attribute
+    'default nil :family "Input Mono"
+    :weight 'light
+    :slant 'italic)
+
+  :weight
+  _Font weight—one of the symbols (from densest to faintest)_
+  =ultra-bold, extra-bold, bold, semi-bold, normal,
+  semi-light, light, extra-light, or ultra-light.=
+
+  On text terminals which support variable-brightness text,
+  any weight greater than normal is displayed as extra bright,
+  and any weight less than normal is displayed as half-bright.
+
+  :slant
+  _Font slant—one of the symbols_:
+  =italic, oblique, normal, reverse-italic, or reverse-oblique=.
+  On text terminals that support variable-brightness text,
+  slanted text is displayed as half-bright.
+
+  _Nice list of the fonts for coding_:
+  =:family "Input Mono"=
+  =:family "Input Mono Narrow"=
+  =:family "Input Mono Compressed"=
+  =:family "Input Mono Condensed"=
+  =:family "Input Sans"=
+  =:family "Input Serif"=
+  =:family "Monaco"=
+  =:family "Inconsolata"=
+  =:family "Anonymous Pro"=
+  =:family "Inconsolata-g"=
+  =:family "DejaVu Sans Mono"=
+  =:family "CamingoCode"=
+  =:family "Fantasque Sans Mono"=
+
+  exemple lisp code:
+  (when (eq system-type 'darwin)
+  (set-face-attribute 'default nil :family "Input Mono" :height 220))
+
+  #+BEGIN_SRC elisp
+
+   (defconst RK/FONT "CamingoCode")
+
+    (when (member RK/FONT (font-family-list))
+      (set-face-attribute
+       'default nil
+       :family RK/FONT
+       :stipple nil
+       :height 220
+       :inverse-video nil
+       :box nil
+       :strike-through nil
+       :overline nil
+       :underline nil
+       :slant 'normal
+       :weight 'light
+       :foundry "outline"))
+   #+END_SRC
+
+** Readable fonts (Novel Reading Mode)
+
+   Here's a command to make current window suitable for reading long
+   text.
+   #+BEGIN_SRC elisp
+   (defun my/toggle-read-novel-mode ()
+     "Setup current buffer to be suitable for reading long novel/article text.
+   • Line wrap at word boundaries.
+   • Set a right margin.
+   • line spacing is increased.
+   • variable width font is used.
+
+   Call again to toggle back.
+   URL 'http://ergoemacs.org/emacs/emacs_novel_reading_mode.html'
+   Version 2017-02-27"
+     (interactive)
+     (if (null (get this-command 'state-on-p))
+         (progn
+           (set-window-margins nil 0 9)
+           (variable-pitch-mode 1)
+           (setq line-spacing 0.4)
+           (setq word-wrap t)
+           (put this-command 'state-on-p t))
+       (progn
+         (set-window-margins nil 0 0)
+         (variable-pitch-mode 0)
+         (setq line-spacing nil)
+         (setq word-wrap nil)
+         (put this-command 'state-on-p nil)))
+     (redraw-frame (selected-frame)))
+   #+END_SRC
+
+** Font scaling
+
+#+BEGIN_SRC elisp
+
+(use-package default-text-scale
+  :ensure t
+  :config
+  (global-set-key (kbd "C-M-=") 'default-text-scale-increase)
+  (global-set-key (kbd "C-M--") 'default-text-scale-decrease))
+#+END_SRC
+
+* Themes
+
+#+BEGIN_SRC elisp
+  (use-package powerline :ensure t :config (powerline-default-theme))
+  (use-package color-theme :ensure t)
+  (use-package boron-theme :ensure t)
+  ;(load-theme 'boron t)
+  ;(use-package green-phosphor-theme :ensure t)
+  ;(load-theme 'deeper-blue t)
+  ;(use-package boron-theme :ensure t)
+  ;(use-package solarized-theme :ensure t)
+  ;(load-theme 'zenburn t)
+#+END_SRC
+
+* Technical Artifacts
+
+ Load up the particular operating system variation.
+
+  #+BEGIN_SRC
+    (if (eq system-type 'darwin)
+        (require 'init-mac)
+      (require 'init-linux))
+  #+END_SRC
+
+  Notice "Windows" is not listed. That is by design.
+
+  #+BEGIN_SRC elisp
+    (provide 'init-client)
+  #+END_SRC
+
+  Before you can build this on a new system, make sure that you put
+  the cursor over any of these properties, and hit: =C-c C-c=
+
+#+DESCRIPTION: A literate programming version of my Emacs Initialization of Org-Mode
+
+#+PROPERTY:    header-args:elisp  :tangle ~/.emacs.d/elisp/init-client.el
+#+PROPERTY:    header-args:       :results silent   :eval no-export   :comments org
+
+#+OPTIONS:     num:nil toc:nil todo:nil tasks:nil tags:nil
+#+OPTIONS:     skip:nil author:nil email:nil creator:nil timestamp:nil
+#+INFOJS_OPT:  view:nil toc:nil ltoc:t mouse:underline buttons:0 path:http://orgmode.org/org-info.js

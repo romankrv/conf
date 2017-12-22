@@ -44,5 +44,8 @@
    (RK/emacs-tangle-file RK/MAIN-ORG-FILE)
    (RK/emacs-tangle-file (concat RK/emacs-directory "emacs-org.org"))
    (RK/emacs-tangle-file (concat RK/emacs-directory "emacs-python.org"))
+   (RK/emacs-tangle-file (concat RK/emacs-directory "emacs-client.org"))
+   (RK/emacs-tangle-file (concat RK/emacs-directory "emacs-server.org"))
+
    (load-file RK/MAIN-LOAD-FILE)
    (message "You are running from TANGLE MAKING SECTION")))

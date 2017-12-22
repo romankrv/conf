@@ -590,129 +590,7 @@ easier.
                 clipmon-cursor-color nil clipmon-suffix nil) (clipmon-mode)))
 #+END_SRC
 
-* Fonts
-** Font Coding
 
-  Try to use http://input.fontbureau.com/
-  *Input font Fonts for code from DJR & Font Bureau*
-
-  Also good font: http://www.janfromm.de/typefaces/camingomono/camingocode/
-
-  exemple lisp code:
-   (set-face-attribute
-    'default nil :family "Input Mono"
-    :weight 'light
-    :slant 'italic)
-
-  :weight
-  _Font weight—one of the symbols (from densest to faintest)_
-  =ultra-bold, extra-bold, bold, semi-bold, normal,
-  semi-light, light, extra-light, or ultra-light.=
-
-  On text terminals which support variable-brightness text,
-  any weight greater than normal is displayed as extra bright,
-  and any weight less than normal is displayed as half-bright.
-
-  :slant
-  _Font slant—one of the symbols_:
-  =italic, oblique, normal, reverse-italic, or reverse-oblique=.
-  On text terminals that support variable-brightness text,
-  slanted text is displayed as half-bright.
-
-  _Nice list of the fonts for coding_:
-  =:family "Input Mono"=
-  =:family "Input Mono Narrow"=
-  =:family "Input Mono Compressed"=
-  =:family "Input Mono Condensed"=
-  =:family "Input Sans"=
-  =:family "Input Serif"=
-  =:family "Monaco"=
-  =:family "Inconsolata"=
-  =:family "Anonymous Pro"=
-  =:family "Inconsolata-g"=
-  =:family "DejaVu Sans Mono"=
-  =:family "CamingoCode"=
-  =:family "Fantasque Sans Mono"=
-
-  exemple lisp code:
-  (when (eq system-type 'darwin)
-  (set-face-attribute 'default nil :family "Input Mono" :height 220))
-
-  #+BEGIN_SRC elisp
-
-   (defconst RK/FONT "CamingoCode")
-
-    (when (member RK/FONT (font-family-list))
-      (set-face-attribute
-       'default nil
-       :family RK/FONT
-       :stipple nil
-       :height 220
-       :inverse-video nil
-       :box nil
-       :strike-through nil
-       :overline nil
-       :underline nil
-       :slant 'normal
-       :weight 'light
-       :foundry "outline"))
-   #+END_SRC
-
-** Readable fonts (Novel Reading Mode)
-
-   Here's a command to make current window suitable for reading long
-   text.
-   #+BEGIN_SRC elisp
-   (defun my/toggle-read-novel-mode ()
-     "Setup current buffer to be suitable for reading long novel/article text.
-   • Line wrap at word boundaries.
-   • Set a right margin.
-   • line spacing is increased.
-   • variable width font is used.
-
-   Call again to toggle back.
-   URL 'http://ergoemacs.org/emacs/emacs_novel_reading_mode.html'
-   Version 2017-02-27"
-     (interactive)
-     (if (null (get this-command 'state-on-p))
-         (progn
-           (set-window-margins nil 0 9)
-           (variable-pitch-mode 1)
-           (setq line-spacing 0.4)
-           (setq word-wrap t)
-           (put this-command 'state-on-p t))
-       (progn
-         (set-window-margins nil 0 0)
-         (variable-pitch-mode 0)
-         (setq line-spacing nil)
-         (setq word-wrap nil)
-         (put this-command 'state-on-p nil)))
-     (redraw-frame (selected-frame)))
-   #+END_SRC
-
-** Font scaling
-
-#+BEGIN_SRC elisp
-
-(use-package default-text-scale
-  :ensure t
-  :config
-  (global-set-key (kbd "C-M-=") 'default-text-scale-increase)
-  (global-set-key (kbd "C-M--") 'default-text-scale-decrease))
-#+END_SRC
-
-* Themes
-
-#+BEGIN_SRC elisp
-  (use-package powerline :ensure t :config (powerline-default-theme))
-  (use-package color-theme :ensure t)
-  ;(use-package green-phosphor-theme :ensure t)
-  ;(load-theme 'deeper-blue t)
-  ;(use-package boron-theme :ensure t)
-  ;(use-package solarized-theme :ensure t)
-  ;(load-theme 'boron t)
-  ;(load-theme 'zenburn t)
-#+END_SRC
 
 * Tools
 ** Git
@@ -967,6 +845,17 @@ to where saveplace stores your position data. Change it at your peril!
      (when (string= (message "%s" major-mode) "org-mode")
      (org-babel-tangle)))
    (add-hook 'after-save-hook 'tangle-on-save-org-mode-file)
+   #+END_SRC
+** Configure the Graphical Settings
+
+   If we are running in a windowed environment where we can set up
+   fonts and whatnot, call the 'mac' stuff... which will still work
+   for Linux too.
+
+   #+BEGIN_SRC elisp
+     (if (window-system)
+        (require 'init-client)
+      (require 'init-server))
    #+END_SRC
 
 ** Load up the Local Configuration
