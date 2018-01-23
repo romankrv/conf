@@ -1,0 +1,56 @@
+#+TITLE:  Macintosh Configuration for Emacs
+#+AUTHOR:  Roman Kalinichenko
+#+EMAIL:  romankrv@gmail.com
+
+* Key Bindings
+
+  In MacOSX the variables available for binding the modifier keys:
+
+      mac-function-modifier
+      mac-control-modifier
+      mac-command-modifier
+      mac-option-modifier
+      mac-right-command-modifier
+      mac-right-control-modifier
+      mac-right-option-modifier
+
+  values can be 'control, 'alt, 'meta, 'super, 'hyper, nil
+  (setting to nil allows the OS to assign values)
+
+  #+BEGIN_SRC elisp
+    ;; set keys for Apple keyboard, for emacs in OS X
+    (when (eq system-type 'darwin)
+      (setq mac-command-modifier 'meta)      ; make cmd key do Meta
+      (setq mac-control-modifier 'control)   ; make Control key do Control
+      (setq mac-function-modifier 'hyper)    ; make Fn key do Hyper
+      (setq mac-option-modifier 'super)      ; make opt key do Super
+      (setq mac-right-option-modifier 'alt)) ; make right opt key do Alt
+  #+END_SRC
+
+  Command-Q is awful (too easy to hit) ... especially next to
+  the more benign key binding to close a window: Cmd-W
+  #+BEGIN_SRC elisp
+    (bind-key "s-q" 'dont-kill-emacs)
+  #+END_SRC
+
+* Technical Artifacts
+
+  Make sure that we can simply =require= this library.
+
+  #+BEGIN_SRC elisp
+    (provide 'init-mac)
+  #+END_SRC
+
+  Before you can build this on a new system, make sure that you put
+  the cursor over any of these properties, and hit: =C-c C-c=
+
+#+DESCRIPTION: A literate programming version of my Emacs Initialization for Mac OSX
+
+#+PROPERTY:    header-args:sh     :tangle no
+#+PROPERTY:    header-args:elisp  :tangle ~/.emacs.d/elisp/init-mac.el
+#+PROPERTY:    header-args:       :results silent   :eval no-export   :comments org
+
+#+OPTIONS:     num:nil toc:nil todo:nil tasks:nil tags:nil
+#+OPTIONS:     skip:nil author:nil email:nil creator:nil timestamp:nil
+#+INFOJS_OPT:  view:nil toc:nil ltoc:t mouse:underline buttons:0 path:http://orgmode.org/org-info.js
+¼µ°‘’·¢×¢

@@ -20,12 +20,14 @@
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
   (package-install 'use-package))
+(setq use-package-verbose t)
 
 (defun RK/emacs-tangle-file (file)
   "Given an 'org-mode' FILE, tangle the source code."
   (interactive "fOrg File: ")
   (find-file file)   ;;  (expand-file-name file \"$DIR\")
   (org-babel-tangle)
+  (message "Run org-babel-tangle from --> %s" file)
   (kill-buffer))
 
 (defun RK/emacs-subdirectory (d) (expand-file-name d RK/emacs-directory))
@@ -46,6 +48,6 @@
    (RK/emacs-tangle-file (concat RK/emacs-directory "emacs-python.org"))
    (RK/emacs-tangle-file (concat RK/emacs-directory "emacs-client.org"))
    (RK/emacs-tangle-file (concat RK/emacs-directory "emacs-server.org"))
-
-   (load-file RK/MAIN-LOAD-FILE)
-   (message "You are running from TANGLE MAKING SECTION")))
+   (when (eq system-type 'darwin)
+     (RK/emacs-tangle-file (concat RK/emacs-directory "emacs-mac.org")))
+   (load-file RK/MAIN-LOAD-FILE)))

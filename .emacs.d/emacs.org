@@ -118,13 +118,22 @@ easier.
 
 ** Modernizing Emacs
 
+   Always load newest byte code
+   #+BEGIN_SRC elisp
+   (setq load-prefer-newer t)
+   #+END_SRC
+
    With a long history of working on small machines without gigabytes
-   of RAM, we might as well let Emacs be the beast it has always
-   dreamed.
+   of RAM, we might as well let Emacs be the beast it has always dreamed.
+   #+BEGIN_SRC elisp
+   (add-hook 'after-init-hook #'(lambda ()
+     ;; restore after startup
+     (setq gc-cons-threshold 800000)))
+   #+END_SRC
 
    First, let’s increase the cache before starting garbage collection:
    #+BEGIN_SRC elisp
-     (setq gc-cons-threshold 50000000)
+     (setq gc-cons-threshold 64000000)
    #+END_SRC
 
    Found [[https://github.com/wasamasa/dotemacs/blob/master/init.org#init][here]] how to remove the warnings from the GnuTLS library when
@@ -132,6 +141,7 @@ easier.
    #+BEGIN_SRC elisp
      (setq gnutls-min-prime-bits 4096)
    #+END_SRC
+
 * Package Initialization
 ** Package Manager
 
@@ -258,9 +268,11 @@ easier.
 
    I've been using Emacs for too long to need to re-enable each
    feature bit-by-bit:
+
    #+BEGIN_SRC elisp
      (setq disabled-command-function nil)
    #+END_SRC
+
 * Navigation
 ** Smex
 
@@ -551,6 +563,17 @@ easier.
       (global-set-key [remap query-replace-regexp] 'anzu-query-replace-regexp)
       (global-set-key [remap query-replace] 'anzu-query-replace)))
  #+END_SRC
+** Avy - navigate by searching for a letter on the screen and jumping to it
+
+   See https://github.com/abo-abo/avy for more info
+
+  #+BEGIN_SRC elisp
+  (use-package avy
+    :ensure t
+    :bind (("M-s" . avy-goto-word-1)
+           ("s-j" . avy-goto-char-timer)))
+    ;; changed from char as per jcs
+  #+END_SRC
 
 * Display Settings
 
@@ -560,14 +583,24 @@ easier.
 
   #+BEGIN_SRC elisp
     (setq initial-scratch-message "") ;Uh, I know what Scratch is for
-    (setq visible-bell t)             ;Get rid of the beeps
     (global-hl-line-mode +1)          ;Highlight Current Line
     (scroll-bar-mode -1)              ;Scrollbars are waste screen estate
+    (show-paren-mode)
 
     (when (window-system)
       (tool-bar-mode 0)               ;; Toolbars were only cool with XEmacs
       (when (fboundp 'horizontal-scroll-bar-mode)
         (horizontal-scroll-bar-mode -1)))
+  #+END_SRC
+
+  #+BEGIN_SRC elisp
+  (defun my-terminal-visible-bell ()
+    "A friendlier visual bell effect."
+    (invert-face 'mode-line)
+    (run-with-timer 0.1 nil 'invert-face 'mode-line))
+
+    (setq visible-bell nil
+          ring-bell-function #'my-terminal-visible-bell)
   #+END_SRC
 
   #+BEGIN_SRC elisp
@@ -577,12 +610,15 @@ easier.
   Show white spaces at the end of lines
   Do not show the cursor in non-active window
   When on a TAB, the cursor has the TAB length
+  Set of the type of the cursor
+
   #+BEGIN_SRC elisp
   (setq-default
-   show-trailing-whitespace t
-   cursor-in-non-selected-windows nil
-   use-dialog-box nil
-   x-stretch-cursor t)
+    show-trailing-whitespace t
+    cursor-in-non-selected-windows nil
+    use-dialog-box nil
+    x-stretch-cursor t
+    cursor-type 'hbar)
   #+END_SRC
 
 * Key Bindings
@@ -685,15 +721,49 @@ easier.
        (which-key-mode 1))
    #+END_SRC
 
+** Browse-kill-ring
+
+   Of course, You can use next flow -> tap C-y M-y M-y ...
+   for that to get them item from the kill-ring but
+   better to use 'browse-kill-ring+' next:
+
+   #+BEGIN_SRC elisp
+   (use-package browse-kill-ring+
+     :ensure t
+     :defer 10
+     :bind ("M-y" . browse-kill-ring))
+   #+END_SRC
+
+** MacOSX settings section
+
+   #+BEGIN_SRC elisp
+   (when (eq system-type 'darwin)
+     (require 'init-mac))
+   #+END_SRC
+
 * Clipboard
 
-#+BEGIN_SRC elisp
-(use-package clipmon
-  :disabled t
-  :init (progn
-          (setq clipmon-action 'kill-new clipmon-timeout nil clipmon-sound nil
-                clipmon-cursor-color nil clipmon-suffix nil) (clipmon-mode)))
-#+END_SRC
+  Clipmon is a clipboard monitor - it watches the system clipboard and can
+  automatically insert any new text into the current location in Emacs. It also
+  adds changes to the system clipboard to the kill ring, making Emacs into a
+  clipboard manager for text - you can then use a package like browse-kill-ring
+  or helm-ring to view and manage your clipboard history.
+
+  #+BEGIN_SRC elisp
+    (use-package clipmon
+      :ensure t
+      :config
+      (setq clipmon-autoinsert-sound nil)
+      (setq clipmon-transform-suffix "")
+      (global-set-key (kbd "<M-f2>") 'clipmon-autoinsert-toggle))
+  #+END_SRC
+
+  The kill ring has a fixed number of entries which you can set, depending on
+  how much history you want to save between sessions:
+
+  #+BEGIN_SRC elisp
+    (setq kill-ring-max 500) ;default is 60 in Emacs 24.4
+  #+END_SRC
 
 * Tools
 ** Git
@@ -767,6 +837,7 @@ easier.
    #+BEGIN_SRC elisp
    (use-package google-translate
      :ensure t
+     :defer 5
      :config
      (progn
        (setq google-translate-default-source-language "en")
@@ -800,6 +871,7 @@ easier.
    #+BEGIN_SRC elisp
    (use-package restclient
      :ensure t
+     :diminish restclient "REST"
      :defer t)
    #+END_SRC
 
@@ -812,7 +884,7 @@ easier.
     (require 'init-org-mode)
   #+END_SRC
 
-* Programming Language (Coding)
+* Programming Lanavyguage (Coding)
 ** Python
 
   #+BEGIN_SRC elisp
@@ -933,6 +1005,20 @@ to where saveplace stores your position data. Change it at your peril!
    #+BEGIN_SRC elisp
      (add-hook 'before-save-hook 'delete-trailing-whitespace)
    #+END_SRC
+
+** Super-Save
+
+   Save Emacs buffers when they lose focus
+
+   #+BEGIN_SRC elisp
+      (use-package super-save
+        :ensure t
+        :diminish super-save-mode
+        :config
+        (super-save-mode +1))
+   #+END_SRC
+
+** Highlight-Indentation
 
 * Technical Artifacts
 ** Run org-babel-tangle on saving that file

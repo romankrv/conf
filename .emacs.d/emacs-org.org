@@ -21,6 +21,7 @@ Emacs love affair.
 #+BEGIN_SRC elisp
 (use-package org
   :ensure org-plus-contrib
+  :defer t
   :init
   (setq org-use-speed-commands t
         org-hide-emphasis-markers t

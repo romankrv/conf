@@ -116,17 +116,15 @@
 
 * Themes
 
-#+BEGIN_SRC elisp
-  (use-package powerline :ensure t :config (powerline-default-theme))
-  (use-package color-theme :ensure t)
-  (use-package boron-theme :ensure t)
-  ;(load-theme 'boron t)
-  ;(use-package green-phosphor-theme :ensure t)
-  ;(load-theme 'deeper-blue t)
-  ;(use-package boron-theme :ensure t)
-  ;(use-package solarized-theme :ensure t)
-  ;(load-theme 'zenburn t)
-#+END_SRC
+  #+BEGIN_SRC elisp
+    (use-package powerline
+      :ensure t
+      :init (powerline-default-theme))
+
+    (use-package nord-theme
+      :ensure t
+      :init (load-theme 'nord t))
+  #+END_SRC
 
 * Technical Artifacts
 
