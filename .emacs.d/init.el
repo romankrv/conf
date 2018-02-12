@@ -39,15 +39,15 @@
       (make-directory dir))))
 
 (if (file-exists-p RK/MAIN-LOAD-FILE)
- (progn
-   (load-file RK/MAIN-LOAD-FILE)
-   (message "You are running from %s" RK/MAIN-LOAD-FILE))
- (progn
-   (RK/emacs-tangle-file RK/MAIN-ORG-FILE)
-   (RK/emacs-tangle-file (concat RK/emacs-directory "emacs-org.org"))
-   (RK/emacs-tangle-file (concat RK/emacs-directory "emacs-python.org"))
-   (RK/emacs-tangle-file (concat RK/emacs-directory "emacs-client.org"))
-   (RK/emacs-tangle-file (concat RK/emacs-directory "emacs-server.org"))
-   (when (eq system-type 'darwin)
-     (RK/emacs-tangle-file (concat RK/emacs-directory "emacs-mac.org")))
-   (load-file RK/MAIN-LOAD-FILE)))
+    (progn
+      (load-file RK/MAIN-LOAD-FILE)
+      (message "You are running from %s" RK/MAIN-LOAD-FILE))
+  (progn
+    (RK/emacs-tangle-file RK/MAIN-ORG-FILE)
+    (RK/emacs-tangle-file (concat RK/emacs-directory "emacs-org.org"))
+    (RK/emacs-tangle-file (concat RK/emacs-directory "emacs-python.org"))
+    (RK/emacs-tangle-file (concat RK/emacs-directory "emacs-client.org"))
+    (RK/emacs-tangle-file (concat RK/emacs-directory "emacs-server.org"))
+    (when (eq system-type 'darwin)
+      (RK/emacs-tangle-file (concat RK/emacs-directory "emacs-mac.org")))
+    (load-file RK/MAIN-LOAD-FILE)))

@@ -126,6 +126,17 @@
       :init (load-theme 'nord t))
   #+END_SRC
 
+  #+BEGIN_SRC elisp :tangle no
+    (use-package zerodark-theme :ensure t)
+     (load-theme 'zerodark t)
+     (zerodark-setup-modeline-format)
+  #+END_SRC
+
+  I wanna change the highlight color for selected text.
+  #+BEGIN_SRC elisp
+    (set-face-attribute 'region nil :background "#babdb6")
+  #+END_SRC
+
 * Technical Artifacts
 
  Load up the particular operating system variation.

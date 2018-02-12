@@ -3,24 +3,25 @@
 #+EMAIL: romankrv@gmail.com
 
 * Introduction
-This is my =.emacs= file ... well, the top-level of it anyway.
-I've written it in a [[http://www.orgmode.org][literate style], to make it easy to explain.
+
+  This is my =.emacs= file ... well, the top-level of it anyway.
+  I've written it in a [[http://www.orgmode.org][literate style], to make it easy to explain.
 
 ** About this file
 
-If you're viewing the Org file, you can open source code blocks (those
-are the ones in begin_src) in a separate buffer by moving your point
-inside them and typing C-c ' (=org-edit-special=). This opens another
-buffer in =emacs-lisp-mode=, so you can use =M-x eval-buffer= to load
-the changes. If you want to explore how functions work, use =M-x
-edebug-defun= to set up debugging for that function, and then call it.
-You can learn more about edebug in the [[http://www.gnu.org/software/emacs/manual/html_node/elisp/Edebug.html][Emacs Lisp]] manual.
+   If you're viewing the Org file, you can open source code blocks (those
+   are the ones in =BEGIN_SRC=) in a separate buffer by moving your point
+   inside them and typing C-c ' (=org-edit-special=). This opens another
+   buffer in =emacs-lisp-mode=, so you can use =M-x eval-buffer= to load
+   the changes. If you want to explore how functions work, use =M-x
+   edebug-defun= to set up debugging for that function, and then call it.
+   You can learn more about edebug in the [[http://www.gnu.org/software/emacs/manual/html_node/elisp/Edebug.html][Emacs Lisp]] manual.
 
-I like using =(setq ...)= more than Customize because I can neatly
-organize my configuration that way. Ditto for =use-package= - I mostly
-use it to group together package-related config without lots of
-=with-eval-after-load= calls, and it also makes declaring keybindings
-easier.
+   I like using =(setq ...)= more than Customize because I can neatly
+   organize my configuration that way. Ditto for =use-package= - I mostly
+   use it to group together package-related config without lots of
+   =with-eval-after-load= calls, and it also makes declaring keybindings
+   easier.
 
 ** Emacs Executable
 
@@ -62,10 +63,10 @@ easier.
    =/Application/Emacs.app=.
 
    All Homebrew options for Emacs can be seen with the command:
-
    #+BEGIN_SRC sh :tangle no
      brew options emacs
    #+END_SRC
+
 * General Settings
 ** My Directory Location
 
@@ -276,14 +277,15 @@ easier.
 * Navigation
 ** Smex
 
-#+BEGIN_SRC elisp
-(use-package smex
-  :ensure t
-  :init (setq smex-save-file "~/.emacs.d/backups/smex-items")
-   (smex-initialize)
-  :bind ("M-x" . smex)
-        ("M-X" . smex-major-mode-commands))
-#+END_SRC
+  #+BEGIN_SRC elisp
+    (use-package smex
+      :ensure t
+      :init
+        (setq smex-save-file "~/.emacs.d/backups/smex-items")
+        (smex-initialize)
+      :bind ("M-x" . smex)
+            ("M-X" . smex-major-mode-commands))
+  #+END_SRC
 
 ** Goto Chg
 
@@ -303,19 +305,19 @@ easier.
 
    According to [[http://www.emacswiki.org/emacs-es/RecentFiles][this article]], Emacs already has the recent file
 
-#+BEGIN_SRC elisp
-(use-package recentf
-  :init
-  (setq recentf-save-file "~/.emacs.d/backups/recentf")
-  (setq recentf-max-menu-items 200
-        recentf-auto-cleanup 'never
-        recentf-keep '(file-remote-p file-readable-p))
-  (recentf-mode 1)
-  (let ((last-ido "~/.emacs.d/backups/ido.last"))
-    (when (file-exists-p last-ido)
-      (delete-file last-ido)))
-  :bind ("C-c f f" . recentf-open-files))
-#+END_SRC
+  #+BEGIN_SRC elisp
+    (use-package recentf
+      :init
+      (setq recentf-save-file "~/.emacs.d/backups/recentf")
+      (setq recentf-max-menu-items 200
+            recentf-auto-cleanup 'never
+            recentf-keep '(file-remote-p file-readable-p))
+      (recentf-mode 1)
+      (let ((last-ido "~/.emacs.d/backups/ido.last"))
+        (when (file-exists-p last-ido)
+          (delete-file last-ido)))
+      :bind ("C-c f f" . recentf-open-files))
+  #+END_SRC
 
 ** Backup Settings
 
@@ -348,34 +350,27 @@ easier.
 
    And let’s make sure our files are saved if we wander off and
    defocus the Emacs application:
-
    #+BEGIN_SRC elisp
-     (defun save-all ()
-       "Save all dirty buffers without asking for confirmation."
+     (defun save-all()
+       "Save all dirty buffers without asking for confirmation"
        (interactive)
        (save-some-buffers t))
-
      (add-hook 'focus-out-hook 'save-all)
-   #+END_SRC
-
-   Move 'auto-save-list' directory to the custom directory
-   #+BEGIN_SRC
-     (setq auto-save-list-file-prefix "~/.emacs.d/backups/auto-save-list/.saves-")
    #+END_SRC
 
 ** More window movement
 
    Offer a *visual* way to choose a window to switch to
 
-#+BEGIN_SRC elisp
-(use-package switch-window
-  :ensure t
-  :bind (("C-x o" . switch-window))
-  :bind (("C-x 1" . switch-window-then-maximize))
-  :bind (("C-x 2" . switch-window-then-split-below))
-  :bind (("C-x 3" . switch-window-then-split-right))
-  :bind (("C-x 4" . switch-window-then-split-delete)))
-#+END_SRC
+  #+BEGIN_SRC elisp
+  (use-package switch-window
+    :ensure t
+    :bind (("C-x o" . switch-window))
+    :bind (("C-x 1" . switch-window-then-maximize))
+    :bind (("C-x 2" . switch-window-then-split-below))
+    :bind (("C-x 3" . switch-window-then-split-right))
+    :bind (("C-x 4" . switch-window-then-split-delete)))
+  #+END_SRC
 
 ** Move to beginning of line
    Copied from http://emacsredux.com/blog/2013/05/22/smarter-navigation-to-the-beginning-of-a-line/
@@ -386,45 +381,45 @@ easier.
    not nil or 1, move forward ARG - 1 lines first. If point reaches the beginning
    or end of the buffer, stop there.
 
-#+BEGIN_SRC elisp
-(defun my/smarter-move-beginning-of-line (arg)
-  (interactive "^p")
-  (setq arg (or arg 1))
-  ;; Move lines first
-  (when (/= arg 1)
-    (let ((line-move-visual nil))
-      (forward-line (1- arg))))
-  (let ((orig-point (point)))
-    (back-to-indentation)
-    (when (= orig-point (point))
-      (move-beginning-of-line 1))))
+  #+BEGIN_SRC elisp
+  (defun my/smarter-move-beginning-of-line (arg)
+    (interactive "^p")
+    (setq arg (or arg 1))
+    ;; Move lines first
+    (when (/= arg 1)
+      (let ((line-move-visual nil))
+        (forward-line (1- arg))))
+    (let ((orig-point (point)))
+      (back-to-indentation)
+      (when (= orig-point (point))
+        (move-beginning-of-line 1))))
 
-;; remap C-a to `smarter-move-beginning-of-line'
-(global-set-key [remap move-beginning-of-line]
-                'my/smarter-move-beginning-of-line)
-#+END_SRC
+  ;; remap C-a to `smarter-move-beginning-of-line'
+  (global-set-key [remap move-beginning-of-line]
+                  'my/smarter-move-beginning-of-line)
+  #+END_SRC
 
 ** Copy filename to clipboard
 
    http://emacsredux.com/blog/2013/03/27/copy-filename-to-the-clipboard/
    https://github.com/bbatsov/prelude
 
-#+BEGIN_SRC elisp
-(defun prelude-copy-file-name-to-clipboard ()
-  "Copy the current buffer file name to the clipboard."
-  (interactive)
-  (let ((filename (if (equal major-mode 'dired-mode)
-                      default-directory
-                    (buffer-file-name))))
-    (when filename
-      (kill-new filename)
-      (message "Copied buffer file name '%s' to the clipboard." filename))))
-#+END_SRC
+  #+BEGIN_SRC elisp
+  (defun prelude-copy-file-name-to-clipboard ()
+    "Copy the current buffer file name to the clipboard."
+    (interactive)
+    (let ((filename (if (equal major-mode 'dired-mode)
+                        default-directory
+                      (buffer-file-name))))
+      (when filename
+        (kill-new filename)
+        (message "Copied buffer file name '%s' to the clipboard." filename))))
+  #+END_SRC
 
 ** IDO (Interactively DO Things)
    According to [[http://www.masteringemacs.org/articles/2010/10/10/introduction-to-ido-mode/][Mickey]], IDO is the greatest thing.
 
-   +BEGIN_SRC
+   #+BEGIN_SRC lisp :tangle no
      (use-package ido
        :ensure t
        :init  (setq ido-enable-flex-matching t
@@ -435,28 +430,29 @@ easier.
        (ido-mode 1)
        (ido-everywhere 1)
        (add-to-list 'completion-ignored-extensions ".pyc"))
-   +END_SRC
+   #+END_SRC
+
    Add to IDO, the [[https://github.com/lewang/flx][FLX]] package:
 
-   +BEGIN_SRC
+   #+BEGIN_SRC elisp :tangle no
      (use-package flx-ido
-        :ensure t
-        :init (setq ido-enable-flex-matching t
-                    ido-use-faces nil)
-        :config (flx-ido-mode 1))
-   +END_SRC
+       :ensure t
+       :init (setq ido-enable-flex-matching t
+                   ido-use-faces nil)
+       :config (flx-ido-mode 1))
+   #+END_SRC
 
    According to [[https://gist.github.com/rkneufeld/5126926][Ryan Neufeld]], we could make IDO work vertically,
    which is much easier to read. For this, I use [[https://github.com/gempesaw/ido-vertical-mode.el][ido-vertically]]:
 
-   +BEGIN_SRC
+   #+BEGIN_SRC elisp :tangle no
      (use-package ido-vertical-mode
        :ensure t
        :init               ; I like up and down arrow keys:
-       (setq ido-vertical-define-keys 'C-n-C-p-up-and-down)
+         (setq ido-vertical-define-keys 'C-n-C-p-up-and-down)
        :config
-       (ido-vertical-mode 1))
-       +END_SRC
+         (ido-vertical-mode 1))
+   #+END_SRC
 
 ** Desktop (saving emacs sessions)
 
@@ -464,7 +460,7 @@ easier.
    Once you save the Emacs desktop—the buffers, their file names, major modes,
    buffer positions, and so on—then subsequent Emacs sessions reload the saved desktop.
 
-#+BEGIN_SRC elisp
+  #+BEGIN_SRC elisp
    (desktop-save-mode 1)
    (setq desktop-path '("~/.emacs.d/backups"))
    (setq desktop-dirname "~/.emacs.d/backups")
@@ -505,7 +501,7 @@ easier.
    ;             (if (saved-session)
    ;                 (if (y-or-n-p "Restore desktop? ")
    ;                     (session-restore)))))
-#+END_SRC
+  #+END_SRC
 
   Specifying Files Not to be Opened
   You can specify buffers which should not be saved, by name or by mode:
@@ -582,10 +578,10 @@ easier.
   with the menu items now, it is just as easy to set them here.
 
   #+BEGIN_SRC elisp
-    (setq initial-scratch-message "") ;Uh, I know what Scratch is for
-    (global-hl-line-mode +1)          ;Highlight Current Line
-    (scroll-bar-mode -1)              ;Scrollbars are waste screen estate
-    (show-paren-mode)
+    (setq initial-scratch-message "") ; Uh, I know what Scratch is for
+    (global-hl-line-mode t)           ; Highlights the current cursor line
+    (scroll-bar-mode -1)              ; Scrollbars are waste screen estate
+   ; (show-paren-mode)
 
     (when (window-system)
       (tool-bar-mode 0)               ;; Toolbars were only cool with XEmacs
@@ -594,13 +590,24 @@ easier.
   #+END_SRC
 
   #+BEGIN_SRC elisp
-  (defun my-terminal-visible-bell ()
-    "A friendlier visual bell effect."
-    (invert-face 'mode-line)
-    (run-with-timer 0.1 nil 'invert-face 'mode-line))
+    (defun my-terminal-visible-bell ()
+      "A friendlier visual bell effect."
+      (invert-face 'mode-line)
+      (run-with-timer 0.1 nil 'invert-face 'mode-line))
 
     (setq visible-bell nil
           ring-bell-function #'my-terminal-visible-bell)
+  #+END_SRC
+
+  Flashes the cursor's line when you scroll
+  #+BEGIN_SRC
+
+    (use-package beacon
+      :ensure t
+      :diminish beacon-mode
+      :config
+      (beacon-mode 1)
+      (setq beacon-color "#666600"))
   #+END_SRC
 
   #+BEGIN_SRC elisp
@@ -658,6 +665,111 @@ easier.
 
        :bind ("C-=" . ha/expand-region))
    #+END_SRC
+** Smartparens [Magic of the pair braces and quotes]
+
+   Minor mode for Emacs that deals with parens pairs and tries to be smart about it.
+   Inside Emacs, M-x sp-cheat-sheet will show you all the commands available, with examples.
+
+  #+BEGIN_SRC elisp
+     (use-package smartparens
+       :ensure t
+       :diminish smartparens-mode "SP"
+       :config
+         (use-package smartparens-config)
+         (use-package smartparens-html)
+         (use-package smartparens-python)
+         (use-package smartparens-latex)
+         (use-package smartparens-javascript)
+         (use-package smartparens-ruby)
+         (use-package smartparens-org)
+         (smartparens-global-mode t)
+         (show-smartparens-global-mode t)
+       :bind
+        (("C-M-a" . sp-beginning-of-sexp)
+         ("C-M-e" . sp-end-of-sexp)
+
+         ("C-<down>" . sp-down-sexp)
+         ("C-<up>"   . sp-up-sexp)
+         ("M-<down>" . sp-backward-down-sexp)
+         ("M-<up>"   . sp-backward-up-sexp)
+
+         ("C-M-f" . sp-forward-sexp)
+         ("C-M-b" . sp-backward-sexp)
+
+         ("C-M-n" . sp-next-sexp)
+         ("C-M-p" . sp-previous-sexp)
+
+         ("C-S-f" . sp-forward-symbol)
+         ("C-S-b" . sp-backward-symbol)
+
+         ("C-<right>" . sp-forward-slurp-sexp)
+         ("M-<right>" . sp-forward-barf-sexp)
+         ("C-<left>"  . sp-backward-slurp-sexp)
+         ("M-<left>"  . sp-backward-barf-sexp)
+
+         ("C-M-t" . sp-transpose-sexp)
+         ("C-M-k" . sp-kill-sexp)
+         ("C-k"   . sp-kill-hybrid-sexp)
+         ("M-k"   . sp-backward-kill-sexp)
+         ("C-M-w" . sp-copy-sexp)
+         ("C-M-d" . delete-sexp)
+
+         ("M-<backspace>" . backward-kill-word)
+         ("C-<backspace>" . sp-backward-kill-word)
+         ([remap sp-backward-kill-word] . backward-kill-word)
+
+         ("M-[" . sp-backward-unwrap-sexp)
+         ("M-]" . sp-unwrap-sexp)
+
+         ("C-x C-t" . sp-transpose-hybrid-sexp)
+
+         ("C-c ("  . wrap-with-parens)
+         ("C-c ["  . wrap-with-brackets)
+         ("C-c {"  . wrap-with-braces)
+         ("C-c '"  . wrap-with-single-quotes)
+
+         ("C-c _"  . wrap-with-underscores)
+         ("C-c `"  . wrap-with-back-quotes)))
+   #+END_SRC
+
+** Block Wrappers
+
+   [[https://github.com/rejeep/wrap-region.el][Wrap-region]] is even more flexible. In most editors, selecting
+   text and typing anything replaces the selected text (see the
+   [[info:emacs#Using%20Region][delete-selection-mode]]), but in this case, we can do something
+   different... like wrapping:
+
+   #+BEGIN_SRC elisp
+     (use-package wrap-region
+       :ensure   t
+       :config
+       (wrap-region-global-mode t)
+       (wrap-region-add-wrappers
+        '(("(" ")")
+          ("[" "]")
+          ("{" "}")
+          ("<" ">")
+          ("'" "'")
+          ("\"" "\"")
+          ("‘" "’"   "q")
+          ("“" "”"   "Q")
+          ("*" "*"   "b"   org-mode)                 ; bolden
+          ("*" "*"   "*"   org-mode)                 ; bolden
+          ("/" "/"   "i"   org-mode)                 ; italics
+          ("/" "/"   "/"   org-mode)                 ; italics
+          ("~" "~"   "c"   org-mode)                 ; code
+          ("~" "~"   "~"   org-mode)                 ; code
+          ("=" "="   "v"   org-mode)                 ; verbatim
+          ("=" "="   "="   org-mode)                 ; verbatim
+          ("_" "_"   "u" '(org-mode markdown-mode))  ; underline
+          ("**" "**" "b"   markdown-mode)            ; bolden
+          ("*" "*"   "i"   markdown-mode)            ; italics
+          ("`" "`"   "c" '(markdown-mode ruby-mode)) ; code
+          ("`" "'"   "c"   lisp-mode)                ; code
+          ))
+       :diminish wrap-region-mode)
+   #+END_SRC
+
 ** Displaying Command Sequences
 
    Many command sequences may be logical, but who can remember them all?
@@ -720,7 +832,6 @@ easier.
 
        (which-key-mode 1))
    #+END_SRC
-
 ** Browse-kill-ring
 
    Of course, You can use next flow -> tap C-y M-y M-y ...
@@ -728,13 +839,13 @@ easier.
    better to use 'browse-kill-ring+' next:
 
    #+BEGIN_SRC elisp
-   (use-package browse-kill-ring+
+   (use-package browse-kill-ring
      :ensure t
      :defer 10
      :bind ("M-y" . browse-kill-ring))
    #+END_SRC
 
-** MacOSX settings section
+** MacOSX specific keybinding
 
    #+BEGIN_SRC elisp
    (when (eq system-type 'darwin)
@@ -763,6 +874,10 @@ easier.
 
   #+BEGIN_SRC elisp
     (setq kill-ring-max 500) ;default is 60 in Emacs 24.4
+  #+END_SRC
+
+  #+BEGIN_SRC elisp
+   (setq save-interprogram-paste-before-kill nil)
   #+END_SRC
 
 * Tools
@@ -858,13 +973,13 @@ easier.
    restclient-mode is a major mode which does a bit of highlighting
    and supports a few additional keypresses:
 
-   ;; C-c C-c: runs the query under the cursor, tries to pretty-print the response (if possible)
-   ;; C-c C-r: same, but doesn't do anything with the response, just shows the buffer
-   ;; C-c C-v: same as C-c C-c, but doesn't switch focus to other window
-   ;; C-c C-p: jump to the previous query
-   ;; C-c C-n: jump to the next query
-   ;; C-c C-.: mark the query under the cursor
-   ;; C-c C-u: copy query under the cursor as a curl command
+    C-c C-c: runs the query under the cursor, tries to pretty-print the response (if possible)  
+    C-c C-r: same, but doesn't do anything with the response, just shows the buffer  
+    C-c C-v: same as C-c C-c, but doesn't switch focus to other window  
+    C-c C-p: jump to the previous query  
+    C-c C-n: jump to the next query  
+    C-c C-.: mark the query under the cursor  
+    C-c C-u: copy query under the cursor as a curl command  
 
    More examples can be found https://github.com/pashky/restclient.el/blob/master/examples/httpbin
 
@@ -884,7 +999,7 @@ easier.
     (require 'init-org-mode)
   #+END_SRC
 
-* Programming Lanavyguage (Coding)
+* Programming Languages (Coding)
 ** Python
 
   #+BEGIN_SRC elisp
@@ -899,21 +1014,21 @@ easier.
    defadvice to change the behavior of transpose-words.
 
    #+BEGIN_SRC elisp
-   (defun my/transpose-words (arg)
-     (interactive "p")
-     (if (looking-at "$")
-         (backward-word 1))
-     (transpose-words arg))
+     (defun my/transpose-words (arg)
+       (interactive "p")
+       (if (looking-at "$")
+           (backward-word 1))
+       (transpose-words arg))
 
-   (defadvice transpose-words
-     (before my/traspose-words)
-     "Transpose last two words when at end of line."
-     (if (looking-at "$")
-       (backward-word 1)))
+     (defadvice transpose-words
+       (before my/traspose-words)
+       "Transpose last two words when at end of line."
+       (if (looking-at "$")
+         (backward-word 1)))
 
-   (ad-activate 'transpose-words)
-   (global-set-key (kbd "M-t") 'my/transpose-words)
-#+END_SRC
+     (ad-activate 'transpose-words)
+     (global-set-key (kbd "M-t") 'my/transpose-words)
+   #+END_SRC
 
 ** Line Numbers
 
@@ -929,7 +1044,8 @@ easier.
 
        :config
        (defun linum-fringe-toggle ()
-         "Toggles the line numbers as well as the fringe."    (interactive)
+         "Toggles the line numbers as well as the fringe."
+         (interactive)
          (cond (linum-mode (fringe-mode '(0 . 0))
                            (linum-mode -1))
                (t          (fringe-mode '(8 . 0))
@@ -1002,7 +1118,7 @@ to where saveplace stores your position data. Change it at your peril!
    When I save, I want to always, and I do mean always strip all
    trailing whitespace from the file.
 
-   #+BEGIN_SRC elisp
+   #+BEGIN_SRC elisp :tangle no
      (add-hook 'before-save-hook 'delete-trailing-whitespace)
    #+END_SRC
 
@@ -1019,6 +1135,37 @@ to where saveplace stores your position data. Change it at your peril!
    #+END_SRC
 
 ** Highlight-Indentation
+(setq highlight-indent-guides-method 'character)
+(add-hook 'prog-mode-hook 'highlight-indent-guides-mode)
+   #+BEGIN_SRC elisp
+   (use-package highlight-indent-guides
+     :ensure t
+     :init
+       (add-hook 'prog-mode-hook 'highlight-indent-guides-mode)
+     :config
+       (setq highlight-indent-guides-method 'column))
+   #+END_SRC
+
+** Hungry-delete
+
+   Deletes all the whitespace when you hit backspace or delete
+
+   #+BEGIN_SRC elisp
+    (use-package hungry-delete
+     :ensure t
+     :diminish hungry-delete-mode
+     :config
+     (global-hungry-delete-mode))
+   #+END_SRC
+** Delete-Selection-Mode
+
+   Replace highlighted text with what I type.
+   This mode also allows you to delete (not kill) the highlighted region
+   by pressing <DEL>.
+
+   #+BEGIN_SRC elisp
+   (delete-selection-mode 1)
+   #+END_SRC
 
 * Technical Artifacts
 ** Run org-babel-tangle on saving that file
