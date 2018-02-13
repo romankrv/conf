@@ -6,10 +6,10 @@
 * Fonts
 ** Font Coding
 
-  Try to use http://input.fontbureau.com/
-  *Input font Fonts for code from DJR & Font Bureau*
+  Try to use http://input.fontbureau.com/  
+  *Input font Fonts for code from DJR & Font Bureau*  
 
-  Also good font: http://www.janfromm.de/typefaces/camingomono/camingocode/
+  Also good font: http://www.janfromm.de/typefaces/camingomono/camingocode/  
 
   exemple lisp code:
    (set-face-attribute
@@ -17,42 +17,41 @@
     :weight 'light
     :slant 'italic)
 
-  :weight
-  _Font weight—one of the symbols (from densest to faintest)_
-  =ultra-bold, extra-bold, bold, semi-bold, normal,
-  semi-light, light, extra-light, or ultra-light.=
+  :weight  
+  _Font weight—one of the symbols (from densest to faintest)_  
+  =ultra-bold, extra-bold, bold, semi-bold, normal,  
+  semi-light, light, extra-light, or ultra-light.=  
 
-  On text terminals which support variable-brightness text,
-  any weight greater than normal is displayed as extra bright,
-  and any weight less than normal is displayed as half-bright.
+  On text terminals which support variable-brightness text,  
+  any weight greater than normal is displayed as extra bright,  
+  and any weight less than normal is displayed as half-bright.  
 
-  :slant
-  _Font slant—one of the symbols_:
-  =italic, oblique, normal, reverse-italic, or reverse-oblique=.
-  On text terminals that support variable-brightness text,
-  slanted text is displayed as half-bright.
+  :slant  
+  _Font slant—one of the symbols_:  
+  =italic, oblique, normal, reverse-italic, or reverse-oblique=.  
+  On text terminals that support variable-brightness text,  
+  slanted text is displayed as half-bright.  
 
-  _Nice list of the fonts for coding_:
-  =:family "Input Mono"=
-  =:family "Input Mono Narrow"=
-  =:family "Input Mono Compressed"=
-  =:family "Input Mono Condensed"=
-  =:family "Input Sans"=
-  =:family "Input Serif"=
-  =:family "Monaco"=
-  =:family "Inconsolata"=
-  =:family "Anonymous Pro"=
-  =:family "Inconsolata-g"=
-  =:family "DejaVu Sans Mono"=
-  =:family "CamingoCode"=
-  =:family "Fantasque Sans Mono"=
+  _Nice list of the fonts for coding_:  
+  =:family "Input Mono"=  
+  =:family "Input Mono Narrow"=  
+  =:family "Input Mono Compressed"=  
+  =:family "Input Mono Condensed"=  
+  =:family "Input Sans"=  
+  =:family "Input Serif"=  
+  =:family "Monaco"=  
+  =:family "Inconsolata"=  
+  =:family "Anonymous Pro"=  
+  =:family "Inconsolata-g"=  
+  =:family "DejaVu Sans Mono"=  
+  =:family "CamingoCode"=  
+  =:family "Fantasque Sans Mono"=  
 
-  exemple lisp code:
-  (when (eq system-type 'darwin)
-  (set-face-attribute 'default nil :family "Input Mono" :height 220))
+  exemple lisp code:  
+  (when (eq system-type 'darwin)   
+  (set-face-attribute 'default nil :family "Input Mono" :height 220))  
 
   #+BEGIN_SRC elisp
-
    (defconst RK/FONT "CamingoCode")
 
     (when (member RK/FONT (font-family-list))
@@ -73,8 +72,8 @@
 
 ** Readable fonts (Novel Reading Mode)
 
-   Here's a command to make current window suitable for reading long
-   text.
+   Here's a command to make current window suitable for reading long text.
+
    #+BEGIN_SRC elisp
    (defun my/toggle-read-novel-mode ()
      "Setup current buffer to be suitable for reading long novel/article text.
@@ -105,14 +104,13 @@
 
 ** Font scaling
 
-#+BEGIN_SRC elisp
-
-(use-package default-text-scale
-  :ensure t
-  :config
-  (global-set-key (kbd "C-M-=") 'default-text-scale-increase)
-  (global-set-key (kbd "C-M--") 'default-text-scale-decrease))
-#+END_SRC
+  #+BEGIN_SRC elisp
+  (use-package default-text-scale
+    :ensure t
+    :config
+      (global-set-key (kbd "C-M-=") 'default-text-scale-increase)
+      (global-set-key (kbd "C-M--") 'default-text-scale-decrease))
+  #+END_SRC
 
 * Themes
 
