@@ -5,8 +5,8 @@
 * Introduction
 
   This is my =.emacs= file ... well, the top-level of it anyway.
-  I've written it in a [[http://www.orgmode.org][literate style], to make it easy to explain.
-
+  I've written it in a [[http://www.orgmode.org][literate style]], to make it easy to explain.
+  
 ** About this file
 
    If you're viewing the Org file, you can open source code blocks (those
@@ -25,44 +25,16 @@
 
 ** Emacs Executable
 
-   While I often use [[http://emacsformacosx.com/builds][Emacs for Mac]], lately, I've been building Emacs
-   from source using [[http://brew.sh/][Homebrew]]. I start by adding the following dependency:
+   I use [[http://emacsformacosx.com/builds][Emacs for Mac]], lately, I've been building Emacs
+   from source using [[http://brew.sh/][Homebrew]].
 
    #+BEGIN_SRC sh :tangle no
-     brew cask install xquartz
-   #+END_SRC
-
-   *Note:* I've been running into an issue where I want Emacs to display
-   ligatures as well as work with the visual regular expression
-   package. To get the both to work, I find I need to build from
-   source after applying [[https://github.com/minimal/emacs/commit/812dd5119645a09bc025a9dddedad9474d12ecb6][this patch]]. According to the Homebrew
-   documentation (see [[https://github.com/Homebrew/brew/blob/master/share/doc/homebrew/Formula-Cookbook.md#patches][the Patches section]]), we first:
-
-   #+BEGIN_SRC sh :tangle no
-     brew edit emacs
-   #+END_SRC
-
-   And add the following section
-
-   #+BEGIN_EXAMPLE
-   patch do
-     url "https://github.com/minimal/emacs/commit/812dd5119645a09bc025a9dddedad9474d12ecb6.diff"
-   end
-   #+END_EXAMPLE
-
-   And then build from source especially for the Mac:
-
-   #+BEGIN_SRC sh :tangle no
-     brew install emacs --HEAD --use-git-head --with-cocoa --with-gnutls --srgb
+     brew install emacs --with-cocoa --with-gnutls --srgb
                         --with-librsvg --with-ns --with-imagemagick
      brew linkapps emacs
    #+END_SRC
 
-   Not only does this install the latest version of Emacs in
-   =/usr/local/bin/emacs=, but it also links a GUI version in
-   =/Application/Emacs.app=.
-
-   All Homebrew options for Emacs can be seen with the command:
+   NOTE: All Homebrew options for Emacs can be seen with the command:
    #+BEGIN_SRC sh :tangle no
      brew options emacs
    #+END_SRC
@@ -71,14 +43,14 @@
 ** My Directory Location
 
    Normally, the =user-emacs-directory= stores everything in a
-   =.emacs.d= directory in the home directory, however, Aquamacs
+   =.emacs.d= directory in the home directory, however, for example, Aquamacs
    overrides that, and since I now feel the need to use these settings
    for both editors (sure feels like XEmacs all over again).
 
    Anyway, I have a new global variable for that:
 
-   *This section put here as nominally and this code moved to init.el*
-   #+BEGIN_SRC elisp
+   *This section put here as nominally and the following code moved to init.el*:
+   #+BEGIN_SRC elisp :tangle no
      (defconst RK/emacs-directory (concat (getenv "HOME") "/.emacs.d/"))
      (defun RK/emacs-subdirectory (d) (expand-file-name d RK/emacs-directory))
    #+END_SRC
@@ -88,8 +60,8 @@
    In case this is the first time running this on a computer, we need
    to make sure the following directories have been created.
 
-   *This section put here as nominally and this code moved to init.el*
-   #+BEGIN_SRC elisp
+   *This section put here as nominally and the following code moved to init.el:*
+   #+BEGIN_SRC elisp :tangle no
     (let* ((subdirs '("elisp" "backups"))
             (fulldirs (mapcar (lambda (d) (RK/emacs-subdirectory d)) subdirs)))
        (dolist (dir fulldirs)
@@ -100,8 +72,8 @@
 
 ** Customization Section
 
-   While I would rather program my configurations, sometimes the Emacs
-   menu system is "good enough", but I want it in its own file:
+   While I would rather to tune of the configuration Emacs, but sometimes the Emacs
+   has =conf system= is good enough and I want to save it in to the file on own path:
 
    #+BEGIN_SRC elisp
      (setq custom-file (expand-file-name "backups/custom.el" RK/emacs-directory))
@@ -113,6 +85,7 @@
 
    Extra packages not available via the package manager go in my
    personal stash at: =$HOME/.emacs.d/elisp=
+
    #+BEGIN_SRC elisp
      (add-to-list 'load-path (RK/emacs-subdirectory "elisp"))
    #+END_SRC
@@ -127,8 +100,7 @@
    With a long history of working on small machines without gigabytes
    of RAM, we might as well let Emacs be the beast it has always dreamed.
    #+BEGIN_SRC elisp
-   (add-hook 'after-init-hook #'(lambda ()
-     ;; restore after startup
+   (add-hook 'after-init-hook #'(lambda ()  ;; restore after startup
      (setq gc-cons-threshold 800000)))
    #+END_SRC
 
@@ -146,10 +118,11 @@
 * Package Initialization
 ** Package Manager
 
-   Emacs has become like every other operating system, and now has a package manager with its own collection
-   repository, but since it is so conservative, we need to add more repositories to get all the sweet goodness, I demand.
+   Emacs has become like every other operating system, and now has a package
+   manager with its own collection repository, but since it is so conservative,
+   we need to add more repositories to get all the sweet goodness, I demand.
 
-   This section put here as nominally and this code moved to init.el
+   This section put here as nominally and following code moved to init.el:
    #+BEGIN_SRC elisp :tangle no
      (require 'package)
      (setq package-enable-at-startup nil)
@@ -163,11 +136,10 @@
 
 ** Use-Package
 
-   Using [[https://github.com/jwiegley/use-package][use-package]] to automatically install certain packages, as
-   well as the ease of lazily loading them.
+   Using [[https://github.com/jwiegley/use-package][use-package]] to automatically install certain packages, as well as the
+   ease of lazily loading them.
 
-   This section put here as nominally and this code moved to init.el
-
+   This section put here as nominally and the following code moved to init.el:
    #+BEGIN_SRC elisp :tangle no
      (unless (package-installed-p 'use-package)
        (package-refresh-contents)
@@ -184,8 +156,8 @@
    Load up my collection of enhancements to Emacs Lisp, including [[https://github.com/magnars/dash.el][dash]]
    and [[https://github.com/magnars/s.el][s]] for string manipulation, and [[https://github.com/rejeep/f.el][f]] for file manipulation.
 
-   'Diminish' is a package that implements hiding or abbreviation
-    of the mode line displays (lighters) of minor-modes.
+   =Diminish= is a package that implements hiding or abbreviation of the mode line
+   displays (lighters) of minor-modes.
 
    #+BEGIN_SRC elisp
      (require 'cl)
@@ -201,12 +173,11 @@
 
 * Variables
 ** Personal information
-
-#+BEGIN_SRC elisp
-(setq user-full-name "Roman Kalinichenko"
-      user-mail-address "romankrv@gmail.com")
-#+END_SRC
-
+   
+ #+BEGIN_SRC elisp
+  (setq user-full-name "Roman Kalinichenko"
+        user-mail-address "romankrv@gmail.com")
+ #+END_SRC
 ** Tabs vs Spaces
 
    I have learned to distrust tabs in my source code, so let's make
@@ -237,7 +208,7 @@
    #+END_SRC
 
    Now, any file loaded with a =gpg= extension, e.g. =some.org.gpg=,
-   will prompt for a password (and then use =org-mode=).  Since these
+   will prompt for a password (and then use =org-mode=). Since these
    files are for my eyes only, I don’t need the key-ring prompt:
 
    #+BEGIN_SRC elisp
@@ -255,13 +226,11 @@
 
    Lazy people like me never want to type “yes” when “y” will suffice.
    Does anyone type =yes= anymore?
-
    #+BEGIN_SRC elisp
      (fset 'yes-or-no-p 'y-or-n-p)
    #+END_SRC
 
    Fix the scrolling to keep point in the center:
-
    #+BEGIN_SRC elisp
      (setq scroll-conservatively 10000
            scroll-preserve-screen-position t)
@@ -373,7 +342,8 @@
   #+END_SRC
 
 ** Move to beginning of line
-   Copied from http://emacsredux.com/blog/2013/05/22/smarter-navigation-to-the-beginning-of-a-line/
+   Copied from
+   http://emacsredux.com/blog/2013/05/22/smarter-navigation-to-the-beginning-of-a-line/
 
    Move point to the first non-whitespace character on this line. If point is
    already there, move to the beginning of the line. Effectively toggle between
@@ -506,17 +476,17 @@
   Specifying Files Not to be Opened
   You can specify buffers which should not be saved, by name or by mode:
 
-#+BEGIN_SRC elisp
-   (setq desktop-buffers-not-to-save
-        (concat "\\("
-                "^nn\\.a[0-9]+\\|\\.log\\|(ftp)\\|^tags\\|^TAGS"
-                "\\|\\.emacs.*\\|\\.diary\\|\\.newsrc-dribble\\|\\.bbdb"
-	        "\\)$"))
-   (add-to-list 'desktop-modes-not-to-save 'dired-mode)
-   (add-to-list 'desktop-modes-not-to-save 'Info-mode)
-   (add-to-list 'desktop-modes-not-to-save 'info-lookup-mode)
-   (add-to-list 'desktop-modes-not-to-save 'fundamental-mode)
-#+END_SRC
+  #+BEGIN_SRC elisp
+    (setq desktop-buffers-not-to-save
+          (concat "\\("
+                  "^nn\\.a[0-9]+\\|\\.log\\|(ftp)\\|^tags\\|^TAGS"
+                  "\\|\\.emacs.*\\|\\.diary\\|\\.newsrc-dribble\\|\\.bbdb"
+                  "\\)$"))
+    (add-to-list 'desktop-modes-not-to-save 'dired-mode)
+    (add-to-list 'desktop-modes-not-to-save 'Info-mode)
+    (add-to-list 'desktop-modes-not-to-save 'info-lookup-mode)
+    (add-to-list 'desktop-modes-not-to-save 'fundamental-mode)
+  #+END_SRC
 
 ** Windmove (switching between windows)
 
@@ -524,15 +494,15 @@
    cycling through =C-x o= (=other-window=). Windmove doesn't behave well
    with Org, so we need to use different keybindings.
 
-#+BEGIN_SRC elisp
-(use-package windmove
-  :ensure
-  :bind
-  (("<f2> <right>" . windmove-right)
-   ("<f2> <left>" . windmove-left)
-   ("<f2> <up>" . windmove-up)
-   ("<f2> <down>" . windmove-down)))
-#+END_SRC
+  #+BEGIN_SRC elisp
+    (use-package windmove
+      :ensure
+      :bind
+      (("<f2> <right>" . windmove-right)
+       ("<f2> <left>" . windmove-left)
+       ("<f2> <up>" . windmove-up)
+       ("<f2> <down>" . windmove-down)))
+  #+END_SRC
 
 ** Winner mode (undo/redo window configuration)
 
@@ -540,34 +510,76 @@
    (and “redo”) changes in the window configuration with the key commands
    ‘C-c left’ and ‘C-c right’
 
-#+BEGIN_SRC elisp
-(when (fboundp 'winner-mode)
+  #+BEGIN_SRC elisp
+    (when (fboundp 'winner-mode)
       (winner-mode 1))
-#+END_SRC
+  #+END_SRC
+
 ** Anzu (display the typed matches in the mode-line)
 
    Anzu is an Emacs port of anzu.vim that provides a minor mode which displays
    current match and total matches information in the mode-line in various search modes.
 
- #+BEGIN_SRC elisp
- (use-package anzu
-   :ensure t
-   :diminish anzu-mode nil
-   :config
-    (progn
-      (global-anzu-mode t)
-      (global-set-key [remap query-replace-regexp] 'anzu-query-replace-regexp)
-      (global-set-key [remap query-replace] 'anzu-query-replace)))
- #+END_SRC
-** Avy - navigate by searching for a letter on the screen and jumping to it
+  #+BEGIN_SRC elisp
+    (use-package anzu
+      :ensure t
+      :diminish anzu-mode nil
+      :config
+      (progn
+        (global-anzu-mode t)
+        (global-set-key [remap query-replace-regexp] 'anzu-query-replace-regexp)
+        (global-set-key [remap query-replace] 'anzu-query-replace)))
+  #+END_SRC
 
-   See https://github.com/abo-abo/avy for more info
+** Swiper / Ivy / Counsel (Efficient Incremental Search)
+
+   *Flexible, Simple tools for minibuffer completion in Emacs*
+
+   Swiper gives us a really efficient incremental search with regular expressions
+   and Ivy / Counsel replace a lot of ido or helms completion functionality
 
   #+BEGIN_SRC elisp
-  (use-package avy
-    :ensure t
-    :bind (("M-s" . avy-goto-word-1)
-           ("s-j" . avy-goto-char-timer)))
+    (use-package counsel
+      :ensure t
+      :bind
+      (("M-y" . counsel-yank-pop)
+       :map ivy-minibuffer-map
+       ("M-y" . ivy-next-line)))
+
+    (use-package ivy
+      :ensure t
+      :diminish (ivy-mode)
+      :bind (("C-x b" . ivy-switch-buffer))
+      :config
+        (ivy-mode 1)
+        (setq ivy-use-virtual-buffers t)
+        (setq ivy-count-format "%d/%d ")
+        (setq ivy-display-style 'fancy))
+
+    (use-package swiper
+      :ensure t
+      :bind (("C-s" . swiper)
+             ("C-r" . swiper)
+             ("C-c C-r" . ivy-resume)
+             ("M-x" . counsel-M-x)
+             ("C-x C-f" . counsel-find-file))
+      :config
+        (progn
+          (ivy-mode 1)
+          (setq ivy-use-virtual-buffers t)
+          (setq ivy-display-style 'fancy)
+          (define-key read-expression-map (kbd "C-r") 'counsel-expression-history)))
+  #+END_SRC
+
+** Avy - navigate by searching for a letter on the screen and jumping to it
+
+  See https://github.com/abo-abo/avy for more info
+
+  #+BEGIN_SRC elisp
+   (use-package avy
+     :ensure t
+     :bind (("M-s" . avy-goto-word-1)
+            ("s-j" . avy-goto-char-timer)))
     ;; changed from char as per jcs
   #+END_SRC
 
@@ -601,7 +613,6 @@
 
   Flashes the cursor's line when you scroll
   #+BEGIN_SRC
-
     (use-package beacon
       :ensure t
       :diminish beacon-mode
@@ -610,8 +621,8 @@
       (setq beacon-color "#666600"))
   #+END_SRC
 
-  #+BEGIN_SRC elisp
-   ;(add-to-list 'default-frame-alist '(fullscreen . maximized))
+  #+BEGIN_SRC elisp :tangle no
+    (add-to-list 'default-frame-alist '(fullscreen . maximized))
   #+END_SRC
 
   Show white spaces at the end of lines
@@ -635,43 +646,47 @@
    slowly increase a region selection by logical segments by using
    Magnar's [[https://github.com/magnars/expand-region.el][expand-region]] project.
 
-     #+BEGIN_SRC elisp
-     (use-package expand-region
-       :ensure t
-       :config
-       (defun ha/expand-region (lines)
-         "Prefix-oriented wrapper around Magnar's `er/expand-region'.
+  #+BEGIN_SRC elisp
+  (use-package expand-region
+    :ensure t
+    :config
+    (defun ha/expand-region (lines)
+      "Prefix-oriented wrapper around Magnar's `er/expand-region'.
 
      Call with LINES equal to 1 (given no prefix), it expands the
      region as normal.  When LINES given a positive number, selects
      the current line and number of lines specified.  When LINES is a
      negative number, selects the current line and the previous lines
      specified.  Select the current line if the LINES prefix is zero."
-         (interactive "p")
-         (cond ((= lines 1)   (er/expand-region 1))
-               ((< lines 0)   (ha/expand-previous-line-as-region lines))
-               (t             (ha/expand-next-line-as-region (1+ lines)))))
+      (interactive "p")
+      (cond ((= lines 1)   (er/expand-region 1))
+            ((< lines 0)   (ha/expand-previous-line-as-region lines))
+            (t             (ha/expand-next-line-as-region (1+ lines)))))
 
-       (defun ha/expand-next-line-as-region (lines)
-         (message "lines = %d" lines)
-         (beginning-of-line)
-         (set-mark (point))
-         (end-of-line lines))
+    (defun ha/expand-next-line-as-region (lines)
+      (message "lines = %d" lines)
+      (beginning-of-line)
+      (set-mark (point))
+      (end-of-line lines))
 
-       (defun ha/expand-previous-line-as-region (lines)
-         (end-of-line)
-         (set-mark (point))
-         (beginning-of-line (1+ lines)))
+    (defun ha/expand-previous-line-as-region (lines)
+      (end-of-line)
+      (set-mark (point))
+      (beginning-of-line (1+ lines)))
 
-       :bind ("C-=" . ha/expand-region))
-   #+END_SRC
+      :bind ("C-=" . ha/expand-region))
+  #+END_SRC
 ** Smartparens [Magic of the pair braces and quotes]
+
+   Managing paired characters like parentheses, braces, brackets, quotation marks,
+   angle brackets, and other conceivable pair-able characters has always been a pain.
+   Other packages solve that problem partially. However, they it still miss several points.
 
    Minor mode for Emacs that deals with parens pairs and tries to be smart about it.
    Inside Emacs, M-x sp-cheat-sheet will show you all the commands available, with examples.
 
   #+BEGIN_SRC elisp
-     (use-package smartparens
+  (use-package smartparens
        :ensure t
        :diminish smartparens-mode "SP"
        :config
@@ -730,7 +745,7 @@
 
          ("C-c _"  . wrap-with-underscores)
          ("C-c `"  . wrap-with-back-quotes)))
-   #+END_SRC
+  #+END_SRC
 
 ** Block Wrappers
 
@@ -988,6 +1003,19 @@
      :ensure t
      :diminish restclient "REST"
      :defer t)
+   #+END_SRC
+
+** PDF Tools
+
+  #+BEGIN_SRC elisp
+;   (use-package pdf-tools
+;     :ensure t
+;     :config
+;       (pdf-tools-install)
+;       (setq-default pdf-view-display-size 'fit-page))
+
+;   (use-package org-pdfview :ensure t)
+;   (require 'org-pdfview)
    #+END_SRC
 
 * Org-mode

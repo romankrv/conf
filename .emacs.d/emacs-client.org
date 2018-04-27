@@ -19,7 +19,7 @@
 
   :weight  
   _Font weight—one of the symbols (from densest to faintest)_  
-  =ultra-bold=, =extra-bold=, ==bold=, =semi-bold=, =normal=,   
+  =ultra-bold=, =extra-bold=, =bold=, =semi-bold=, =normal=,        
   =semi-light, =light, =extra-light, or =ultra-light=.
 
   On text terminals which support variable-brightness text,  
