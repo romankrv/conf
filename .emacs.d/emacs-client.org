@@ -4,23 +4,23 @@
 #+TAGS:   emacs
 
 * Fonts
-** Font Coding
+** Font for coding
 
-  Try to use http://input.fontbureau.com/  
-  *Input font Fonts for code from DJR & Font Bureau*  
+ Try to use http://input.fontbureau.com/  
+ *Input font Fonts for code from DJR & Font Bureau*  
 
-  Also good font: http://www.janfromm.de/typefaces/camingomono/camingocode/  
+ Also good font: http://www.janfromm.de/typefaces/camingomono/camingocode/  
 
-  exemple lisp code:
-   (set-face-attribute
-    'default nil :family "Input Mono"
-    :weight 'light
-    :slant 'italic)
+ exemple lisp code:
+     (set-face-attribute
+     'default nil :family "Input Mono"
+     :weight 'light
+     :slant 'italic)
 
   :weight  
   _Font weight—one of the symbols (from densest to faintest)_  
-  =ultra-bold, extra-bold, bold, semi-bold, normal,  
-  semi-light, light, extra-light, or ultra-light.=  
+  =ultra-bold=, =extra-bold=, =bold=, =semi-bold=, =normal=,   
+  =semi-light, =light, =extra-light, or =ultra-light=.
 
   On text terminals which support variable-brightness text,  
   any weight greater than normal is displayed as extra bright,  
@@ -28,31 +28,31 @@
 
   :slant  
   _Font slant—one of the symbols_:  
-  =italic, oblique, normal, reverse-italic, or reverse-oblique=.  
-  On text terminals that support variable-brightness text,  
+  =italic, oblique, normal, reverse-italic, or reverse-oblique=.   
+  On text terminals that support variable-brightness text,
   slanted text is displayed as half-bright.  
 
   _Nice list of the fonts for coding_:  
-  =:family "Input Mono"=  
-  =:family "Input Mono Narrow"=  
-  =:family "Input Mono Compressed"=  
-  =:family "Input Mono Condensed"=  
-  =:family "Input Sans"=  
-  =:family "Input Serif"=  
-  =:family "Monaco"=  
-  =:family "Inconsolata"=  
-  =:family "Anonymous Pro"=  
-  =:family "Inconsolata-g"=  
-  =:family "DejaVu Sans Mono"=  
-  =:family "CamingoCode"=  
-  =:family "Fantasque Sans Mono"=  
+   ="Input Mono"=    
+   ="Input Mono Narrow"=  
+   ="Input Mono Compressed"=  
+   ="Input Mono Condensed"=  
+   ="Input Sans"=  
+   ="Input Serif"=  
+   ="Monaco"=  
+   ="Inconsolata"=  
+   ="Anonymous Pro"=  
+   ="Inconsolata-g"=  
+   ="DejaVu Sans Mono"=  
+   ="CamingoCode"=  
+   ="Fantasque Sans Mono"=  
 
-  exemple lisp code:  
-  (when (eq system-type 'darwin)   
-  (set-face-attribute 'default nil :family "Input Mono" :height 220))  
+  exemple lisp code:    
+      (when (eq system-type 'darwin)    
+      (set-face-attribute 'default nil :family "Input Mono" :height 220))    
 
   #+BEGIN_SRC elisp
-   (defconst RK/FONT "CamingoCode")
+   (defconst RK/FONT "Input Mono")
 
     (when (member RK/FONT (font-family-list))
       (set-face-attribute
@@ -108,8 +108,8 @@
   (use-package default-text-scale
     :ensure t
     :config
-      (global-set-key (kbd "C-M-=") 'default-text-scale-increase)
-      (global-set-key (kbd "C-M--") 'default-text-scale-decrease))
+    (global-set-key (kbd "C-M-=") 'default-text-scale-increase)
+    (global-set-key (kbd "C-M--") 'default-text-scale-decrease))
   #+END_SRC
 
 * Themes
@@ -162,3 +162,4 @@
 #+OPTIONS:     num:nil toc:nil todo:nil tasks:nil tags:nil
 #+OPTIONS:     skip:nil author:nil email:nil creator:nil timestamp:nil
 #+INFOJS_OPT:  view:nil toc:nil ltoc:t mouse:underline buttons:0 path:http://orgmode.org/org-info.js
+
