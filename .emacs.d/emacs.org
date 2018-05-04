@@ -51,8 +51,8 @@
 
    *This section put here as nominally and the following code moved to init.el*:
    #+BEGIN_SRC elisp :tangle no
-     (defconst RK/emacs-directory (concat (getenv "HOME") "/.emacs.d/"))
-     (defun RK/emacs-subdirectory (d) (expand-file-name d RK/emacs-directory))
+     (defconst RK/dir (concat (getenv "HOME") "/.emacs.d/"))
+     (defun RK/subdir (d) (expand-file-name d RK/dir))
    #+END_SRC
 
 ** Directory Structure
@@ -63,7 +63,7 @@
    *This section put here as nominally and the following code moved to init.el:*
    #+BEGIN_SRC elisp :tangle no
     (let* ((subdirs '("elisp" "backups"))
-            (fulldirs (mapcar (lambda (d) (RK/emacs-subdirectory d)) subdirs)))
+            (fulldirs (mapcar (lambda (d) (RK/subdir d)) subdirs)))
        (dolist (dir fulldirs)
          (when (not (file-exists-p dir))
            (message "Make directory: %s" dir)
@@ -76,7 +76,7 @@
    has =conf system= is good enough and I want to save it in to the file on own path:
 
    #+BEGIN_SRC elisp
-     (setq custom-file (expand-file-name "backups/custom.el" RK/emacs-directory))
+     (setq custom-file (expand-file-name "backups/custom.el" RK/dir))
      (when (file-exists-p custom-file)
        (load custom-file))
    #+END_SRC
@@ -87,7 +87,7 @@
    personal stash at: =$HOME/.emacs.d/elisp=
 
    #+BEGIN_SRC elisp
-     (add-to-list 'load-path (RK/emacs-subdirectory "elisp"))
+     (add-to-list 'load-path (RK/subdir "elisp"))
    #+END_SRC
 
 ** Modernizing Emacs
@@ -303,8 +303,7 @@
 
    #+BEGIN_SRC elisp
      (setq backup-directory-alist
-           `(("." . ,(expand-file-name
-                      (RK/emacs-subdirectory "backups")))))
+           `(("." . ,(expand-file-name (RK/subdir "backups")))))
    #+END_SRC
 
    Tramp should do the same:
