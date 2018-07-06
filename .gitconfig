@@ -1,6 +1,6 @@
 [user]
-        name = Roman Kalinichenko
-        email = romankrv@gmail.com
+	name = Roman Kalinichenko
+	email = romankrv@gmail.com
 
 [sendemail]
         smtpserver = smtp.gmail.com
