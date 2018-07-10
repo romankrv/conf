@@ -44,6 +44,16 @@
     (when (string= system-type "darwin")
       (setq dired-use-ls-dired nil))
   #+END_SRC
+  
+  There is a well known issue about the PATH not being the same in Emacs
+  as in the MacOS shell (ie Terminal).
+  
+  #+BEGIN_SRC emacs-lisp
+    (use-package exec-path-from-shell
+      :ensure t
+      :if (memq window-system '(mac ns))
+      :config (exec-path-from-shell-initialize))
+  #+END_SRC
 
 * Technical Artifacts
 

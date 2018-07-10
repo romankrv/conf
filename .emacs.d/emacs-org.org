@@ -39,28 +39,25 @@ Just a few tweaks here to make the experience better.
               org-hide-leading-stars t
               org-confirm-babel-evaluate nil
 
-              ;;; Org-html export configuration
+              ;; Org-html export configuration
               org-html-doctype "html5"
               org-html-html5-fancy t
               org-html-postamble nil
 
-              ;;; change behavior of TAB as per the appropriate major mode
-              ;; org-startup-indented t
-              org-startup-folded (quote overview)
+              ;; Change behavior of TAB as per the appropriate major mode
+              ;org-startup-indented t
+
+              ;; Preserve the indentation inside of source blocks
+              ;org-src-tab-acts-natively t
+              ;org-src-preserve-indentation t
+
+;              org-startup-folded (quote overview)
               org-todo-keywords '((sequence "TODO(t)" "DOING(g)" "|" "DONE(d)")
                                   (sequence "|" "CANCELED(c)")))
               (add-to-list 'auto-mode-alist '("\\.txt\\'" . org-mode))
               (add-to-list 'auto-mode-alist '(".*/[0-9]*$" . org-mode))   ;; Journal entries
 
-              ;; Preserve the indentation inside of source blocks
-              ;; org-src-tab-acts-natively t
-              ;;org-src-preserve-indentation t
-
         (setq org-ellipsis " ▼")
-        ;; Better bullets
-        (font-lock-add-keywords 'org-mode
-          '(("^ +\\([-*]\\) "
-          (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
 
       :bind (("C-c l" . org-store-link)
              ("C-c c" . org-capture)
@@ -167,10 +164,6 @@ Just a few tweaks here to make the experience better.
      :init (add-hook 'org-mode-hook 'org-bullets-mode))
   #+END_SRC
 
-  Here is my approach for quickly making the initial asterisks for listing items
-  and whatnot, appear as Unicode bullets (without actually affecting the text file
-  or the behavior).
-
   #+BEGIN_SRC elisp
     (use-package org
       :init
@@ -253,3 +246,4 @@ Just a few tweaks here to make the experience better.
 #+OPTIONS:     num:nil toc:nil todo:nil tasks:nil tags:nil
 #+OPTIONS:     skip:nil author:nil email:nil creator:nil timestamp:nil
 #+INFOJS_OPT:  view:nil toc:nil ltoc:t mouse:underline buttons:0 path:http://orgmode.org/org-info.js
+

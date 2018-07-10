@@ -289,16 +289,6 @@
      (setq disabled-command-function nil)
    #+END_SRC
 
-   Use UTF-8 by default
-
-   #+BEGIN_SRC elisp
-     (prefer-coding-system        'utf-8)
-     (set-language-environment    'utf-8)
-     (set-default-coding-systems  'utf-8)
-     (set-terminal-coding-system  'utf-8)
-     (set-selection-coding-system 'utf-8)
-   #+END_SRC
-
 * Navigation
 ** Smex
 
@@ -381,7 +371,6 @@
        (save-some-buffers t))
      (add-hook 'focus-out-hook 'save-all)
    #+END_SRC
-
 ** More window movement
 
    Offer a *visual* way to choose a window to switch to
@@ -558,6 +547,35 @@
     (add-to-list 'desktop-modes-not-to-save 'info-lookup-mode)
     (add-to-list 'desktop-modes-not-to-save 'fundamental-mode)
   #+END_SRC
+
+** ADVANCED UNDO/REDO -> Undo Tree
+  
+   Keybinding notes:
+   https://gist.github.com/jclosure/cf57e47736d986adb445
+
+   important notes:
+
+    Active undoo-tree with =C-x u=
+
+    =C-q=  (`undo-tree-visualizer-abort')
+     Abort undo-tree-visualizer.
+
+    =q=  (`undo-tree-visualizer-quit')
+     Quit undo-tree-visualizer.
+
+    =d=  (`undo-tree-visualizer-toggle-diff')
+     Toggle diff display.
+
+
+   #+BEGIN_SRC elisp
+     (use-package undo-tree
+      :ensure t
+      :init
+        (global-undo-tree-mode)
+      :config 
+        (setq undo-tree-visualizer-timestamps t)
+      :diminish "UTree")
+   #+END_SRC
 
 ** Windmove (switching between windows)
 
@@ -900,6 +918,58 @@
           ("C-c `" . wrap-with-back-quotes)))
    #+END_SRC
 
+** Toggle Window Split
+   
+   Vertical split shows more of each line, horizontal split shows more
+   lines. This code toggles between them. It only works for frames
+   with exactly two windows.
+
+   #+BEGIN_SRC elisp
+          (defun toggle-window-split ()
+            (interactive)
+            (if (= (count-windows) 2)
+                (let* ((this-win-buffer (window-buffer))
+                       (next-win-buffer (window-buffer (next-window)))
+                       (this-win-edges (window-edges (selected-window)))
+                       (next-win-edges (window-edges (next-window)))
+                       (this-win-2nd (not (and (<= (car this-win-edges)
+                                                   (car next-win-edges))
+                                               (<= (cadr this-win-edges)
+                                                   (cadr next-win-edges)))))
+                       (splitter
+                        (if (= (car this-win-edges)
+                               (car (window-edges (next-window))))
+                            'split-window-horizontally
+                          'split-window-vertically)))
+                  (delete-other-windows)
+                  (let ((first-win (selected-window)))
+                    (funcall splitter)
+                    (if this-win-2nd (other-window 1))
+                    (set-window-buffer (selected-window) this-win-buffer)
+                    (set-window-buffer (next-window) next-win-buffer)
+                    (select-window first-win)
+                    (if this-win-2nd (other-window 1))))))
+
+          ;; I don't use the default binding of 'C-x 5', so use toggle-frame-split instead
+          (global-set-key (kbd "C-x 5") 'toggle-frame-split)
+     (defun toggle-frame-split ()
+       "If the frame is split vertically, split it horizontally or vice versa.
+     Assumes that the frame is only split into two."
+       (interactive)
+       (unless (= (length (window-list)) 2) (error "Can only toggle a frame split in two"))
+       (let ((split-vertically-p (window-combined-p)))
+         (delete-window) ; closes current window
+         (if split-vertically-p
+             (split-window-horizontally)
+           (split-window-vertically)) ; gives us a split with the other window twice
+         (switch-to-buffer nil))) ; restore the original window in this part of the frame
+
+     ;; I don't use the default binding of 'C-x 5', so use toggle-frame-split instead
+     (global-set-key (kbd "C-x 5") 'toggle-frame-split)     
+
+
+   #+END_SRC
+   
 ** Block Wrappers
 
    [[https://github.com/rejeep/wrap-region.el][Wrap-region]] is even more flexible. In most editors, selecting
@@ -1391,7 +1461,21 @@
    #+BEGIN_SRC elisp
      (delete-selection-mode 1)
    #+END_SRC
+** Highlighting the current word
+   
+   Emacs comes with this functionality built in, but it is very
+   awkward to use. The next code is remedy that.
+   
+   #+BEGIN_SRC elisp
+     (require 'hi-lock)
+     (defun RK/toggle-mark-word-at-point ()
+       (interactive)
+       (if hi-lock-interactive-patterns
+           (unhighlight-regexp (car (car hi-lock-interactive-patterns)))
+         (highlight-symbol-at-point)))
 
+     (global-set-key (kbd "s-.") 'RK/toggle-mark-word-at-point)
+   #+END_SRC
 * Technical Artifacts
 ** Run org-babel-tangle on saving that file
 
