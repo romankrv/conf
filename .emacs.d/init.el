@@ -1,55 +1,49 @@
-;; This's the file of the manage of emacs.org
-(require 'package)
-(setq package-enable-at-startup nil)
-(setq package-archives '(("org"       . "http://orgmode.org/elpa/")
-			 ("gnu"       . "http://elpa.gnu.org/packages/")
-			 ("melpa"     . "http://melpa.org/packages/")
-			 ("marmalade" . "http://marmalade-repo.org/packages/")))
-(package-initialize)
-
-;; Bootstrap `use-package'
-(unless (package-installed-p 'use-package)
-        (package-refresh-contents)
-        (package-install 'use-package))
-(setq use-package-verbose t)
-
-
-(defconst RK/dir (concat (getenv "HOME") "/.emacs.d/"))
-(defconst RK/MAIN-ORG-FILE (concat RK/dir "emacs.org"))
-(defconst RK/MAIN-LOAD-FILE (concat RK/dir "elisp/init-main.el"))
-
-
-(defun RK/tangle-file (file)
-  "Given an 'org-mode' FILE, tangle the source code."
-  (interactive "fOrg File: ")
-  (find-file file)
-  (org-babel-tangle)
-  (message "Run org-babel-tangle from --> %s" file)
-  (kill-buffer))
-
-(defun RK/subdir (d) (expand-file-name d RK/dir))
-(let* ((subdirs '("elisp" "backups"))
-       (fulldirs (mapcar (lambda (d) (RK/subdir d)) subdirs)))
-  (dolist (dir fulldirs)
-    (when (not (file-exists-p dir))
-      (message "Make directory: %s" dir)
-      (make-directory dir))))
-
-(if (file-exists-p RK/MAIN-LOAD-FILE)
-    (progn
-      (load-file RK/MAIN-LOAD-FILE)
-      (message "You are running from %s" RK/MAIN-LOAD-FILE))
-  (progn
-    (RK/tangle-file RK/MAIN-ORG-FILE)
-    (RK/tangle-file (concat RK/dir "emacs-org.org"))
-    (RK/tangle-file (concat RK/dir "emacs-python.org"))
-    (RK/tangle-file (concat RK/dir "emacs-client.org"))
-    ;(RK/tangle-file (concat RK/dir "emacs-server.org"))
-    (when (eq system-type 'darwin)
-      (RK/tangle-file (concat RK/dir "emacs-mac.org")))
-
+(let ((file-name-handler-alist nil))
+    ;; Increase the garbage collection threshold to 200 MB to ease startup
+    (setq gc-cons-threshold (* 200 1024 1024))
+    (require 'package)
+    (setq package-enable-at-startup nil)
+    (setq package-archives '(("org"   . "http://orgmode.org/elpa/")
+                             ("melpa" . "http://melpa.org/packages/")
+                             ("gnu"   . "http://elpa.gnu.org/packages/")))
+    (package-initialize)
+    ;; Bootstrap `use-package'
+    (unless (package-installed-p 'use-package)
+      (package-refresh-contents)
+      (package-install 'use-package))
+    (setq use-package-verbose nil
+          use-package-always-defer nil
+          use-package-compute-statistics nil
+          use-package-minimum-reported-time 0)
+    (defconst RK/MAIN-ORG-FILE "emacs.org")
+    (defconst RK/EMACS-DIR (concat (getenv "HOME") "/.emacs.d/"))
+    (defconst RK/MAIN-LOAD-FILE (concat RK/EMACS-DIR "elisp/init-main.el"))
+    (defun RK/subdir (d)(expand-file-name d RK/EMACS-DIR))
+    ;; One needs to make sure the following directories have been created.
+    (let* ((subdirs '("elisp" "backups"))
+           (fulldirs (mapcar (lambda (d) (RK/subdir d)) subdirs)))
+      (dolist (dir fulldirs)
+        (when (not (file-exists-p dir))
+          (make-directory dir))))
+    (defun RK/tangle-file (file)
+      "Given an 'org-mode' FILE, tangle the source code."
+      (interactive "fOrg File: ")
+      (find-file (concat RK/EMACS-DIR file))
+      (org-babel-tangle)
+      (kill-buffer))
     (if (file-exists-p RK/MAIN-LOAD-FILE)
-       (progn
-         (load-file RK/MAIN-LOAD-FILE)
-         (message "You are running from %s after tangle process" RK/MAIN-LOAD-FILE))
-      (message "Main config file %s not exist. Check out this" RK/MAIN-LOAD-FILE))))
+        (progn
+          (load-file RK/MAIN-LOAD-FILE)
+          (message "\n=====> You are running from %s <=====\n" RK/MAIN-LOAD-FILE))
+      (progn
+        (RK/tangle-file RK/MAIN-ORG-FILE)
+        (RK/tangle-file "emacs-org.org")
+        (RK/tangle-file "emacs-python.org")
+        (RK/tangle-file "emacs-client.org")
+        (when (eq system-type 'darwin) (RK/tangle-file "emacs-mac.org"))
+        (if (file-exists-p RK/MAIN-LOAD-FILE)
+           (progn
+             (load-file RK/MAIN-LOAD-FILE)
+             (message "\n====*> You are running from %s after tangle process <*====\n" RK/MAIN-LOAD-FILE))
+          (message "\n=!= Main config file %s not exist. Check out this =!=\n" RK/MAIN-LOAD-FILE)))))
+
