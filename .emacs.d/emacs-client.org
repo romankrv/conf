@@ -7,68 +7,68 @@
 ** Font for coding
 
    Try to use http://input.fontbureau.com/
-   *Input font Fonts for code from DJR & Font Bureau*
+   Input font Fonts for code from DJR & Font Bureau
 
    Also good font: http://www.janfromm.de/typefaces/camingomono/camingocode/
 
    exemple lisp code:
 
-   (set-face-attribute
-   'default nil :family "Input Mono"
+   ‘(set-face-attribute
+   'default nil :family Input Mono
    :weight 'light
-   :slant 'italic)
+   :slant 'italic)’
 
   :weight
-    _Font weight—one of the symbols (from densest to faintest)_
-    =ultra-bold=, =extra-bold=, =bold=, =semi-bold=, =normal=,
-    =semi-light, =light, =extra-light, or =ultra-light=.
+  Font weight—one of the symbols (from densest to faintest)
+    ultra-bold, extra-bold, bold, semi-bold, normal,
+    =semi-light, =light, =extra-light, or ultra-light.
 
   On text terminals which support variable-brightness text,
   any weight greater than normal is displayed as extra bright,
   and any weight less than normal is displayed as half-bright.
 
   :slant
-    _Font slant—one of the symbols_:
-    =italic, oblique, normal, reverse-italic, or reverse-oblique=.
+  Font slant—one of the symbols:
+    italic, oblique, normal, reverse-italic, or reverse-oblique.
     On text terminals that support variable-brightness text,
     slanted text is displayed as half-bright.
 
-  _Nice list of the fonts for coding_:
-   ="Input Mono"=
-   ="Input Mono Narrow"=
-   ="Input Mono Compressed"=
-   ="Input Mono Condensed"=
-   ="Input Sans"=
-   ="Input Serif"=
-   ="Monaco"=
-   ="Inconsolata"=
-   ="Anonymous Pro"=
-   ="Inconsolata-g"=
-   ="DejaVu Sans Mono"=
-   ="CamingoCode"=
-   ="Fantasque Sans Mono"=  
- 
+  Nice list of the fonts for coding:
+  Input Mono
+   CamingoCode
+   Input Mono Narrow
+   Input Mono Compressed
+   Input Mono Condensed
+   Input Sans
+   Input Serif
+   Monaco
+   Inconsolata
+   Anonymous Pro
+   Inconsolata-g
+   DejaVu Sans Mono
+   Fantasque Sans Mono
+
   exemple lisp code:
       (when (eq system-type 'darwin)
-      (set-face-attribute 'default nil :family "Input Mono" :height 220))
+      (set-face-attribute 'default nil :family Input Mono :height 220))
 
    #+BEGIN_SRC elisp
-     (defconst RK/FONT "Input Mono")
+     (defconst RK/FONT "CamingoCode")
 
      (when (member RK/FONT (font-family-list))
        (set-face-attribute
-        'default nil
-        :family RK/FONT
-        :stipple nil
-        :height 220
-        :inverse-video nil
-        :box nil
-        :strike-through nil
-        :overline nil
-        :underline nil
-        :slant 'normal
-        :weight 'light
-        :foundry "outline"))
+          'default nil
+          :family RK/FONT
+          :stipple nil
+          :height 200
+          :inverse-video nil
+          :box nil
+          :strike-through nil
+          :overline nil
+          :underline nil
+          :slant 'normal
+          :weight 'light
+          :foundry 'outline))
    #+END_SRC
 
 ** Readable fonts Novel Reading Mode
@@ -84,7 +84,7 @@
     • variable width font is used.
 
     Call again to toggle back.
-    URL 'http://ergoemacs.org/emacs/emacs_novel_reading_mode.html'
+    URL http://ergoemacs.org/emacs/emacs_novel_reading_mode.html
     Version 2017-02-27"
       (interactive)
       (if (null (get this-command 'state-on-p))
@@ -105,12 +105,12 @@
 
 ** Font scaling
 
-  #+BEGIN_SRC elisp
+  #+BEGIN_SRC elisp :tangle no
     (use-package default-text-scale
       :ensure t
       :config
-      (global-set-key (kbd "C-M-=") 'default-text-scale-increase)
-      (global-set-key (kbd "C-M--") 'default-text-scale-decrease))
+      (global-set-key (kbd C-M-=) 'default-text-scale-increase)
+      (global-set-key (kbd C-M--) 'default-text-scale-decrease))
   #+END_SRC
 
 * Themes
@@ -118,27 +118,96 @@
   #+BEGIN_SRC elisp
     (use-package powerline
       :ensure t
+      :defer 1
       :init (powerline-default-theme))
   #+END_SRC
 
-  #+BEGIN_SRC elisp
+  #+BEGIN_SRC elisp :tangle no
     (use-package nord-theme
       :ensure t
       :init (load-theme 'nord t))
   #+END_SRC
 
-
-  I wanna change the highlight color for selected text.
-
   #+BEGIN_SRC elisp
-    (set-face-attribute 'region nil :background "#babdb6")
+    (use-package doom-themes
+      :if window-system
+      :ensure t
+      :defer 0.1
+      :config
+      (progn
+        (load-theme 'doom-opera t)
+         ;(load-theme 'doom-vibrant t)
+         ;(load-theme 'doom-molokai t)
+         ;(load-theme 'doom-dracula t)
+         ;(load-theme 'doom-peacock t)
+         ;(load-theme 'doom-city-lights t)
+        (doom-themes-org-config)
+        ;;The highlight color
+        (set-face-background hl-line-face "#424056")
+        (set-face-attribute 'region nil :background "#5586de" :foreground "#fff7d9")))
   #+END_SRC
+
+  If you use Emacs as Terminal Mode -> ‘$emacs -nw’
+  #+BEGIN_SRC elisp
+    (unless (featurep 'display-graphic-p)
+      ;(load-theme 'wombat t)
+      (load-theme 'tango-dark t)
+      ;(set-face-background hl-line-face "#424056")
+      (set-face-attribute 'region nil :background "#5586de" :foreground "#FFF7D9"))
+  #+END_SRC
+
+  #+BEGIN_SRC elisp :tangle no
+    (unless (featurep 'display-graphic-p)
+      (let
+        ((*background-color*   "#000000")
+         (*brown*              "#E64")
+         (*comments*           "#FF0000")
+         (*constant*           "#008080")
+         (*current-line*       "#1A1D2B")
+         (*cursor-block*       "#FFA560")
+         (*cursor-underscore*  "#8888AA")
+         (*keywords*           "#CC33CC")
+         (*Light-purple*       "#FFCCFF")
+         (*line-number*        "#111")
+         (*method-declaration* "#3300CC")
+         (*mode-line-bg*       "#202020")
+         (*mode-line-fg*       "#FFA560")
+         (*normal*             "#F6F3E8")
+         (*number*             "#FF73FD")
+         (*operators*          "#228B22")
+         (*red*                "#FF6C60")
+         (*red-light*          "#FFB6B0")
+         (*regexp*             "#E9C")
+         (*regexp-alternate*   "#FF0")
+         (*regexp-alternate-2* "#B18A3D")
+         (*search-selection*   "#2F2F00")
+         (*string*             "#8B008B")
+         (*string-inner*       "#00A0A0")
+         (*variable*           "#C76114")
+         (*visual-selection*   "#FFA560"))))
+       #+END_SRC
+
+* Miscellaneous
+** Color Codes
+
+   Running things like RSpec in compilation mode produces ansi color codes that
+   aren't properly dealt with by default. This takes care of that and makes sure
+   that the colors that are trying to be presented are rendered correctly.
+
+   #+BEGIN_SRC elisp
+     (require 'ansi-color)
+     (defun colorize-compilation-buffer ()
+       (toggle-read-only)
+       (ansi-color-apply-on-region (point-min) (point-max))
+       (toggle-read-only))
+     (add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
+   #+END_SRC
 
 * Technical Artifacts
 
   Load up the particular operating system variation.
 
-  #+BEGIN_SRC
+  #+BEGIN_SRC elisp :tangle no
     (if (eq system-type 'darwin)
         (require 'init-mac)
       (require 'init-linux))
