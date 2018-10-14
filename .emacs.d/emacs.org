@@ -1,4 +1,4 @@
-#+TITLE:  Emacs Configuration File
+t#+TITLE:  Emacs Configuration File
 #+AUTHOR: Roman Kalinichenko
 #+EMAIL:  romankrv@gmail.com
 
@@ -49,8 +49,8 @@
 
    *This section put here as nominally and the following code moved to init.el*:
    #+BEGIN_SRC elisp :tangle no
-     (defconst RK/dir (concat (getenv "HOME") "/.emacs.d/"))
-       (defun RK/subdir (d) (expand-file-name d RK/dir))
+     (defconst RK/EMACS-DIR (concat (getenv "HOME") "/.emacs.d/"))
+       (defun RK/subdir (d) (expand-file-name d RK/EMACS-DIR))
    #+END_SRC
 
 ** Directory Structure
@@ -74,7 +74,7 @@
    has =conf system= is good enough and I want to save it in to the file on own path:
 
    #+BEGIN_SRC elisp
-     (setq custom-file (expand-file-name "backups/custom.el" RK/dir))
+     (setq custom-file (expand-file-name "backups/custom.el" RK/EMACS-DIR))
      (when (file-exists-p custom-file)
        (load custom-file))
    #+END_SRC
@@ -89,7 +89,7 @@
   #+END_SRC
 
 ** Input Decode Map
-   
+
    #+BEGIN_SRC elisp
      (mapc (lambda (map)
              (define-key input-decode-map
@@ -122,7 +122,7 @@
              ("<C-delete>"   "ESC [3;5~")
              ))
    #+END_SRC
-   
+
 ** Coding Systems
 
    We use UTF-8 by default
@@ -549,7 +549,7 @@
   #+END_SRC
 
 ** ADVANCED UNDO/REDO -> Undo Tree
-  
+
    Keybinding notes:
    https://gist.github.com/jclosure/cf57e47736d986adb445
 
@@ -572,7 +572,7 @@
       :ensure t
       :init
         (global-undo-tree-mode)
-      :config 
+      :config
         (setq undo-tree-visualizer-timestamps t)
       :diminish "UTree")
    #+END_SRC
@@ -817,10 +817,10 @@
          :bind ("C-=" . ha/expand-region))
    #+END_SRC
 ** Multiple Cursors
-   
+
    I’m intrigued with Magmar’s multiple-cursors project.
    It doesn’t have any default keybindings, so I set up these:
-   
+
    #+BEGIN_SRC elisp
      (use-package multiple-cursors
        :ensure t
@@ -856,7 +856,7 @@
    Minor mode for Emacs that deals with parens pairs and tries to be smart about it.
    Inside Emacs, M-x sp-cheat-sheet will show you all the commands available, with examples.
 
-   #+BEGIN_SRC elisp
+   #+BEGIN_SRC elisp :tangle no
      (use-package smartparens
        :ensure t
        :diminish smartparens-mode "SP"
@@ -919,7 +919,7 @@
    #+END_SRC
 
 ** Toggle Window Split
-   
+
    Vertical split shows more of each line, horizontal split shows more
    lines. This code toggles between them. It only works for frames
    with exactly two windows.
@@ -965,11 +965,11 @@
          (switch-to-buffer nil))) ; restore the original window in this part of the frame
 
      ;; I don't use the default binding of 'C-x 5', so use toggle-frame-split instead
-     (global-set-key (kbd "C-x 5") 'toggle-frame-split)     
+     (global-set-key (kbd "C-x 5") 'toggle-frame-split)
 
 
    #+END_SRC
-   
+
 ** Block Wrappers
 
    [[https://github.com/rejeep/wrap-region.el][Wrap-region]] is even more flexible. In most editors, selecting
@@ -1103,10 +1103,10 @@
 
 ** Define Key Sequence
 
-   Stolen solution from  
+   Stolen solution from
    http://ergoemacs.org/emacs/emacs_keybinding_power_of_keys_sequence.html
 
-   #+BEGIN_SRC elisp  
+   #+BEGIN_SRC elisp
      (progn
        (define-prefix-command 'inkel-map)
         (define-key inkel-map (kbd "<f1>") 'linum-mode)
@@ -1308,7 +1308,7 @@
 
 ** Line Numbers
 
-   Turn =linum-mode= on/off with =Command-K= 
+   Turn =linum-mode= on/off with =Command-K=
    However, I turn this on automatically for programming modes.
 
    #+BEGIN_SRC elisp
@@ -1396,7 +1396,7 @@
    #+BEGIN_SRC elisp :tangle no
      (add-hook 'before-save-hook 'delete-trailing-whitespace)
    #+END_SRC
-  
+
 ** Trailing Whitespaces
 
    #+BEGIN_SRC
@@ -1462,10 +1462,10 @@
      (delete-selection-mode 1)
    #+END_SRC
 ** Highlighting the current word
-   
+
    Emacs comes with this functionality built in, but it is very
    awkward to use. The next code is remedy that.
-   
+
    #+BEGIN_SRC elisp
      (require 'hi-lock)
      (defun RK/toggle-mark-word-at-point ()
