@@ -1,4 +1,4 @@
-t#+TITLE:  Emacs Configuration File
+#+TITLE:  Emacs Configuration File
 #+AUTHOR: Roman Kalinichenko
 #+EMAIL:  romankrv@gmail.com
 
