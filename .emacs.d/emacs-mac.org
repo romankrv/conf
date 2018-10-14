@@ -7,19 +7,19 @@
 
   In MacOSX the variables available for binding the modifier keys:
 
-      mac-function-modifier   
-      mac-control-modifier   
-      mac-command-modifier   
-      mac-option-modifier   
-      mac-right-command-modifier   
-      mac-right-control-modifier   
-      mac-right-option-modifier   
+      mac-function-modifier
+      mac-control-modifier
+      mac-command-modifier
+      mac-option-modifier
+      mac-right-command-modifier
+      mac-right-control-modifier
+      mac-right-option-modifier
 
   values can be 'control, 'alt, 'meta, 'super, 'hyper, nil
   (setting to nil allows the OS to assign values)
 
   #+BEGIN_SRC elisp
-    ;; set keys for Apple keyboard, for emacs in OS X
+    ;; set keys for Apple keyboard on emacs in OSX
     (when (eq system-type 'darwin)
       (setq mac-command-modifier 'meta)      ; make cmd key do Meta
       (setq mac-control-modifier 'control)   ; make Control key do Control
@@ -30,6 +30,7 @@
 
   Command-Q is awful (too easy to hit) ... especially next to
   the more benign key binding to close a window: Cmd-W
+
   #+BEGIN_SRC elisp
     (bind-key "s-q" 'dont-kill-emacs)
   #+END_SRC
@@ -41,32 +42,93 @@
   =ls does not support --dired; see `dired-use-ls-dired' for more details.=
 
   #+BEGIN_SRC elisp
-    (when (string= system-type "darwin")
-      (setq dired-use-ls-dired nil))
+    (when (string= system-type "darwin") (setq dired-use-ls-dired nil))
   #+END_SRC
-  
+
   There is a well known issue about the PATH not being the same in Emacs
-  as in the MacOS shell (ie Terminal).
-  
-  #+BEGIN_SRC emacs-lisp
+  as in the MacOS shell (i.e. Terminal).
+
+  *Fancy titlebar for MacOS* /Matching Titlebar color on MacOS/
+
+  #+BEGIN_SRC elisp
+    (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
+    (add-to-list 'default-frame-alist '(ns-appearance . dark))
+    (setq ns-use-proxy-icon nil)
+    (setq frame-title-format nil)
+  #+END_SRC
+
+  #+BEGIN_SRC elisp
     (use-package exec-path-from-shell
       :ensure t
-      :if (memq window-system '(mac ns))
+      :defer t
+      :if (memq window-system '(mac ns x))
       :config (exec-path-from-shell-initialize))
   #+END_SRC
 
+* Notifications
+
+  Looking at making some processes a bit more obvious, for instance, when a
+  command kicked off in the eshell takes too much time, I need it to beep
+  when it is done. For this, I simply shell out to Mac’s notification center
+  using the terminal-notifier. To install, do:
+
+  #+BEGIN_EXAMPLE
+    brew install terminal-notifier
+  #+END_EXAMPLE
+
+  The =beep= command can either be typed at the end of a command
+  (after a semi-colon), or at the beginning, since anything following
+  isexecuted first, and the notification follows.
+
+  #+BEGIN_SRC elisp
+    (defun eshell/beep (&rest args)
+      "Send a Mac notification message when the command given has
+    completed."
+
+      (let ((comment (if args
+                         (concat "Process has completed: " (car args))
+                       "Process has completed.")))
+        (if args
+            (eshell-plain-command (car args) (cdr args)))
+
+        (shell-command-to-string
+         (concat "terminal-notifier -message '"
+                 comment
+                 "' -title 'Emacs' -subtitle 'Eshell Process Completed'"
+                 " -sound default -sender org.gnu.Emacs"))))
+  #+END_SRC
+
+* DASH
+
+  #+BEGIN_EXAMPLE
+    brew cask install dash
+  #+END_EXAMPLE
+
+
+  The Dash product is nice, and this project allows Emacs to open Dash for
+  documentation of anything with a =C-c d= keystroke:
+
+  #+BEGIN_SRC emacs-lisp
+    (use-package dash-at-point
+      :ensure t
+      :bind ("C-c d d" . dash-at-point-with-docset)
+      :config
+      (add-to-list 'dash-at-point-mode-alist '(clojure-mode . "clojure"))
+      (add-to-list 'dash-at-point-mode-alist '(ruby-mode . "ruby"))
+      (add-to-list 'dash-at-point-mode-alist '(python-mode . "python2"))
+      (add-to-list 'dash-at-point-mode-alist '(sh-mode . "bash"))
+      (add-to-list 'dash-at-point-mode-alist '(emacs-lisp-mode . "elisp")))
+  #+END_SRC
 * Technical Artifacts
 
   Make sure that we can simply =require= this library.
 
   #+BEGIN_SRC elisp
-    (provide 'init-mac)
+   (provide 'init-mac)
   #+END_SRC
 
   Before you can build this on a new system, make sure that you put
   the cursor over any of these properties, and hit: =C-c C-c=
-
-#+DESCRIPTION: A literate programming version of my Emacs Initialization for Mac OSX
 
 #+PROPERTY:    header-args:sh     :tangle no
 #+PROPERTY:    header-args:elisp  :tangle ~/.emacs.d/elisp/init-mac.el
