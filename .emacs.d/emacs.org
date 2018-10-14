@@ -604,22 +604,6 @@ t#+TITLE:  Emacs Configuration File
        (winner-mode 1))
    #+END_SRC
 
-** Anzu (display the typed matches in the mode-line)
-
-   Anzu is an Emacs port of anzu.vim that provides a minor mode which displays
-   current match and total matches information in the mode-line in various search modes.
-
-   #+BEGIN_SRC elisp
-     (use-package anzu
-       :ensure t
-       :diminish anzu-mode nil
-       :config
-       (progn
-         (global-anzu-mode t)
-         (global-set-key [remap query-replace-regexp] 'anzu-query-replace-regexp)
-         (global-set-key [remap query-replace] 'anzu-query-replace)))
-   #+END_SRC
-
 ** Swiper / Ivy / Counsel (Efficient Incremental Search)
 
    *Flexible, Simple tools for minibuffer completion in Emacs*
@@ -660,7 +644,7 @@ t#+TITLE:  Emacs Configuration File
            (define-key read-expression-map (kbd "C-r") 'counsel-expression-history)))
    #+END_SRC
 
-** Avy - navigate by searching for a letter on the screen and jumping to it
+** Avy - jumping to visible text using a char-based decision tree
 
    See https://github.com/abo-abo/avy for more info
 
@@ -672,6 +656,22 @@ t#+TITLE:  Emacs Configuration File
       ;; changed from char as per jcs
    #+END_SRC
 
+** Anzu (display the typed matches in the mode-line)
+
+   Anzu is an Emacs port of anzu.vim that provides a minor mode
+   which displays current match and total matches information in
+   the mode-line in various search modes.
+
+   #+BEGIN_SRC elisp :tangle no
+     (use-package anzu
+       :ensure t
+       :diminish anzu-mode nil
+       :config
+       (progn
+         (global-anzu-mode t)
+         (global-set-key [remap query-replace-regexp] 'anzu-query-replace-regexp)
+         (global-set-key [remap query-replace] 'anzu-query-replace)))
+   #+END_SRC
 * File Browsing and Management
 ** Stop creating dozens of buffers when using dired.
 
@@ -699,8 +699,7 @@ t#+TITLE:  Emacs Configuration File
        (setq uniquify-buffer-name-style 'forward)
        (setq uniquify-separator "/")
        (setq uniquify-after-kill-buffer-p t)    ; rename after killing uniquified
-       (setq uniquify-ignore-buffers-re "^\\*") ; don't muck with special buffers
-       )
+       (setq uniquify-ignore-buffers-re "^\\*")) ; don't muck with special buffers
    #+END_SRC
 
 ** Quickly rename both the currently visited file and its related buffer.
@@ -732,7 +731,7 @@ t#+TITLE:  Emacs Configuration File
     (setq initial-scratch-message "") ; Uh, I know what Scratch is for
     (global-hl-line-mode t)           ; Highlights the current cursor line
     (scroll-bar-mode -1)              ; Scrollbars are waste screen estate
-   ; (show-paren-mode)
+    (show-paren-mode)
 
     (when (window-system)
       (tool-bar-mode 0)               ;; Toolbars were only cool with XEmacs
@@ -815,6 +814,112 @@ t#+TITLE:  Emacs Configuration File
          (beginning-of-line (1+ lines)))
 
          :bind ("C-=" . ha/expand-region))
+   #+END_SRC
+** Hippie-Expand
+
+   HippieExpand looks at the word before point and tries to expand it in various
+   ways including expanding from a fixed list
+
+   [[https://www.emacswiki.org/emacs/HippieExpand]]
+   #+BEGIN_SRC elisp
+     (setq hippie-expand-try-functions-list
+                '(try-expand-dabbrev
+                  try-expand-dabbrev-all-buffers
+                  try-expand-dabbrev-from-kill
+                  try-complete-file-name-partially
+                  try-complete-file-name
+                  try-expand-all-abbrevs
+                  try-expand-list
+                  try-expand-line
+                  try-complete-lisp-symbol-partially
+                  try-complete-lisp-symbol))
+
+     (global-set-key (kbd "M-/") 'hippie-expand)
+   #+END_SRC
+
+   Create a hippie-expand function with a given list of strings
+
+   #+BEGIN_SRC elisp
+     (setq dcsh-command-list '("all_registers"
+                               "check_design" "check_test" "compile" "current_design"
+                               "link" "uniquify"
+                               "report_timing" "report_clocks" "report_constraint"
+                               "get_unix_variable" "set_unix_variable"
+                               "set_max_fanout"
+                               "report_area" "all_clocks" "all_inputs" "all_outputs"))
+
+     (defun he-dcsh-command-beg ()
+       (let ((p))
+         (save-excursion
+           (backward-word 1)
+           (setq p (point)))
+         p))
+
+      (defun try-expand-dcsh-command (old)
+        (unless old
+          (he-init-string (he-dcsh-command-beg) (point))
+          (setq he-expand-list (sort
+                                (all-completions he-search-string (mapcar 'list dcsh-command-list))
+                                'string-lessp)))
+        (while (and he-expand-list
+                (he-string-member (car he-expand-list) he-tried-table))
+          (setq he-expand-list (cdr he-expand-list)))
+        (if (null he-expand-list)
+            (progn
+              (when old (he-reset-string))
+              ())
+          (he-substitute-string (car he-expand-list))
+          (setq he-tried-table (cons (car he-expand-list) (cdr he-tried-table)))
+          (setq he-expand-list (cdr he-expand-list))
+          t))
+   #+END_SRC
+
+   Create a keybinding with a list of hippie-expand functions
+
+   #+BEGIN_SRC elisp
+     (global-set-key [(meta f6)] (make-hippie-expand-function
+                                    '(try-expand-dcsh-command
+                                      try-expand-dabbrev-visible
+                                      try-expand-dabbrev
+                                      try-expand-dabbrev-all-buffers) t))
+   #+END_SRC
+** *Backspace* and *Help* Keys
+
+   Traditionally, *Unix uses the ^H keystroke to send a backspace* from or to a
+   terminal. Emacs, not coming from a Unix background, does not respect this
+   tradition. If you are using Emacs on a terminal and are not getting the
+   results you expect when you press Backspace, you may want to try mapping
+   ^H to delete-backward-char:
+
+   Note: This does not work on Linux Mint and probably all debian based distros.
+   #+BEGIN_SRC elisp :tangle no
+   (global-set-key [(control ?h)] 'delete-backward-char)
+   #+END_SRC
+
+   #+BEGIN_SRC elisp :tangle no
+   (keyboard-translate ?\C-h ?\C-?)
+   #+END_SRC
+
+   *This's usually a better solution* than =keyboard-translate=
+   #+BEGIN_SRC elisp
+   (define-key key-translation-map [?\C-h] [?\C-?])
+   #+END_SRC
+
+   #+BEGIN_SRC elisp
+     (global-set-key [(hyper ?h)] 'help-command)
+     (global-set-key (kbd "C-?") 'help-command)
+   #+END_SRC
+
+   That way C-h and M-h behave like the backwards version of C-d and M-d, and my
+   right pinky does not suffer by trying to get to the backspace or del key (this
+   and mapping ctrl to alt-keys and meta to super and right crtl solves the pinkys
+   problem)
+
+   #+BEGIN_SRC elisp :tangle no
+   (global-set-key (kbd "C-?") 'help-command)
+   (global-set-key (kbd "M-?") 'mark-paragraph)
+   (global-set-key (kbd "C-h") 'delete-backward-char)
+   (global-set-key (kbd "M-h") 'backward-kill-word)
    #+END_SRC
 ** Multiple Cursors
 
@@ -917,7 +1022,6 @@ t#+TITLE:  Emacs Configuration File
           ("C-c _" . wrap-with-underscores)
           ("C-c `" . wrap-with-back-quotes)))
    #+END_SRC
-
 ** Toggle Window Split
 
    Vertical split shows more of each line, horizontal split shows more
@@ -966,8 +1070,6 @@ t#+TITLE:  Emacs Configuration File
 
      ;; I don't use the default binding of 'C-x 5', so use toggle-frame-split instead
      (global-set-key (kbd "C-x 5") 'toggle-frame-split)
-
-
    #+END_SRC
 
 ** Block Wrappers
@@ -979,7 +1081,7 @@ t#+TITLE:  Emacs Configuration File
 
    #+BEGIN_SRC elisp
      (use-package wrap-region
-       :ensure   t
+       :ensure t
        :config
        (wrap-region-global-mode t)
        (wrap-region-add-wrappers
@@ -1084,11 +1186,36 @@ t#+TITLE:  Emacs Configuration File
        :bind ("M-y" . browse-kill-ring))
    #+END_SRC
 
+** Kill Line Backward
+** Smart Kill Whole Line
+
+   It would be bound to =<C-S-backspace>=
+   #+BEGIN_SRC elisp
+     (defun smart-kill-whole-line (&optional arg)
+       "A simple wrapper around `kill-whole-line' that respects indentation."
+       (interactive "P")
+       (kill-whole-line arg)
+       (back-to-indentation))
+     (global-set-key [remap kill-whole-line] 'smart-kill-whole-line)
+  #+END_SRC
 ** MacOSX Specific Keybinding
 
    #+BEGIN_SRC elisp
      (when (eq system-type 'darwin)
        (require 'init-mac))
+   #+END_SRC
+** Windows Specific Keybindings
+
+   #+BEGIN_SRC elisp
+     (when (eq system-type 'windows-nt)
+       (setq w32-pass-lwindow-to-system nil)
+       (setq w32-lwindow-modifier 'super) ; Left Windows key
+
+       (setq w32-pass-rwindow-to-system nil)
+       (setq w32-rwindow-modifier 'super) ; Right Windows key
+
+       (setq w32-pass-apps-to-system nil)
+       (setq w32-apps-modifier 'hyper)) ; Menu/App key
    #+END_SRC
 
 ** Move Text UP/DOWN
@@ -1100,7 +1227,27 @@ t#+TITLE:  Emacs Configuration File
        (([(meta shift up)] . move-text-up)
         ([(meta shift down)] . move-text-down)))
    #+END_SRC
+** Unbind suspend frame
 
+   Unbind the keys for suspending emacs,
+   these are terrible to hit when using a graphical emacs.
+
+   #+BEGIN_SRC elisp
+     (global-unset-key (kbd "C-z"))
+     (global-unset-key (kbd "C-x C-z"))
+   #+END_SRC
+** M-z: zap-to-char to useful zap-up-to-char
+
+   It’s an improvement on zap-to-char, where you specify a character and all
+   characters from the point up to and including the specified character are
+   deleted. I’ve found it’s more practical in most situations not to kill the
+   specharacter.
+
+   #+BEGIN_SRC elisp
+     (autoload 'zap-up-to-char "misc"
+     "Kill up to, but not including ARGth occurrence of CHAR." t)
+     (global-set-key (kbd "M-z") 'zap-up-to-char)
+   #+END_SRC
 ** Define Key Sequence
 
    Stolen solution from
@@ -1115,6 +1262,45 @@ t#+TITLE:  Emacs Configuration File
         (define-key inkel-map (kbd "<f4>") 'auto-fill-mode))
      (global-set-key (kbd "<f9>") inkel-map)
   #+END_SRC
+** Define Key Sequence | F2 and F9 Helpers
+
+   Stolen solution from
+   http://ergoemacs.org/emacs/emacs_keybinding_power_of_keys_sequence.html
+
+   #+BEGIN_SRC elisp
+     (progn
+       (define-prefix-command 'RK-map)
+        (define-key RK-map (kbd "<f1>") 'linum-mode)
+        (define-key RK-map (kbd "<f2>") 'whitespace-mode)
+        (define-key RK-map (kbd "<f3>") 'flyspell-mode)
+        (define-key RK-map (kbd "<f4>") 'auto-fill-mode))
+     (global-set-key (kbd "<f9>") RK-map)
+  #+END_SRC
+** Duplication things
+
+   Easy duplicate line or region, with comment out.
+
+   #+BEGIN_SRC elisp
+     (use-package duplicate-thing
+       :ensure t
+       :defer t
+       :bind ("s-d" . duplicate-thing))
+   #+END_SRC
+
+** Hit =Return key= acts like 'newline-and-indent
+
+   #+BEGIN_SRC elisp
+     (global-set-key (kbd "RET") 'newline-and-indent)
+   #+END_SRC
+** Edit main config file - EMACS.ORG
+
+  #+BEGIN_SRC elisp
+    (defun find-config ()
+      "Edit config.org"
+      (interactive)
+      (find-file (concat RK/EMACS-DIR RK/MAIN-ORG-FILE)))
+    (global-set-key (kbd "C-c I") 'find-config)
+   #+END_SRC
 
 * Clipboard
 
