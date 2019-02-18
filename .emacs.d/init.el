@@ -1,11 +1,26 @@
-(let ((file-name-handler-alist nil))
+;;;;; Startup optimizations
 
-  ;; Increase the garbage collection threshold to 200 MB to ease startup
-  (setq gc-cons-threshold (* 200 1024 1024))
+;;;;;; Set garbage collection threshold
+(setq gc-cons-threshold-original gc-cons-threshold)
+(setq gc-cons-threshold (* 1024 1024 256))
+
+;;;;;; Set file-name-handler-alist
+(setq file-name-handler-alist-original file-name-handler-alist)
+(setq file-name-handler-alist nil)
+
+;;;;;; Set deferred timer to reset them
+(run-with-idle-timer
+ 5 nil
+ (lambda ()
+   (setq gc-cons-threshold gc-cons-threshold-original)
+   (setq file-name-handler-alist file-name-handler-alist-original)
+   (makunbound 'gc-cons-threshold-original)
+   (makunbound 'file-name-handler-alist-original)
+   (message "gc-cons-threshold and file-name-handler-alist restored")))
 
   (require 'package)
   (setq package-enable-at-startup nil)
-  (setq package-archives '(("org"   . "http://orgmode.org/elpa/")
+  (setq package-archives '(("org"  . "http://orgmode.org/elpa/")
                           ("melpa" . "http://melpa.org/packages/")
                           ("gnu"   . "http://elpa.gnu.org/packages/")
                           ("marmalade" . "http://marmalade-repo.org/packages/")))
@@ -17,9 +32,11 @@
     (package-install 'use-package))
 
   (setq use-package-verbose nil
-	use-package-always-defer nil
+        use-package-always-ensure t
 	use-package-compute-statistics nil
 	use-package-minimum-reported-time 0)
+  (require 'use-package)
+
 
   (defconst RK/MAIN-ORG-FILE "emacs.org")
   (defconst RK/EMACS-DIR (concat (getenv "HOME") "/.emacs.d/"))
@@ -45,8 +62,7 @@
 
   (if (file-exists-p RK/MAIN-LOAD-FILE)
       (progn
-	(load-file RK/MAIN-LOAD-FILE)
-	(message "==> You are running from %s <==" RK/MAIN-LOAD-FILE))
+	(load-file RK/MAIN-LOAD-FILE))
     (progn
       (RK/tangle-file RK/MAIN-ORG-FILE)
       (RK/tangle-file "emacs-org.org")
@@ -58,4 +74,4 @@
 	  (progn
 	    (load-file RK/MAIN-LOAD-FILE)
 	    (message "\n==*> You are running from %s after tangle process <*==\n" RK/MAIN-LOAD-FILE))
-	(message "\n=!= Main config file %s not exist. Check out this =!=\n" RK/MAIN-LOAD-FILE)))))
+	(message "\n=!= Main config file %s not exist. Check out this =!=\n" RK/MAIN-LOAD-FILE))))
