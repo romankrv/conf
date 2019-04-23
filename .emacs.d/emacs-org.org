@@ -17,7 +17,7 @@ Just a few tweaks here to make the experience better.
   Need htmlize for the code highlighting in the exports
 
   #+BEGIN_SRC elisp
-    (use-package htmlize :ensure t)
+    (use-package htmlize :defer 1)
   #+END_SRC
 
 * Initial Settings
@@ -26,44 +26,46 @@ Just a few tweaks here to make the experience better.
 
   #+BEGIN_SRC elisp
     (use-package org
-      :ensure t
+      :defer 2
       :init
-        (setq org-directory "~/Dropbox/orgfiles"
-              org-default-notes-file (concat org-directory "/notes.org")
-              org-hide-emphasis-markers t
-              org-fontify-emphasized-text t
-              org-export-coding-system 'utf-8
-              org-src-fontify-natively t
-              org-use-speed-commands t
-              org-return-follows-link t
-              org-hide-leading-stars t
-              org-confirm-babel-evaluate nil
+      (setq org-directory "~/Dropbox/orgfiles"
+            org-default-notes-file (concat org-directory "/notes.org")
+            org-hide-emphasis-markers t
+            org-fontify-emphasized-text t
+            org-export-coding-system 'utf-8
+            org-src-fontify-natively t
+            org-use-speed-commands t
+            org-return-follows-link t
+            org-hide-leading-stars t
+            org-confirm-babel-evaluate nil
+            org-ellipsis " ▼"
 
-              ;; Org-html export configuration
-              org-html-doctype "html5"
-              org-html-html5-fancy t
-              org-html-postamble nil
+            ;; Org-html export configuration
+            org-html-doctype "html5"
+            org-html-html5-fancy t
+            org-html-postamble nil
 
-              ;; Change behavior of TAB as per the appropriate major mode
-              ;org-startup-indented t
+            ;; Change behavior of TAB as per the appropriate major mode
+            ;org-startup-indented t
+            ;; Preserve the indentation inside of source blocks
+            ;org-src-tab-acts-natively t
+            ;org-src-preserve-indentation t
+            ;org-startup-folded (quote overview)
 
-              ;; Preserve the indentation inside of source blocks
-              ;org-src-tab-acts-natively t
-              ;org-src-preserve-indentation t
+            org-todo-keywords '((sequence "TODO(t)" "DOING(g)" "|" "DONE(d)")
+                                (sequence "|" "CANCELED(c)")))
 
-;              org-startup-folded (quote overview)
-              org-todo-keywords '((sequence "TODO(t)" "DOING(g)" "|" "DONE(d)")
-                                  (sequence "|" "CANCELED(c)")))
-              (add-to-list 'auto-mode-alist '("\\.txt\\'" . org-mode))
-              (add-to-list 'auto-mode-alist '(".*/[0-9]*$" . org-mode))   ;; Journal entries
+      (font-lock-add-keywords 'org-mode '(("^ +\\([-*]\\) "
+        (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
 
-        (setq org-ellipsis " ▼")
+      (add-to-list 'auto-mode-alist '("\\.txt\\'" . org-mode))
+      (add-to-list 'auto-mode-alist '(".*/[0-9]*$" . org-mode)) ;; Journal entries
 
       :bind (("C-c l" . org-store-link)
              ("C-c c" . org-capture)
              ("C-M-|" . indent-rigidly))
       :config
-        (font-lock-add-keywords            ; A bit silly but my headers are now
+        (font-lock-add-keywords             ; A bit silly but my headers are now
           'org-mode `(("^\\*+ \\(TODO\\) "  ; shorter, and that is nice canceled
           (1 (progn (compose-region (match-beginning 1) (match-end 1) "⚑")
           nil)))
@@ -84,14 +86,14 @@ Just a few tweaks here to make the experience better.
 
   #+BEGIN_SRC elisp
     (use-package org-ac
-      :ensure t
+      :defer 3
       :diminish auto-complete-mode
       :init (org-ac/config-default))
         (setq ac-comphist-file "~/.emacs.d/backups/ac-comphist.dat")
   #+END_SRC
 
   #+BEGIN_SRC elisp
-    (use-package org-mime :ensure t :defer t)
+    (use-package org-mime :defer t)
   #+END_SRC
 
 * Specify the Org Directories
@@ -107,8 +109,9 @@ Just a few tweaks here to make the experience better.
 
 * Local Key Bindings
 ** Better Org Return
+
   #+BEGIN_SRC elisp
-    (defun ha/org-return (&optional ignore)
+    (defun RK/org-return (&optional ignore)
      "Add new list item, heading or table row with RET.
      A double return on an empty element deletes it.
      Use a prefix arg to get regular RET. "
@@ -151,8 +154,23 @@ Just a few tweaks here to make the experience better.
          (t
           (org-return)))))
 
-    (define-key org-mode-map (kbd "RET")  #'ha/org-return)
+    (define-key org-mode-map (kbd "RET")  #'RK/org-return)
   #+END_SRC
+** Move cursor to the first text in heading body by [C-a]
+
+   Or use the command is back-to-indentation, bound by default to M-m instand
+
+   #+BEGIN_SRC elisp
+     (defadvice org-beginning-of-line (around ad-org-beginning-of-line-around act)
+       "Move back to indentation first, then to beginning of line"
+       (let ((initial-position (point)))
+         ad-do-it
+         (when (looking-at "^ +")
+           (when (equal initial-position
+                        (progn (back-to-indentation)
+                               (point)))
+             (beginning-of-line)))))
+   #+END_SRC
 
 * Color and Display
 
@@ -160,16 +178,8 @@ Just a few tweaks here to make the experience better.
 
   #+BEGIN_SRC elisp
     (use-package org-bullets
-     :ensure t
+     :defer 1
      :init (add-hook 'org-mode-hook 'org-bullets-mode))
-  #+END_SRC
-
-  #+BEGIN_SRC elisp
-    (use-package org
-      :init
-       (font-lock-add-keywords 'org-mode
-      '(("^ +\\([-*]\\) "
-        (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•")))))))
   #+END_SRC
 
 * Export Settings
@@ -246,4 +256,3 @@ Just a few tweaks here to make the experience better.
 #+OPTIONS:     num:nil toc:nil todo:nil tasks:nil tags:nil
 #+OPTIONS:     skip:nil author:nil email:nil creator:nil timestamp:nil
 #+INFOJS_OPT:  view:nil toc:nil ltoc:t mouse:underline buttons:0 path:http://orgmode.org/org-info.js
-

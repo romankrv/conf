@@ -15,10 +15,10 @@
    (setq gc-cons-threshold gc-cons-threshold-original)
    (setq file-name-handler-alist file-name-handler-alist-original)
    (makunbound 'gc-cons-threshold-original)
-   (makunbound 'file-name-handler-alist-original)
-   (message "gc-cons-threshold and file-name-handler-alist restored")))
+   (makunbound 'file-name-handler-alist-original)))
+  ;(message "gc-cons-threshold and file-name-handler-alist restored")
 
-  (require 'package)
+
   (setq package-enable-at-startup nil)
   (setq package-archives '(("org"  . "http://orgmode.org/elpa/")
                           ("melpa" . "http://melpa.org/packages/")
@@ -31,12 +31,11 @@
     (package-refresh-contents)
     (package-install 'use-package))
 
-  (setq use-package-verbose nil
+  (setq use-package-verbose t
         use-package-always-ensure t
 	use-package-compute-statistics nil
 	use-package-minimum-reported-time 0)
   (require 'use-package)
-
 
   (defconst RK/MAIN-ORG-FILE "emacs.org")
   (defconst RK/EMACS-DIR (concat (getenv "HOME") "/.emacs.d/"))

@@ -34,7 +34,7 @@
     slanted text is displayed as half-bright.
 
   Nice list of the fonts for coding:
-  Input Mono
+   Input Mono
    CamingoCode
    Input Mono Narrow
    Input Mono Compressed
@@ -53,7 +53,7 @@
       (set-face-attribute 'default nil :family Input Mono :height 220))
 
    #+BEGIN_SRC elisp
-     (defconst RK/FONT "CamingoCode")
+     (defconst RK/FONT "Input Mono Narrow")
 
      (when (member RK/FONT (font-family-list))
        (set-face-attribute
@@ -116,35 +116,26 @@
 * Themes
 
   #+BEGIN_SRC elisp
+    (use-package doom-themes
+      :if window-system
+      :defer 0.1
+      :config
+      (progn
+        (load-theme 'doom-opera t)
+        (doom-themes-org-config)
+        (set-face-background hl-line-face "#424056")
+        (set-face-attribute 'region nil :background "#5586de" :foreground "#fff7d9")))
+  #+END_SRC
+
+  #+BEGIN_SRC elisp
     (use-package powerline
-      :ensure t
       :defer 1
       :init (powerline-default-theme))
   #+END_SRC
 
   #+BEGIN_SRC elisp :tangle no
     (use-package nord-theme
-      :ensure t
       :init (load-theme 'nord t))
-  #+END_SRC
-
-  #+BEGIN_SRC elisp
-    (use-package doom-themes
-      :if window-system
-      :ensure t
-      :defer 0.1
-      :config
-      (progn
-        (load-theme 'doom-opera t)
-         ;(load-theme 'doom-vibrant t)
-         ;(load-theme 'doom-molokai t)
-         ;(load-theme 'doom-dracula t)
-         ;(load-theme 'doom-peacock t)
-         ;(load-theme 'doom-city-lights t)
-        (doom-themes-org-config)
-        ;;The highlight color
-        (set-face-background hl-line-face "#424056")
-        (set-face-attribute 'region nil :background "#5586de" :foreground "#fff7d9")))
   #+END_SRC
 
   If you use Emacs as Terminal Mode -> ‘$emacs -nw’

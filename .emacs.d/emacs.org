@@ -37,6 +37,31 @@
      brew options emacs
    #+END_SRC
 
+* Bootstrap
+** Benchmark Emacs startup
+
+   It’s easier to optimize Emacs startup time when I have some data available.
+   Time code borrowed from John Wiegley’s init.el
+
+   #+BEGIN_SRC elisp
+     (defconst emacs-start-time (current-time))
+
+     (defun display-startup-echo-area-message ())
+
+     (add-hook 'after-init-hook
+               `(lambda ()
+                  (let ((elapsed
+                         (float-time
+                          (time-subtract (current-time) emacs-start-time))))
+                    (message "Loading %s...done (%.3fs) [after-init]"
+                             ,load-file-name elapsed))) t)
+   #+END_SRC
+
+   #+BEGIN_SRC elisp
+     (defun display-startup-echo-area-message ()
+       "Display startup echo area message."
+       (message "Initialized in %s" (emacs-init-time)))
+   #+END_SRC
 * General Settings
 ** My Directory Location
 
@@ -47,7 +72,7 @@
 
    Anyway, I have a new global variable for that:
 
-   *This section put here as nominally and the following code moved to init.el*:
+   *This section put here nominally, the code moved to init.el:*
    #+BEGIN_SRC elisp :tangle no
      (defconst RK/EMACS-DIR (concat (getenv "HOME") "/.emacs.d/"))
        (defun RK/subdir (d) (expand-file-name d RK/EMACS-DIR))
@@ -58,7 +83,7 @@
    In case this is the first time running this on a computer, we need
    to make sure the following directories have been created.
 
-   *This section put here as nominally and the following code moved to init.el:*
+   *This section put here nominally, the code moved to init.el:*
    #+BEGIN_SRC elisp :tangle no
      (let* ((subdirs '("elisp" "backups"))
              (fulldirs (mapcar (lambda (d) (RK/subdir d)) subdirs)))
@@ -73,10 +98,10 @@
    While I would rather to tune of the configuration Emacs, but sometimes the Emacs
    has =conf system= is good enough and I want to save it in to the file on own path:
 
-   #+BEGIN_SRC elisp
+   *This section put here nominally, the code moved to init.el:*
+   #+BEGIN_SRC elisp :tangle no
      (setq custom-file (expand-file-name "backups/custom.el" RK/EMACS-DIR))
-     (when (file-exists-p custom-file)
-       (load custom-file))
+     (when (file-exists-p custom-file)(load custom-file))
    #+END_SRC
 
 ** Setting up the Load Path
@@ -145,22 +170,56 @@
    With a long history of working on small machines without gigabytes
    of RAM, we might as well let Emacs be the beast it has always dreamed.
 
-   #+BEGIN_SRC elisp
-     (add-hook 'after-init-hook #'(lambda ()  ;; restore after startup
-                                    (setq gc-cons-threshold 800000)))
-   #+END_SRC
+    The optimize of using of the memory after startup of the inctanse EMACS
 
-   First, let’s increase the cache before starting garbage collection:
    #+BEGIN_SRC elisp
-     (setq gc-cons-threshold 64000000)
+     (add-hook 'after-init-hook #'(lambda () (setq gc-cons-threshold (* 20 1024 1024))))
    #+END_SRC
 
    Found [[https://github.com/wasamasa/dotemacs/blob/master/init.org#init][here]] how to remove the warnings from the GnuTLS library when
    using HTTPS... increase the minimum prime bits size:
+
    #+BEGIN_SRC elisp
      (setq gnutls-min-prime-bits 4096)
    #+END_SRC
 
+   To improve emacs performance when you view large file.
+   #+BEGIN_SRC elisp
+     (defun my-find-file-check-make-large-file-read-only-hook ()
+       "If a file is over a given size, make the buffer read only."
+       (when (> (buffer-size) (* 1024 1024))
+         (message "file is over a (* 1024 1024) size, make the buffer read only.")
+         (setq buffer-read-only t)
+         (buffer-disable-undo)
+         (fundamental-mode)))
+
+     (add-hook 'find-file-hook 'my-find-file-check-make-large-file-read-only-hook)
+   #+END_SRC
+
+   Emacs displays a message at the beginning and end of garbage collection.
+
+   #+BEGIN_SRC elisp
+     (setq garbage-collection-messages t)
+   #+END_SRC
+
+   #+BEGIN_SRC elisp
+        (defun my-minibuffer-setup-hook ()
+          (setq gc-cons-threshold most-positive-fixnum))
+
+        (defun my-minibuffer-exit-hook ()
+          (setq gc-cons-threshold (* 20 1024 1024)))
+
+        (add-hook 'minibuffer-setup-hook #'my-minibuffer-setup-hook)
+        (add-hook 'minibuffer-exit-hook #'my-minibuffer-exit-hook)
+   #+END_SRC
+
+   Allow font-lock-mode to do background parsing
+   #+BEGIN_SRC elisp
+     (setq jit-lock-stealth-time 1
+           ;; jit-lock-stealth-load 200
+           jit-lock-chunk-size 1000
+           jit-lock-defer-time 0.05)
+   #+END_SRC
 * Package Initialization
 ** Package Manager
 
@@ -168,7 +227,7 @@
    manager with its own collection repository, but since it is so conservative,
    we need to add more repositories to get all the sweet goodness, I demand.
 
-   This section put here as nominally and following code moved to init.el:
+   *This section put here nominally, the code moved to init.el:*
    #+BEGIN_SRC elisp :tangle no
      (require 'package)
      (setq package-enable-at-startup nil)
@@ -185,7 +244,7 @@
    Using [[https://github.com/jwiegley/use-package][use-package]] to automatically install certain packages, as well as the
    ease of lazily loading them.
 
-   This section put here as nominally and the following code moved to init.el:
+   *This section put here nominally, the code moved to init.el:*
    #+BEGIN_SRC elisp :tangle no
      (unless (package-installed-p 'use-package)
        (package-refresh-contents)
@@ -195,6 +254,10 @@
      (require 'use-package)
      (use-package auto-compile
        :config (auto-compile-on-load-mode))
+   #+END_SRC
+
+   #+BEGIN_SRC elisp
+     (use-package eldoc :defer 2 :diminish "")
    #+END_SRC
 
 ** Init File Support
@@ -209,12 +272,13 @@
      (require 'cl)
 
      (use-package dash
-       :ensure t
-       :config (eval-after-load "dash" '(dash-enable-font-lock)))
+       :defer 1
+       :config
+         (eval-after-load "dash" '(dash-enable-font-lock)))
 
-     (use-package s :ensure t)
-     (use-package f :ensure t)
-     (use-package diminish :ensure t)
+     (use-package s :defer 1)
+     (use-package f :defer 1)
+     (use-package diminish)
     #+END_SRC
 * Variables
 ** Personal information
@@ -282,445 +346,16 @@
            scroll-preserve-screen-position t)
    #+END_SRC
 
+   #+BEGIN_SRC elisp
+     (setq echo-keystrokes 0.1)
+   #+END_SRC
+
    I've been using Emacs for too long to need to re-enable each
    feature bit-by-bit:
 
    #+BEGIN_SRC elisp
      (setq disabled-command-function nil)
    #+END_SRC
-
-* Navigation
-** Smex
-
-  #+BEGIN_SRC elisp
-    (use-package smex
-      :ensure t
-      :init
-        (setq smex-save-file "~/.emacs.d/backups/smex-items")
-        (smex-initialize)
-      :bind ("M-x" . smex)
-            ("M-X" . smex-major-mode-commands))
-  #+END_SRC
-
-** Goto Chg
-
-  Goto last change in current buffer. Repeat to go to earlier changes. Negative arg
-  to go back to more recent changes. With argument 0 (C-u 0) you get a description
-
-  M-. can conflict with etags tag search. But C-. can get overwritten by
-  flyspell-auto-correct-word. And goto-last-change needs a really fast key.
-
-  #+BEGIN_SRC elisp
-    (use-package goto-chg
-      :ensure t
-      :bind (([(control ?.)] . goto-last-change) ([(meta .)] . goto-last-change)))
-  #+END_SRC
-
-** Recent File List
-
-   According to [[http://www.emacswiki.org/emacs-es/RecentFiles][this article]], Emacs already has the recent file
-
-   #+BEGIN_SRC elisp
-     (use-package recentf
-       :init
-       (setq recentf-save-file "~/.emacs.d/backups/recentf")
-       (setq recentf-max-menu-items 200
-             recentf-auto-cleanup 'never
-             recentf-keep '(file-remote-p file-readable-p))
-       (recentf-mode 1)
-       (let ((last-ido "~/.emacs.d/backups/ido.last"))
-         (when (file-exists-p last-ido)
-           (delete-file last-ido)))
-       :bind ("C-c f f" . recentf-open-files))
-   #+END_SRC
-
-** Backup Settings
-
-   This setting moves all backup files to a central location.
-   Got it from [[http://whattheemacsd.com/init.el-02.html][this page]].
-
-   Backup files are so very annoying, until the day they save
-   your hide. That's when you don't want to look back and say
-   "Man, I really shouldn't have disabled those stupid backups."
-   These settings move all backup files to a central location.
-   Bam! No longer annoying. As an added bonus, that last line
-   makes sure your files are backed up even when the files are
-   in version control. Do it.
-
-   #+BEGIN_SRC elisp
-     (setq backup-directory-alist
-           `(("." . ,(expand-file-name (RK/subdir "backups")))))
-   #+END_SRC
-
-   Tramp should do the same:
-   #+BEGIN_SRC elisp
-     (setq tramp-backup-directory-alist backup-directory-alist)
-   #+END_SRC
-
-   Make backups of files, even when they're in version control:
-   #+BEGIN_SRC elisp
-     (setq vc-make-backup-files t)
-   #+END_SRC
-
-   And let’s make sure our files are saved if we wander off and
-   defocus the Emacs application:
-   #+BEGIN_SRC elisp
-     (defun save-all()
-       "Save all dirty buffers without asking for confirmation"
-       (interactive)
-       (save-some-buffers t))
-     (add-hook 'focus-out-hook 'save-all)
-   #+END_SRC
-** More window movement
-
-   Offer a *visual* way to choose a window to switch to
-
-   #+BEGIN_SRC elisp
-     (use-package switch-window
-       :ensure t
-       :bind (("C-x o" . switch-window))
-       :bind (("C-x 1" . switch-window-then-maximize))
-       :bind (("C-x 2" . switch-window-then-split-below))
-       :bind (("C-x 3" . switch-window-then-split-right))
-       :bind (("C-x 4" . switch-window-then-split-delete)))
-   #+END_SRC
-
-** Move to beginning of line
-   Copied from
-   http://emacsredux.com/blog/2013/05/22/smarter-navigation-to-the-beginning-of-a-line/
-
-   Move point to the first non-whitespace character on this line. If point is
-   already there, move to the beginning of the line. Effectively toggle between
-   the first non-whitespace character and the beginning of the line. If ARG is
-   not nil or 1, move forward ARG - 1 lines first. If point reaches the beginning
-   or end of the buffer, stop there.
-
-   #+BEGIN_SRC elisp
-     (defun my/smarter-move-beginning-of-line (arg)
-       (interactive "^p")
-       (setq arg (or arg 1))
-       ;; Move lines first
-       (when (/= arg 1)
-         (let ((line-move-visual nil))
-           (forward-line (1- arg))))
-       (let ((orig-point (point)))
-         (back-to-indentation)
-         (when (= orig-point (point))
-           (move-beginning-of-line 1))))
-
-     ;; remap C-a to `smarter-move-beginning-of-line'
-     (global-set-key [remap move-beginning-of-line]
-                     'my/smarter-move-beginning-of-line)
-   #+END_SRC
-
-   #+BEGIN_SRC elisp
-     (defun smart-beginning-of-line ()
-      "Move point to first non-whitespace character or beginning-of-line"
-       (interactive)
-       (let ((oldpos (point)))
-       (back-to-indentation)
-       (and (= oldpos (point))
-         (beginning-of-line))))
-
-     (global-set-key [home] 'smart-beginning-of-line)
-     (global-set-key [(end)]  'end-of-line)
-     (global-set-key "\C-x'" 'kill-paragraph)
-   #+END_SRC
-
-** Copy filename to clipboard
-
-   http://emacsredux.com/blog/2013/03/27/copy-filename-to-the-clipboard/
-   https://github.com/bbatsov/prelude
-
-  #+BEGIN_SRC elisp
-    (defun prelude-copy-file-name-to-clipboard ()
-      "Copy the current buffer file name to the clipboard."
-      (interactive)
-      (let ((filename (if (equal major-mode 'dired-mode)
-                          default-directory
-                        (buffer-file-name))))
-        (when filename
-          (kill-new filename)
-          (message "Copied buffer file name '%s' to the clipboard." filename))))
-  #+END_SRC
-
-** IDO (Interactively DO Things)
-   According to [[http://www.masteringemacs.org/articles/2010/10/10/introduction-to-ido-mode/][Mickey]], IDO is the greatest thing.
-
-   #+BEGIN_SRC lisp :tangle no
-     (use-package ido
-       :ensure t
-       :init  (setq ido-enable-flex-matching t
-                    ido-ignore-extensions t
-                    ido-use-virtual-buffers t
-                    ido-everywhere t)
-       :config
-       (ido-mode 1)
-       (ido-everywhere 1)
-       (add-to-list 'completion-ignored-extensions ".pyc"))
-   #+END_SRC
-
-   Add to IDO, the [[https://github.com/lewang/flx][FLX]] package:
-
-   #+BEGIN_SRC elisp :tangle no
-     (use-package flx-ido
-       :ensure t
-       :init (setq ido-enable-flex-matching t
-                   ido-use-faces nil)
-       :config (flx-ido-mode 1))
-   #+END_SRC
-
-   According to [[https://gist.github.com/rkneufeld/5126926][Ryan Neufeld]], we could make IDO work vertically,
-   which is much easier to read. For this, I use [[https://github.com/gempesaw/ido-vertical-mode.el][ido-vertically]]:
-
-   #+BEGIN_SRC elisp :tangle no
-     (use-package ido-vertical-mode
-       :ensure t
-       :init               ; I like up and down arrow keys:
-         (setq ido-vertical-define-keys 'C-n-C-p-up-and-down)
-       :config
-         (ido-vertical-mode 1))
-   #+END_SRC
-
-** Desktop (saving emacs sessions)
-
-   Use the desktop library to save the state of Emacs from one session to another.
-   Once you save the Emacs desktop—the buffers, their file names, major modes,
-   buffer positions, and so on—then subsequent Emacs sessions reload the saved desktop.
-
-   #+BEGIN_SRC elisp
-     (desktop-save-mode 1)
-     (setq desktop-path '("~/.emacs.d/backups"))
-     (setq desktop-dirname "~/.emacs.d/backups")
-     (setq desktop-base-file-name "emacs-desktop")
-
-     ;; remove desktop after it's been read
-     (add-hook 'desktop-after-read-hook
-                  '(lambda ()
-                  ;; desktop-remove clears desktop-dirname
-                  (setq desktop-dirname-tmp desktop-dirname)
-                  (desktop-remove)
-                  (setq desktop-dirname desktop-dirname-tmp)))
-
-     (defun saved-session ()
-       (file-exists-p (concat desktop-dirname "/" desktop-base-file-name)))
-
-     ;; use session-restore to restore the desktop manually
-     (defun session-restore ()
-       "Restore a saved emacs session."
-       (interactive)
-       (if (saved-session)
-           (desktop-read)
-         (message "No desktop found.")))
-
-     ;; use session-save to save the desktop manually
-     (defun session-save ()
-       "Save an emacs session."
-       (interactive)
-       (if (saved-session)
-           (if (y-or-n-p "Overwrite existing desktop? ")
-               (desktop-save-in-desktop-dir)
-             (message "Session not saved."))
-         (desktop-save-in-desktop-dir)))
-   #+END_SRC
-
-   Ask user whether to restore desktop at start-up
-   #+BEGIN_SRC elisp :tangle no
-     (add-hook 'after-init-hook
-               '(lambda ()
-                  (if (saved-session)
-                      (if (y-or-n-p "Restore desktop? ")
-                          (session-restore)))))
-  #+END_SRC
-
-  Specifying Files Not to be Opened
-  You can specify buffers which should not be saved, by name or by mode:
-
-  #+BEGIN_SRC elisp
-    (setq desktop-buffers-not-to-save
-          (concat "\\("
-                  "^nn\\.a[0-9]+\\|\\.log\\|(ftp)\\|^tags\\|^TAGS"
-                  "\\|\\.emacs.*\\|\\.diary\\|\\.newsrc-dribble\\|\\.bbdb"
-                  "\\)$"))
-    (add-to-list 'desktop-modes-not-to-save 'dired-mode)
-    (add-to-list 'desktop-modes-not-to-save 'Info-mode)
-    (add-to-list 'desktop-modes-not-to-save 'info-lookup-mode)
-    (add-to-list 'desktop-modes-not-to-save 'fundamental-mode)
-  #+END_SRC
-
-** ADVANCED UNDO/REDO -> Undo Tree
-
-   Keybinding notes:
-   https://gist.github.com/jclosure/cf57e47736d986adb445
-
-   important notes:
-
-    Active undoo-tree with =C-x u=
-
-    =C-q=  (`undo-tree-visualizer-abort')
-     Abort undo-tree-visualizer.
-
-    =q=  (`undo-tree-visualizer-quit')
-     Quit undo-tree-visualizer.
-
-    =d=  (`undo-tree-visualizer-toggle-diff')
-     Toggle diff display.
-
-
-   #+BEGIN_SRC elisp
-     (use-package undo-tree
-      :ensure t
-      :init
-        (global-undo-tree-mode)
-      :config
-        (setq undo-tree-visualizer-timestamps t)
-      :diminish "UTree")
-   #+END_SRC
-
-** Windmove (switching between windows)
-
-   Windmove lets you move between windows with something more natural than
-   cycling through =C-x o= (=other-window=). Windmove doesn't behave well
-   with Org, so we need to use different keybindings.
-
-   #+BEGIN_SRC elisp
-     (use-package windmove
-       :ensure
-       :bind
-       (("<f2> <right>" . windmove-right)
-        ("<f2> <left>" . windmove-left)
-        ("<f2> <up>" . windmove-up)
-        ("<f2> <down>" . windmove-down)))
-   #+END_SRC
-
-** Winner mode (undo/redo window configuration)
-
-   Winner Mode is a global minor mode. When activated, it allows you to “undo”
-   (and “redo”) changes in the window configuration with the key commands
-   ‘C-c left’ and ‘C-c right’
-
-   #+BEGIN_SRC elisp
-     (when (fboundp 'winner-mode)
-       (winner-mode 1))
-   #+END_SRC
-
-** Swiper / Ivy / Counsel (Efficient Incremental Search)
-
-   *Flexible, Simple tools for minibuffer completion in Emacs*
-
-   Swiper gives us a really efficient incremental search with regular expressions
-   and Ivy / Counsel replace a lot of ido or helms completion functionality
-
-   #+BEGIN_SRC elisp
-     (use-package counsel
-       :ensure t
-       :bind
-       (("M-y" . counsel-yank-pop)
-        :map ivy-minibuffer-map
-        ("M-y" . ivy-next-line)))
-
-     (use-package ivy
-       :ensure t
-       :diminish (ivy-mode)
-       :bind (("C-x b" . ivy-switch-buffer))
-       :config
-         (ivy-mode 1)
-         (setq ivy-use-virtual-buffers t)
-         (setq ivy-count-format "%d/%d ")
-         (setq ivy-display-style 'fancy))
-
-     (use-package swiper
-       :ensure t
-       :bind (("C-s" . swiper)
-              ("C-r" . swiper)
-              ("C-c C-r" . ivy-resume)
-              ("M-x" . counsel-M-x)
-              ("C-x C-f" . counsel-find-file))
-       :config
-         (progn
-           (ivy-mode 1)
-           (setq ivy-use-virtual-buffers t)
-           (setq ivy-display-style 'fancy)
-           (define-key read-expression-map (kbd "C-r") 'counsel-expression-history)))
-   #+END_SRC
-
-** Avy - jumping to visible text using a char-based decision tree
-
-   See https://github.com/abo-abo/avy for more info
-
-   #+BEGIN_SRC elisp
-     (use-package avy
-       :ensure t
-       :bind (("M-s" . avy-goto-word-1)
-              ("s-j" . avy-goto-char-timer)))
-      ;; changed from char as per jcs
-   #+END_SRC
-
-** Anzu (display the typed matches in the mode-line)
-
-   Anzu is an Emacs port of anzu.vim that provides a minor mode
-   which displays current match and total matches information in
-   the mode-line in various search modes.
-
-   #+BEGIN_SRC elisp :tangle no
-     (use-package anzu
-       :ensure t
-       :diminish anzu-mode nil
-       :config
-       (progn
-         (global-anzu-mode t)
-         (global-set-key [remap query-replace-regexp] 'anzu-query-replace-regexp)
-         (global-set-key [remap query-replace] 'anzu-query-replace)))
-   #+END_SRC
-* File Browsing and Management
-** Stop creating dozens of buffers when using dired.
-
-  #+BEGIN_SRC elisp
-    (defun RK/bury-buffer-instead-of-hidding ()
-      "Modify keymaps used by `dired-mode'."
-      (local-set-key (kbd "q") 'kill-this-buffer))
-
-    (add-hook 'dired-mode-hook 'RK/bury-buffer-instead-of-hidding)
-
-    ; Avoid dired to open several dired buffer when browsing through directories
-    (put 'dired-find-alternate-file 'disabled nil)
-
-    (add-hook 'dired-mode-hook
-      (lambda ()
-        (define-key dired-mode-map (kbd "^")
-          (lambda () (interactive) (find-alternate-file "..")))))
-  #+END_SRC
-
-** Uniquify Buffer Names
-
-   #+BEGIN_SRC elisp
-     (use-package uniquify
-       :config
-       (setq uniquify-buffer-name-style 'forward)
-       (setq uniquify-separator "/")
-       (setq uniquify-after-kill-buffer-p t)    ; rename after killing uniquified
-       (setq uniquify-ignore-buffers-re "^\\*")) ; don't muck with special buffers
-   #+END_SRC
-
-** Quickly rename both the currently visited file and its related buffer.
-
-  #+BEGIN_SRC elisp
-    (defun rename-file-and-buffer (new-name)
-      "Renames both current buffer and file it's visiting to NEW-NAME."
-      (interactive "FNew name: ")
-      (let
-        ((name (buffer-name))
-          (filename (buffer-file-name)))
-        (if (not filename)
-        (message "Buffer '%s' is not visiting a file!" name)
-          (if (get-buffer new-name)
-          (message "A buffer named '%s' already exists!" new-name)
-          (progn (rename-file name new-name 1)
-            (rename-buffer new-name)
-            (set-visited-file-name new-name)
-            (set-buffer-modified-p nil))))))
-  #+END_SRC
-
 * Display Settings
 
   I've been using Emacs for several years, and appreciate a certain
@@ -728,17 +363,18 @@
   with the menu items now, it is just as easy to set them here.
 
   #+BEGIN_SRC elisp
-    (setq initial-scratch-message "") ; Uh, I know what Scratch is for
-    (global-hl-line-mode t)           ; Highlights the current cursor line
-    (scroll-bar-mode -1)              ; Scrollbars are waste screen estate
-    (show-paren-mode)
+    (setq initial-scratch-message "")
+    (global-hl-line-mode t)
+    (scroll-bar-mode -1)
+    (show-paren-mode 1)
+    (setq show-paren-delay 0)
 
     (when (window-system)
-      (tool-bar-mode 0)               ;; Toolbars were only cool with XEmacs
+      (tool-bar-mode 0)
       (when (fboundp 'horizontal-scroll-bar-mode)
         (horizontal-scroll-bar-mode -1)))
   #+END_SRC
-
+(set-face-attribute 'show-paren-match nil :weight 'extra-bold)
   #+BEGIN_SRC elisp
     (defun my-terminal-visible-bell ()
       "A friendlier visual bell effect."
@@ -750,7 +386,7 @@
   #+END_SRC
 
   Flashes the cursor's line when you scroll
-  #+BEGIN_SRC
+  #+BEGIN_SRC :tangle no
     (use-package beacon
       :ensure t
       :diminish beacon-mode
@@ -777,7 +413,6 @@
     (blink-cursor-mode -1)
     (set-cursor-color "red2")
   #+END_SRC
-
 * Key Bindings
 ** Expand Region
 
@@ -787,7 +422,6 @@
 
    #+BEGIN_SRC elisp
      (use-package expand-region
-       :ensure t
        :config
        (defun ha/expand-region (lines)
          "Prefix-oriented wrapper around Magnar's `er/expand-region'.
@@ -1081,7 +715,7 @@
 
    #+BEGIN_SRC elisp
      (use-package wrap-region
-       :ensure t
+       :defer 3
        :config
        (wrap-region-global-mode t)
        (wrap-region-add-wrappers
@@ -1172,7 +806,6 @@
 
        (which-key-mode 1))
    #+END_SRC
-
 ** Browse-Kill-Ring
 
    Of course, You can use next flow -> tap C-y M-y M-y ...
@@ -1187,6 +820,14 @@
    #+END_SRC
 
 ** Kill Line Backward
+
+   #+BEGIN_SRC elisp
+     (global-set-key (kbd "C-<backspace>") (lambda ()
+                                             (interactive)
+                                             (kill-line 0)
+                                             (indent-according-to-mode)))
+   #+END_SRC
+
 ** Smart Kill Whole Line
 
    It would be bound to =<C-S-backspace>=
@@ -1226,6 +867,7 @@
        :bind
        (([(meta shift up)] . move-text-up)
         ([(meta shift down)] . move-text-down)))
+
    #+END_SRC
 ** Unbind suspend frame
 
@@ -1286,7 +928,6 @@
        :defer t
        :bind ("s-d" . duplicate-thing))
    #+END_SRC
-
 ** Hit =Return key= acts like 'newline-and-indent
 
    #+BEGIN_SRC elisp
@@ -1302,6 +943,482 @@
     (global-set-key (kbd "C-c I") 'find-config)
    #+END_SRC
 
+* Navigation
+** Smex
+
+  #+BEGIN_SRC elisp
+    (use-package smex
+      :ensure t
+      :init
+        (setq smex-save-file "~/.emacs.d/backups/smex-items")
+        (smex-initialize)
+      :bind ("M-x" . smex)
+            ("M-X" . smex-major-mode-commands))
+  #+END_SRC
+
+** Goto Chg
+
+  Goto last change in current buffer. Repeat to go to earlier changes. Negative arg
+  to go back to more recent changes. With argument 0 (C-u 0) you get a description
+
+  M-. can conflict with etags tag search. But C-. can get overwritten by
+  flyspell-auto-correct-word. And goto-last-change needs a really fast key.
+
+  #+BEGIN_SRC elisp
+    (use-package goto-chg
+      :ensure t
+      :bind (([(control ?.)] . goto-last-change) ([(meta .)] . goto-last-change)))
+  #+END_SRC
+
+** Recent File List
+
+   According to [[http://www.emacswiki.org/emacs-es/RecentFiles][this article]], Emacs already has the recent file
+
+   #+BEGIN_SRC elisp :tangle no
+     (use-package recentf
+       :init
+       (setq recentf-save-file "~/.emacs.d/backups/recentf")
+       (setq recentf-max-menu-items 200
+             recentf-auto-cleanup 'never
+             recentf-keep '(file-remote-p file-readable-p))
+       (recentf-mode 1)
+       (let ((last-ido "~/.emacs.d/backups/ido.last"))
+         (when (file-exists-p last-ido)
+           (delete-file last-ido)))
+       :bind ("C-c f f" . recentf-open-files))
+   #+END_SRC
+
+** Backup Settings
+
+   This setting moves all backup files to a central location.
+   Got it from [[http://whattheemacsd.com/init.el-02.html][this page]].
+
+   Backup files are so very annoying, until the day they save
+   your hide. That's when you don't want to look back and say
+   "Man, I really shouldn't have disabled those stupid backups."
+   These settings move all backup files to a central location.
+   Bam! No longer annoying. As an added bonus, that last line
+   makes sure your files are backed up even when the files are
+   in version control. Do it.
+
+   #+BEGIN_SRC elisp
+     (setq backup-directory-alist
+           `(("." . ,(expand-file-name (RK/subdir "backups")))))
+   #+END_SRC
+
+   Tramp should do the same:
+
+   #+BEGIN_SRC elisp
+     (setq tramp-backup-directory-alist backup-directory-alist)
+   #+END_SRC
+
+   Make backups of files, even when they're in version control:
+
+   #+BEGIN_SRC elisp
+     (setq vc-make-backup-files t)
+   #+END_SRC
+
+   And let’s make sure our files are saved if we wander off and
+   defocus the Emacs application:
+
+   #+BEGIN_SRC elisp
+     (defun save-all()
+       "Save all dirty buffers without asking for confirmation"
+       (interactive)
+       (save-some-buffers t))
+     (add-hook 'focus-out-hook 'save-all)
+   #+END_SRC
+
+** Popwin
+
+   Treat some windows as popups and close them when they're not used.
+
+   #+BEGIN_SRC elisp
+     (use-package popwin
+       :defer 2
+       :config
+       (popwin-mode 1)
+       (add-to-list 'popwin:special-display-config '"*anaconda-doc*"))
+   #+END_SRC
+
+** More window movement
+
+   Offer a *visual* way to choose a window to switch to
+
+   #+BEGIN_SRC elisp
+     (use-package switch-window
+       :ensure t
+       :bind (("C-x o" . switch-window))
+       :bind (("C-x 1" . switch-window-then-maximize))
+       :bind (("C-x 2" . switch-window-then-split-below))
+       :bind (("C-x 3" . switch-window-then-split-right))
+       :bind (("C-x 4" . switch-window-then-split-delete)))
+   #+END_SRC
+
+** Move to beginning of line
+
+   Copied from: [[http://emacsredux.com/blog/2013/05/22/smarter-navigation-to-the-beginning-of-a-line/][smarter-navigation-to-the-beginning-of-a-line]]
+
+   Move point to the first non-whitespace character on this line. If point is
+   already there, move to the beginning of the line. Effectively toggle between
+   the first non-whitespace character and the beginning of the line. If ARG is
+   not nil or 1, move forward ARG - 1 lines first. If point reaches the beginning
+   or end of the buffer, stop there.
+
+   #+BEGIN_SRC elisp
+     (defun smarter-move-beginning-of-line (arg)
+       "Move point back to indentation of beginning of line.
+
+     Move point to the first non-whitespace character on this line.
+     If point is already there, move to the beginning of the line.
+     Effectively toggle between the first non-whitespace character and
+     the beginning of the line.
+
+     If ARG is not nil or 1, move forward ARG - 1 lines first.  If
+     point reaches the beginning or end of the buffer, stop there."
+       (interactive "^p")
+       (setq arg (or arg 1))
+
+       ;; Move lines first
+       (when (/= arg 1)
+         (let ((line-move-visual nil))
+           (forward-line (1- arg))))
+
+       (let ((orig-point (point)))
+         (back-to-indentation)
+         (when (= orig-point (point))
+           (move-beginning-of-line 1))))
+
+     ;; remap C-a to `smarter-move-beginning-of-line'
+     (global-set-key [remap move-beginning-of-line]
+                     'smarter-move-beginning-of-line)
+   #+END_SRC
+
+   If I'm not at the end of a line, C-e will go to the end of the line,
+   otherwise, go the end of next line.
+
+   #+BEGIN_SRC elisp
+     (defun my-move-end-of-line (arg)
+       (interactive "P")
+       (when (eolp) (forward-line (if arg -1 1)))
+       (move-end-of-line nil))
+
+     (global-set-key [remap move-end-of-line]  'my-move-end-of-line)
+   #+END_SRC
+
+** Copy filename to clipboard
+
+   http://emacsredux.com/blog/2013/03/27/copy-filename-to-the-clipboard/
+   https://github.com/bbatsov/prelude
+
+  #+BEGIN_SRC elisp
+    (defun prelude-copy-file-name-to-clipboard ()
+      "Copy the current buffer file name to the clipboard."
+      (interactive)
+      (let ((filename (if (equal major-mode 'dired-mode)
+                          default-directory
+                        (buffer-file-name))))
+        (when filename
+          (kill-new filename)
+          (message "Copied buffer file name '%s' to the clipboard." filename))))
+  #+END_SRC
+
+** IDO (Interactively DO Things)
+   According to [[http://www.masteringemacs.org/articles/2010/10/10/introduction-to-ido-mode/][Mickey]], IDO is the greatest thing.
+
+   #+BEGIN_SRC lisp :tangle no
+     (use-package ido
+       :ensure t
+       :init  (setq ido-enable-flex-matching t
+                    ido-ignore-extensions t
+                    ido-use-virtual-buffers t
+                    ido-everywhere t)
+       :config
+       (ido-mode 1)
+       (ido-everywhere 1)
+       (add-to-list 'completion-ignored-extensions ".pyc"))
+   #+END_SRC
+
+   Add to IDO, the [[https://github.com/lewang/flx][FLX]] package:
+
+   #+BEGIN_SRC elisp :tangle no
+     (use-package flx-ido
+       :ensure t
+       :init (setq ido-enable-flex-matching t
+                   ido-use-faces nil)
+       :config (flx-ido-mode 1))
+   #+END_SRC
+
+   According to [[https://gist.github.com/rkneufeld/5126926][Ryan Neufeld]], we could make IDO work vertically,
+   which is much easier to read. For this, I use [[https://github.com/gempesaw/ido-vertical-mode.el][ido-vertically]]:
+
+   #+BEGIN_SRC elisp :tangle no
+     (use-package ido-vertical-mode
+       :ensure t
+       :init               ; I like up and down arrow keys:
+         (setq ido-vertical-define-keys 'C-n-C-p-up-and-down)
+       :config
+         (ido-vertical-mode 1))
+   #+END_SRC
+
+** Desktop (saving emacs sessions)
+
+   Use the desktop library to save the state of Emacs from one session to another.
+   Once you save the Emacs desktop—the buffers, their file names, major modes,
+   buffer positions, and so on—then subsequent Emacs sessions reload the saved desktop.
+
+   #+BEGIN_SRC elisp
+     (desktop-save-mode 1)
+     (setq desktop-path '("~/.emacs.d/backups"))
+     (setq desktop-dirname "~/.emacs.d/backups")
+     (setq desktop-base-file-name "emacs-desktop")
+
+     (add-hook 'desktop-after-read-hook
+               '(lambda ()
+                  (setq desktop-dirname-tmp desktop-dirname)
+                  (desktop-remove)
+                  (setq desktop-dirname desktop-dirname-tmp)))
+
+     (defun saved-session ()
+       (file-exists-p (concat desktop-dirname "/" desktop-base-file-name)))
+
+     ;; use session-restore to restore the desktop manually
+     (defun session-restore ()
+       "Restore a saved emacs session."
+       (interactive)
+       (if (saved-session)
+           (desktop-read)
+         (message "No desktop found.")))
+
+     ;; use session-save to save the desktop manually
+     (defun session-save ()
+       "Save an emacs session."
+       (interactive)
+       (if (saved-session)
+           (if (y-or-n-p "Overwrite existing desktop? ")
+               (desktop-save-in-desktop-dir)
+             (message "Session not saved."))
+         (desktop-save-in-desktop-dir)))
+
+     (setq desktop-buffers-not-to-save
+          (concat "\\("
+                  "^nn\\.a[0-9]+\\|\\.log\\|(ftp)\\|^tags\\|^TAGS"
+                  "\\|\\.emacs.*\\|\\.diary\\|\\.newsrc-dribble\\|\\.bbdb"
+                  "\\)$"))
+     (add-to-list 'desktop-modes-not-to-save 'dired-mode)
+     (add-to-list 'desktop-modes-not-to-save 'Info-mode)
+     (add-to-list 'desktop-modes-not-to-save 'info-lookup-mode)
+     (add-to-list 'desktop-modes-not-to-save 'fundamental-mode)
+   #+END_SRC
+
+   Ask user whether to restore desktop at start-up
+   #+BEGIN_SRC elisp :tangle no
+     (add-hook 'after-init-hook
+               '(lambda ()
+                  (if (saved-session)
+                      (if (y-or-n-p "Restore desktop? ")
+                          (session-restore)))))
+   #+END_SRC
+
+** ADVANCED UNDO/REDO -> Undo Tree
+
+   Keybinding notes:
+   https://gist.github.com/jclosure/cf57e47736d986adb445
+
+   important notes:
+
+    Active undo-tree with =C-x u=
+
+    =C-q=  (`undo-tree-visualizer-abort')
+     Abort undo-tree-visualizer.
+
+    =q=  (`undo-tree-visualizer-quit')
+     Quit undo-tree-visualizer.
+
+    =d=  (`undo-tree-visualizer-toggle-diff')
+     Toggle diff display.
+
+
+   #+BEGIN_SRC elisp
+     (use-package undo-tree
+      :ensure t
+      :init
+        (global-undo-tree-mode)
+      :config
+        (setq undo-tree-visualizer-timestamps t)
+      :diminish "undo-tree")
+   #+END_SRC
+
+** Windmove (switching between windows)
+
+   Windmove lets you move between windows with something more natural than
+   cycling through =C-x o= (=other-window=). Windmove doesn't behave well
+   with Org, so we need to use different keybindings.
+
+   #+BEGIN_SRC elisp
+     (use-package windmove
+       :ensure
+       :bind
+       (("<f2> <right>" . windmove-right)
+        ("<f2> <left>" . windmove-left)
+        ("<f2> <up>" . windmove-up)
+        ("<f2> <down>" . windmove-down)))
+   #+END_SRC
+
+** Winner mode (undo/redo window configuration)
+
+   Winner Mode is a global minor mode. When activated, it allows you to “undo”
+   (and “redo”) changes in the window configuration with the key commands
+   ‘C-c left’ and ‘C-c right’
+
+   #+BEGIN_SRC elisp
+     (when (fboundp 'winner-mode)
+       (winner-mode 1))
+   #+END_SRC
+
+** Swiper / Ivy / Counsel (Efficient Incremental Search)
+
+   *Flexible, Simple tools for minibuffer completion in Emacs*
+
+   Swiper gives us a really efficient incremental search with regular expressions
+   and Ivy / Counsel replace a lot of ido or helms completion functionality
+
+   #+BEGIN_SRC elisp
+     (use-package counsel
+       :ensure t
+       :bind
+       (("M-y" . counsel-yank-pop)
+        :map ivy-minibuffer-map
+        ("M-y" . ivy-next-line)))
+
+     (use-package ivy
+       :ensure t
+       :diminish (ivy-mode)
+       :bind (("C-x b" . ivy-switch-buffer))
+       :config
+         (ivy-mode 1)
+         (setq ivy-use-virtual-buffers t)
+         (setq ivy-count-format "%d/%d ")
+         (setq ivy-display-style 'fancy))
+
+     (use-package swiper
+       :ensure t
+       :bind (("C-s" . swiper)
+              ("C-r" . swiper)
+              ("C-c C-r" . ivy-resume)
+              ("M-x" . counsel-M-x)
+              ("C-x C-f" . counsel-find-file))
+       :config
+         (progn
+           (ivy-mode 1)
+           (setq ivy-use-virtual-buffers t)
+           (setq ivy-display-style 'fancy)
+           (define-key read-expression-map (kbd "C-r") 'counsel-expression-history)))
+   #+END_SRC
+
+** Avy - jumping to visible text using a char-based decision tree
+
+   See https://github.com/abo-abo/avy for more info
+
+   #+BEGIN_SRC elisp
+     (use-package avy
+       :ensure t
+       :bind (("M-s" . avy-goto-word-1)
+              ("s-j" . avy-goto-char-timer)))
+      ;; changed from char as per jcs
+   #+END_SRC
+
+** Anzu (display the typed matches in the mode-line)
+
+   Anzu is an Emacs port of anzu.vim that provides a minor mode
+   which displays current match and total matches information in
+   the mode-line in various search modes.
+
+   #+BEGIN_SRC elisp :tangle no
+     (use-package anzu
+       :ensure t
+       :diminish anzu-mode
+       :config
+       (progn
+         (global-anzu-mode t)
+         (global-set-key [remap query-replace-regexp] 'anzu-query-replace-regexp)
+         (global-set-key [remap query-replace] 'anzu-query-replace)))
+   #+END_SRC
+* Loading and Find File
+** Stop creating dozens of buffers when using dired.
+
+  #+BEGIN_SRC elisp
+    (defun RK/bury-buffer-instead-of-hidding ()
+      "Modify keymaps used by `dired-mode'."
+      (local-set-key (kbd "q") 'kill-this-buffer))
+
+    (add-hook 'dired-mode-hook 'RK/bury-buffer-instead-of-hidding)
+
+    ; Avoid dired to open several dired buffer when browsing through directories
+    (put 'dired-find-alternate-file 'disabled nil)
+
+    (add-hook 'dired-mode-hook
+      (lambda ()
+        (define-key dired-mode-map (kbd "^")
+          (lambda () (interactive) (find-alternate-file "..")))))
+  #+END_SRC
+** NeoTree
+
+   #+BEGIN_SRC elisp1
+     (use-package neotree
+       :bind ("s-d" . neotree)
+       :config
+       (setq neo-dont-be-alone t
+             neo-theme 'nerd)
+       (bind-keys :map neotree-mode-map
+                  ("u" . neotree-select-up-node)
+                  ;;("d" . *-neo-down-and-next)
+                  ("i" . neotree-enter)
+                  ("K" . neotree-delete-node)))
+   #+END_SRC
+
+   #+BEGIN_SRC elisp
+     (use-package all-the-icons :defer 3)
+
+     (use-package neotree
+       :defer 3
+       :bind
+         ("<f8>" . neotree-toggle)
+       :init
+         (setq neo-theme (if (display-graphic-p) 'icons 'arrow))
+       :config
+         (setq neo-smart-open t)
+         (setq projectile-switch-project-action 'neotree-projectile-action))
+   #+END_SRC
+
+** Uniquify Buffer Names
+
+   #+BEGIN_SRC elisp
+     (require 'uniquify)
+     (setq uniquify-buffer-name-style 'forward
+           uniquify-separator "/"
+           uniquify-after-kill-buffer-p t    ; rename after killing uniquified
+           uniquify-ignore-buffers-re "^\\*") ; don't muck with special buffers
+   #+END_SRC
+
+** Quickly rename both the currently visited file and its related buffer.
+
+  #+BEGIN_SRC elisp
+    (defun rename-file-and-buffer (new-name)
+      "Renames both current buffer and file it's visiting to NEW-NAME."
+      (interactive "FNew name: ")
+      (let
+        ((name (buffer-name))
+          (filename (buffer-file-name)))
+        (if (not filename)
+        (message "Buffer '%s' is not visiting a file!" name)
+          (if (get-buffer new-name)
+          (message "A buffer named '%s' already exists!" new-name)
+          (progn (rename-file name new-name 1)
+            (rename-buffer new-name)
+            (set-visited-file-name new-name)
+            (set-buffer-modified-p nil))))))
+  #+END_SRC
 * Clipboard
 
   Clipmon is a clipboard monitor - it watches the system clipboard and can
@@ -1332,21 +1449,72 @@
   #+END_SRC
 
 * Tools
+** Hydra [C-x t]
+
+   #+BEGIN_SRC elisp
+     (use-package hydra
+         :ensure hydra
+         :init
+         (global-set-key
+         (kbd "C-x t")
+         (defhydra toggle (:color blue)
+           "toggle"
+           ("a" abbrev-mode "abbrev")
+           ("s" flyspell-mode "flyspell")
+           ("d" toggle-debug-on-error "debug")
+           ("c" fci-mode "fCi")
+           ("f" auto-fill-mode "fill")
+           ("t" toggle-truncate-lines "truncate")
+           ("w" whitespace-mode "whitespace")
+           ("q" nil "cancel"))))
+   #+END_SRC
 ** Git
-   I like [[https://github.com/syohex/emacs-git-gutter-fringe][git-gutter-fringe]]:
+
+    [[https://github.com/syohex/emacs-git-gutter-fringe][git-gutter-fringe]]
+
    #+BEGIN_SRC elisp
      (use-package git-gutter-fringe
-        :ensure t
+        :defer 1
         :diminish git-gutter-mode
-        :init (setq git-gutter-fr:side 'right-fringe)
-        :config (global-git-gutter-mode t))
+        :init
+        (setq git-gutter-fr:side 'left-fringe)
+        (global-set-key (kbd "M-g M-g") 'hydra-git-gutter/body)
+        :config
+        (global-git-gutter-mode t))
+
+     (defhydra hydra-git-gutter (:body-pre (git-gutter-mode 1) :hint nil)
+       "
+     Git gutter:
+       _j_: next hunk        _s_tage hunk     _q_uit
+       _k_: previous hunk    _r_evert hunk    _Q_uit and deactivate git-gutter
+       ^ ^                   _p_opup hunk
+       _h_: first hunk
+       _l_: last hunk        set start _R_evision
+     "
+       ("j" git-gutter:next-hunk)
+       ("k" git-gutter:previous-hunk)
+       ("h" (progn (goto-char (point-min))
+                   (git-gutter:next-hunk 1)))
+       ("l" (progn (goto-char (point-min))
+                   (git-gutter:previous-hunk 1)))
+       ("s" git-gutter:stage-hunk)
+       ("r" git-gutter:revert-hunk)
+       ("p" git-gutter:popup-hunk)
+       ("R" git-gutter:set-start-revision)
+       ("q" nil :color blue)
+       ("Q" (progn (git-gutter-mode -1)
+                   ;; git-gutter-fringe doesn't seem to
+                   ;; clear the markup right away
+                   (sit-for 0.1)
+                   (git-gutter:clear))
+            :color blue))
    #+END_SRC
 
    I want to have special mode for Git's =configuration= file:
 
    #+BEGIN_SRC elisp
-     (use-package gitconfig-mode :ensure t)
-     (use-package gitignore-mode :ensure t)
+     (use-package gitconfig-mode :ensure t :defer 2)
+     (use-package gitignore-mode :ensure t :defer 2)
    #+END_SRC
 
    Finally, I want to play with [[https://github.com/pidu/git-timemachine][Git Time Machine]] project for stepping
@@ -1365,17 +1533,17 @@
    b Run magit-blame on the currently visited revision (if magit available).
 
    #+BEGIN_SRC elisp
-     (use-package git-timemachine :ensure t)
+     (use-package git-timemachine :defer t)
    #+END_SRC
 
-** Magit
+ ** Magit
 
    Git is [[http://emacswiki.org/emacs/Git][already part of Emacs]]. However, [[http://philjackson.github.com/magit/magit.html][Magit]] is sweet.
    Don't believe me? Check out [[https://www.youtube.com/watch?v=vQO7F2Q9DwA][this video]].
 
    #+BEGIN_SRC elisp
      (use-package magit
-       :ensure t
+
        :commands magit-status magit-blame
        :init
          (defadvice magit-status (around magit-fullscreen activate)
@@ -1579,7 +1747,7 @@
    When I save, I want to always, and I do mean always strip all
    trailing whitespace from the file.
 
-   #+BEGIN_SRC elisp :tangle no
+   #+BEGIN_SRC elisp
      (add-hook 'before-save-hook 'delete-trailing-whitespace)
    #+END_SRC
 
@@ -1609,7 +1777,7 @@
 
    #+BEGIN_SRC elisp
      (use-package super-save
-       :ensure t
+       :defer 1
        :diminish super-save-mode
        :config
         (super-save-mode +1))
@@ -1619,12 +1787,21 @@
 
   #+BEGIN_SRC elisp
     (use-package highlight-indent-guides
-      :ensure t
-       :init
-         (add-hook 'prog-mode-hook 'highlight-indent-guides-mode)
-       :config
-         (setq highlight-indent-guides-method 'column))
+      :defer 1
+      :diminish highlight-indent-guides-mode
+      :init (add-hook 'prog-mode-hook 'highlight-indent-guides-mode)
+      :config (setq highlight-indent-guides-method 'column))
   #+END_SRC
+
+** Volatile Highlights
+
+   #+BEGIN_SRC elisp
+     (use-package volatile-highlights
+       :defer 2
+       :diminish volatile-highlights-mode
+       :config
+       (volatile-highlights-mode t))
+   #+END_SRC
 
 ** Hungry-Delete
 
@@ -1632,10 +1809,27 @@
 
    #+BEGIN_SRC elisp
      (use-package hungry-delete
-      :ensure t
+      :defer 2
       :diminish hungry-delete-mode
       :config
         (global-hungry-delete-mode))
+   #+END_SRC
+
+** Rainbow-Mode & Rainbow-Delimiters
+
+   This minor mode sets background color to strings that match color
+   names, e.g. #0000ff is displayed in white with a blue background.
+
+   #+BEGIN_SRC elisp
+     (use-package rainbow-mode
+       :defer 1
+       :diminish rainbow-mode
+       :config
+       (add-hook 'prog-mode-hook #'rainbow-mode))
+
+     (use-package rainbow-delimiters
+         :defer 1
+         :init (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
    #+END_SRC
 
 ** Delete-Selection-Mode
