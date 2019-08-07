@@ -84,7 +84,7 @@
    to make sure the following directories have been created.
 
    *This section put here nominally, the code moved to init.el:*
-   #+BEGIN_SRC elisp :tangle no
+   #+BEGIN_SRC elisp :tangle no 
      (let* ((subdirs '("elisp" "backups"))
              (fulldirs (mapcar (lambda (d) (RK/subdir d)) subdirs)))
         (dolist (dir fulldirs)
@@ -173,7 +173,8 @@
     The optimize of using of the memory after startup of the inctanse EMACS
 
    #+BEGIN_SRC elisp
-     (add-hook 'after-init-hook #'(lambda () (setq gc-cons-threshold (* 20 1024 1024))))
+   (add-hook 'after-init-hook #'(lambda () 
+     (setq gc-cons-threshold (* 20 1024 1024))))
    #+END_SRC
 
    Found [[https://github.com/wasamasa/dotemacs/blob/master/init.org#init][here]] how to remove the warnings from the GnuTLS library when

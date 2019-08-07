@@ -42,6 +42,7 @@
   (defconst RK/MAIN-LOAD-FILE (concat RK/EMACS-DIR "elisp/init-main.el"))
   (defun RK/subdir (d) (expand-file-name d RK/EMACS-DIR))
 
+
   ;; One needs to make sure the following directories have been created.
   (let* ((subdirs '("elisp" "backups"))
 	 (fulldirs (mapcar (lambda (d) (RK/subdir d)) subdirs)))

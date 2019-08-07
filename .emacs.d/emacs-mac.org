@@ -1,32 +1,10 @@
 #+TITLE:  Macintosh Configuration for Emacs
-#+AUTHOR:  Roman Kalinichenko
+#+AUTHOR: Roman Kalinichenko
 #+EMAIL:  romankrv@gmail.com
 
 
 * Key Bindings
 
-  In MacOSX the variables available for binding the modifier keys:
-
-      mac-function-modifier
-      mac-control-modifier
-      mac-command-modifier
-      mac-option-modifier
-      mac-right-command-modifier
-      mac-right-control-modifier
-      mac-right-option-modifier
-
-  values can be 'control, 'alt, 'meta, 'super, 'hyper, nil
-  (setting to nil allows the OS to assign values)
-
-  #+BEGIN_SRC elisp
-    ;; set keys for Apple keyboard on emacs in OSX
-    (when (eq system-type 'darwin)
-      (setq mac-command-modifier 'meta)      ; make cmd key do Meta
-      (setq mac-control-modifier 'control)   ; make Control key do Control
-      (setq mac-function-modifier 'hyper)    ; make Fn key do Hyper
-      (setq mac-option-modifier 'super)      ; make opt key do Super
-      (setq mac-right-option-modifier 'alt)) ; make right opt key do Alt
-  #+END_SRC
 
   Command-Q is awful (too easy to hit) ... especially next to
   the more benign key binding to close a window: Cmd-W
