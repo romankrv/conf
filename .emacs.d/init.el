@@ -1,77 +1,18 @@
-;;;;; Startup optimizations
+;; At the beginning of the BIG BANG
 
-;;;;;; Set garbage collection threshold
-(setq gc-cons-threshold-original gc-cons-threshold)
-(setq gc-cons-threshold (* 1024 1024 256))
+;; -*- lexical-binding: t; -*-
 
-;;;;;; Set file-name-handler-alist
-(setq file-name-handler-alist-original file-name-handler-alist)
-(setq file-name-handler-alist nil)
+(let ((gc-cons-threshold (* 256 1024 1024))
+      (file-name-handler-alist nil))
+  (defun emacs-subdir (d) (expand-file-name d (concat (getenv "HOME") "/.emacs.d/")))
+  (setq main-org-file "emacs.org"
+        main-el-file (emacs-subdir "elisp/init-main.el")
+        org-files-d (file-name-directory (or (buffer-file-name) load-file-name)))
 
-;;;;;; Set deferred timer to reset them
-(run-with-idle-timer
- 5 nil
- (lambda ()
-   (setq gc-cons-threshold gc-cons-threshold-original)
-   (setq file-name-handler-alist file-name-handler-alist-original)
-   (makunbound 'gc-cons-threshold-original)
-   (makunbound 'file-name-handler-alist-original)))
-  ;(message "gc-cons-threshold and file-name-handler-alist restored")
-
-
-  (setq package-enable-at-startup nil)
-  (setq package-archives '(("org"  . "http://orgmode.org/elpa/")
-                          ("melpa" . "http://melpa.org/packages/")
-                          ("gnu"   . "http://elpa.gnu.org/packages/")
-                          ("marmalade" . "http://marmalade-repo.org/packages/")))
-  (package-initialize)
-
-  ;; Bootstrap `use-package'
-  (unless (package-installed-p 'use-package)
-    (package-refresh-contents)
-    (package-install 'use-package))
-
-  (setq use-package-verbose t
-        use-package-always-ensure t
-	use-package-compute-statistics nil
-	use-package-minimum-reported-time 0)
-  (require 'use-package)
-
-  (defconst RK/MAIN-ORG-FILE "emacs.org")
-  (defconst RK/EMACS-DIR (concat (getenv "HOME") "/.emacs.d/"))
-  (defconst RK/MAIN-LOAD-FILE (concat RK/EMACS-DIR "elisp/init-main.el"))
-  (defun RK/subdir (d) (expand-file-name d RK/EMACS-DIR))
-
-
-  ;; One needs to make sure the following directories have been created.
-  (let* ((subdirs '("elisp" "backups"))
-	 (fulldirs (mapcar (lambda (d) (RK/subdir d)) subdirs)))
-    (dolist (dir fulldirs)
-      (when (not (file-exists-p dir))
-	(make-directory dir))))
-
-  (defun RK/tangle-file (file)
-    "Given an 'org-mode' FILE, tangle the source code."
-    (interactive "fOrg File: ")
-    (find-file (concat RK/EMACS-DIR file))
-    (org-babel-tangle)
-    (kill-buffer))
-
-  (setq custom-file (expand-file-name "backups/emacs-custom.el" RK/EMACS-DIR))
-  (when (file-exists-p custom-file)(load custom-file))
-
-  (if (file-exists-p RK/MAIN-LOAD-FILE)
-      (progn
-	(load-file RK/MAIN-LOAD-FILE))
-    (progn
-      (RK/tangle-file RK/MAIN-ORG-FILE)
-      (RK/tangle-file "emacs-org.org")
-      (RK/tangle-file "emacs-python.org")
-      (RK/tangle-file "emacs-client.org")
-      (when (eq system-type 'darwin) (RK/tangle-file "emacs-mac.org"))
-
-      (if (file-exists-p RK/MAIN-LOAD-FILE)
-	  (progn
-	    (load-file RK/MAIN-LOAD-FILE)
-	    (message "\n==*> You are running from %s after tangle process <*==\n" RK/MAIN-LOAD-FILE))
-	(message "\n=!= Main config file %s not exist. Check out this =!=\n" RK/MAIN-LOAD-FILE))))
+  (if (file-exists-p main-el-file)(load main-el-file)
+    (progn (when (not (file-exists-p (emacs-subdir "elisp")))
+	     (make-directory (emacs-subdir "elisp")))
+      (require 'ob-tangle)
+      (mapc #'org-babel-tangle-file (directory-files org-files-d t "\\.org$"))
+      (message "== Applyed *org-babel-load-file* to each of the org-files ==")))
+)
